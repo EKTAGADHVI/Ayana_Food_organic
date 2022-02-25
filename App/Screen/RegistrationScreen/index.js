@@ -9,12 +9,14 @@ import { screen_height } from '../../Utils/constant';
 import styles from './styles';
 
 
-class LoginScreen extends Component
+class RegistrationScreen extends Component
 {
     constructor ( props )
     {
         super( props );
         this.state = {
+            username: "",
+            phone: '',
             email: '',
             password: '',
             showPassword: true,
@@ -27,18 +29,39 @@ class LoginScreen extends Component
             <ImageBackground
                 source={ require( '../../../assets/background.png' ) }
                 style={ styles.mainLayout }>
-                <SafeAreaView>
-                    <ScrollView>
+             
+                    <ScrollView  style={{paddingTop:"5%",paddingBottom:"5%"}} showsVerticalScrollIndicator={false}>
                         <View >
                             <LogoView />
 
                         </View>
                         <View style={ { marginVertical: 10 } }>
-                            <Text style={ styles.titleText } >Login</Text>
+                            <Text style={ styles.titleText } >Sign Up</Text>
                             <Text style={ styles.regularText } >Enter Your Credentials to Continue</Text>
                         </View>
 
                         <View style={ { marginVertical: 10 } }>
+                            <Input
+
+                                title={ "Username" }
+                                value={ this.state.username }
+                                onChangeText={ ( text ) =>
+                                {
+                                    this.setState( {
+                                        username: text
+                                    } )
+                                } }
+                                secureTextEntry={ false }
+
+                                iconPress={ () =>
+                                {
+                                    this.setState( {
+                                        showPassword: true
+                                    } )
+                                } }
+                                placeholder={ "xyz" }
+                            />
+
                             <Input
 
                                 title={ "Email/Phone" }
@@ -61,6 +84,28 @@ class LoginScreen extends Component
                             />
 
                             <Input
+
+                                title={ "Mobile Number" }
+                                value={ this.state.email }
+                                onChangeText={ ( text ) =>
+                                {
+                                    this.setState( {
+                                        email: text
+                                    } )
+                                } }
+                                secureTextEntry={ false }
+
+                                iconPress={ () =>
+                                {
+                                    this.setState( {
+                                        showPassword: true
+                                    } )
+                                } }
+                                placeholder={ "+91 9056256525" }
+                            />
+
+
+                            <Input
                                 title={ "Password" }
                                 value={ this.state.password }
                                 onChangeText={ ( text ) =>
@@ -81,40 +126,30 @@ class LoginScreen extends Component
                             />
                             <FilledButton
                                 onPress={ () => { } }
-                                title={ "Login with OTP" } />
+                                title={ "Sign Up with OTP" } />
 
-                            <Pressable>
+                            {/* <Pressable>
                                 <Text style={ [ styles.regularText, { color: Black, textAlign: 'center' } ] }> Forgot Password ?</Text>
-                            </Pressable>
+                            </Pressable> */}
                             <FilledButton
                                 onPress={ () => { } }
-                                title={ "Login " } />
-                            <View style={ { flexDirection: 'row', justifyContent: 'center' ,marginVertical:5} }>
-                                <Text style={ [ styles.regularText, { color: Black, textAlign: 'center' } ] }> Don't have account ? </Text>
+                                title={ "Sign Up " } />
+                            <View style={ { flexDirection: 'row', justifyContent: 'center', marginVertical: 5 } }>
+                                <Text style={ [ styles.regularText, { color: Black, textAlign: 'center' } ] }> Already have an account ? </Text>
                                 <Pressable onPress={()=>{
-                                    this.props.navigation.navigate('RegistrationScreen')
+                                    this.props.navigation.navigate('LoginScreen')
                                 }}>
-                                    <Text style={ [ styles.regularText, { color: Light_Green, textAlign: 'center' } ] }> Sign Up</Text>
+                                    <Text style={ [ styles.regularText, { color: Light_Green, textAlign: 'center' } ] }> Sign In</Text>
                                 </Pressable>
                             </View>
 
-                            <SocialMediadButton
-                                color={ Light_Blue }
-                                source={ require( '../../../assets/google.png' ) }
-                                title={ "Continue with Google " } />
-                            <SocialMediadButton
-                                color={ Dark_Blue }
-                                source={ require( '../../../assets/facebook.png' ) }
-                                title={ "Continue with FaceBook  " } />
-                            <Pressable onPress={()=>{this.props.navigation.navigate('Home')}}>
-                                <Text style={ [ styles.regularText, { color: Black, textAlign: 'center', textDecorationLine: 'underline' } ] }>Skip ></Text>
-                            </Pressable>
+                           
                         </View>
                     </ScrollView>
-                </SafeAreaView>
+            
             </ImageBackground>
         );
     }
 }
 
-export default LoginScreen;
+export default RegistrationScreen;

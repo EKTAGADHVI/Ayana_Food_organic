@@ -4,7 +4,7 @@ import { screen_height, screen_width } from '../Utils/constant';
 
 const LogoView = (props) =>{
     return <Image
-    style={[styles.mainLayout,styles.props]}
+    style={[styles.mainLayout,props.style]}
     source={require('../../assets/logo.png')}/>
 }
 

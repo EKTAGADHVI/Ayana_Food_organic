@@ -8,7 +8,7 @@ const Input = ( props ) =>
 {
     return (
         <View style={ styles.inputContainer }>
-            <Text style={ styles.RegularText }>{ props.title }</Text>
+            <Text style={ [styles.RegularText ,props.textStyle]}>{ props.title }</Text>
             <View style={ styles.inputView }>
                 <TextInput
                     placeholderTextColor={ Text_Gray }
