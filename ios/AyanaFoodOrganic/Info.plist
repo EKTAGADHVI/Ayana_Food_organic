@@ -35,6 +35,7 @@
 			</dict>
 		</dict>
 	</dict>
+	
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string/>
 	<key>UILaunchStoryboardName</key>
@@ -101,6 +102,8 @@
 		<string>Roboto-Regular.ttf</string>
 		<string>Roboto-Thin.ttf</string>
 		<string>Roboto-ThinItalic.ttf</string>
+		<string>MaterialIcons.ttf</string>
 	</array>
+
 </dict>
 </plist>

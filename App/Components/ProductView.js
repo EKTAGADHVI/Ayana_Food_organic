@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, ImageBackground, Text ,Image} from 'react-native';
-import { screen_width } from '../Utils/constant';
+import { screen_height, screen_width } from '../Utils/constant';
 import { Rating, AirbnbRating } from 'react-native-ratings';
 import { Light_Green, Line_Gray, ORENGE, Text_Gray, White } from '../Utils/colors';
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../Utils/fonts';
@@ -8,8 +8,12 @@ import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../Utils/fonts';
 const startImage = require('../../assets/star.png')
 const ProductView = ( props ) =>
 {
+    // var count = 13;
+    // let name= props.name;
+    // let title =name.slice(0,count) +(name.length > count ? "..." : "");
+// console.log("props.item",props.item)
     return (
-        <TouchableOpacity style={ [ styles.mainContainer, props.style ] }>
+        <TouchableOpacity style={ [ styles.mainContainer, props.style ] } onPress={props.onPress}>
             <ImageBackground
             resizeMode='contain'
             style={{
@@ -20,28 +24,28 @@ const ProductView = ( props ) =>
          
             
             }}
-            source={require('../../assets/product.png')}>
+            source={{uri:props.image}}>
                 <View style={styles.circleView}>
                     <Text style={styles.discountText} >20%</Text>
                 </View>
             </ImageBackground>
-            <Text style={styles.regularText}>Product Name</Text>
+            <Text style={styles.regularText}>{props.name}</Text>
             <Rating
-                type='star'
+                type='star'                
                 ratingImage={ startImage }
                 ratingColor='#3498db'
                 ratingBackgroundColor='#c8c7c8'
                 ratingCount={ 5 }
-                imageSize={ 10 }
-                defaultRating={3}
+                imageSize={ 10 }   
+                startingValue={props.rating}             
                 onFinishRating={ this.ratingCompleted }
                 style={ { alignSelf:'flex-start' } }
             />
              <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>Store Name</Text>
-             <Text style={styles.regularText}>Rs. 135/-</Text>
+             <Text style={styles.regularText}>Rs. {props.price}/-</Text>
              <TouchableOpacity style={styles.btnView}>
                  <Image
-                 style={{height:10,width:10}}
+                 style={{height:10,width:10,alignSelf:'center'}}
                  source={require('../../assets/plus.png')}/>
              </TouchableOpacity>
         </TouchableOpacity>
@@ -51,8 +55,8 @@ export default ProductView;
 
 const styles = StyleSheet.create( {
     mainContainer: {
-        height: 200,
-        width: screen_width / 2 - 35,
+      
+        width: screen_width / 2 - 30,
         borderRadius:10,
         shadowColor:'#E2E2E2',
         shadowOffset: { width: 0, height: 3 },
@@ -60,7 +64,11 @@ const styles = StyleSheet.create( {
         elevation:5,
         paddingHorizontal:10,
         paddingVertical:5,
-        backgroundColor:White
+        backgroundColor:White,
+        marginHorizontal:8,
+        borderWidth:1,
+        borderColor:'#E2E2E2',
+        marginVertical:5
         // borderWidth:1
     },
     circleView:{
@@ -75,7 +83,8 @@ const styles = StyleSheet.create( {
     discountText:{
         color:White,
         fontSize:10,
-        fontFamily:POPINS_SEMI_BOLD
+        fontFamily:POPINS_SEMI_BOLD,
+       paddingVertical:5
     },
     regularText:{
         fontFamily:POPINS_SEMI_BOLD,
@@ -85,10 +94,13 @@ const styles = StyleSheet.create( {
     },
     btnView:{
         backgroundColor:Light_Green,
-        borderRadius:10,
+        borderRadius:8,
         height: 25,
         width:25,
         justifyContent:'center',
-        alignContent:'center'
+        alignContent:'center',
+        alignSelf:'flex-end',    
+        bottom:3,
+     
     }
 } )

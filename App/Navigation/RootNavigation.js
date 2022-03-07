@@ -10,11 +10,21 @@ import ContactUs from '../Screen/ContactUs';
 import AboutUs from '../Screen/AboutUs';
 import AddDeliveryLocation from '../Screen/AddDeliveryLocation';
 import RegistrationScreen from '../Screen/RegistrationScreen';
+import ProductViewScreen from '../Screen/ProductViewScreen.js';
+import ProductDetailScreen from '../Screen/ProductDetailScreen';
 
 
 const bottomTab = createBottomTabNavigator();
 const mainStack = createNativeStackNavigator();
 
+const isTabBarVisible = (navState) => {
+    console.log("nav State",navState);
+    if (!navState) {
+      return true;
+    }
+    let tabBarVisible = navState.routes[navState.index].params ? navState.routes[navState.index].params.showTabBar : true;
+    return tabBarVisible;
+  }
 const TabBarIcon = (props) =>{
     // cons [isActive]
     return(
@@ -72,22 +82,36 @@ const RootNavigation = ({navigation}) =>{
             options={{
                 headerShown:false
             }}/>
+              <mainStack.Screen
+            name="ProductViewScreen"
+            component={ProductViewScreen}
+            options={{
+                headerShown:false
+            }}/>
+                <mainStack.Screen
+            name="ProductDetailScreen"
+            component={ProductDetailScreen}
+            options={{
+                headerShown:false
+            }}/>
 
         </mainStack.Navigator>
     );
 }
 
 
-const BottomTab = () =>{
+const BottomTab = ({navigation}) =>{
     return(
         <bottomTab.Navigator screenOptions={{ 
             headerShown: false ,
+       
             tabBarActiveTintColor: Light_Green,
             tabBarInactiveTintColor:Black,
             tabBarLabelStyle:{
                 fontFamily:POPINS_REGULAR,
                 fontSize:12
             },
+            
             tabBarStyle:{
                 backgroundColor:White,
                 borderTopEndRadius:15,
@@ -102,7 +126,8 @@ const BottomTab = () =>{
                 },
                 shadowRadius:20,
                 elevation:5
-            }
+            },
+        
         }}>
             <bottomTab.Screen
             name="Shop" 
@@ -110,6 +135,7 @@ const BottomTab = () =>{
             options={
             {
                 tabBarIcon : ({focused})=><TabBarIcon source={require('../../assets/store.png')} tintColor={focused ? Light_Green :Black}/>
+            , 
             }
             }/>
               <bottomTab.Screen

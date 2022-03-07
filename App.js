@@ -30,6 +30,7 @@ import {
 import SplashScreen from './App/Screen/SplashScreen';
 import RootNavigation from './App/Navigation/RootNavigation';
 import { NavigationContainer } from '@react-navigation/native';
+import { connect } from 'react-redux';
 
 
 
@@ -55,6 +56,7 @@ componentDidMount(){
    }
    else{
     return  (
+      
       <NavigationContainer>
         <RootNavigation/>
       </NavigationContainer>
@@ -62,6 +64,24 @@ componentDidMount(){
   }
   }
 }
+function mapStateToProps(state, ownProps) {
+  // console.log(" state.loginReducer.data", state.loginReducer.data)
+    return {
+      // data : state.loginReducer.data
+  
+  
+    };
+  
+  }
+  
+  const mapDispatchToProps = dispatch => {
+    return {
+        //getPeople,
+        // login: (request) => dispatch(actions.login.apiActionCreator(request)),
+      
+        dispatch,
+    };
+  };
+  export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 
-export default App;

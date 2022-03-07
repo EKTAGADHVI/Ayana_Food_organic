@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Light_Green, ORENGE } from "../../Utils/colors";
-import { screen_width } from "../../Utils/constant";
+import { screen_height, screen_width } from "../../Utils/constant";
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts";
 
 const styles = StyleSheet.create({
@@ -37,22 +37,49 @@ const styles = StyleSheet.create({
     },
     rowView:{
         flexDirection:'row',
-        marginHorizontal:10
+        marginHorizontal:15
     },
     labelText:{
-        fontSize:12,
+        fontSize:14,
         fontFamily:POPINS_SEMI_BOLD,
         paddingVertical:5
     },
     smallText:{
         fontFamily:POPINS_REGULAR,
-        fontSize:12,
+        fontSize:13,
         paddingVertical:2,
         color:Light_Green
     },
     featureButton:{
         paddingRight:10,
-        paddingVertical:3
+        paddingVertical:3,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    offerBannerContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        width:screen_width /1.5-20,
+        padding:15,
+        borderRadius:20, 
+        marginHorizontal:5
+        
+    },
+    regularText:{
+        fontSize:14,
+        fontFamily:POPINS_REGULAR,
+        paddingVertical:5
+    },
+    bannerStyle:{
+        height:screen_height/2,
+        marginVertical:10
+    },
+    banerText:{
+        fontSize:20,
+        fontFamily:POPINS_REGULAR,
+        paddingVertical:5,
+        textAlign:'right',
+        paddingHorizontal:15
     }
     
 

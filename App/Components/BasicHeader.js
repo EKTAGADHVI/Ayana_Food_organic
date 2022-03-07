@@ -14,7 +14,11 @@ const BasicHeader = ( props ) =>
             </TouchableOpacity>
             <Text style={ styles.titleText }>{ props.title }</Text>
             <View>
-
+            <TouchableOpacity onPress={ props.OnRightMenuPress }>
+                <Image
+                    style={ styles.iconStyle }
+                    source={props.rightMenuIcon } />
+            </TouchableOpacity>
             </View>
         </View>
     );
