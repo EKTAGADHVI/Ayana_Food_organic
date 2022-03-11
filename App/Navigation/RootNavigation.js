@@ -12,6 +12,9 @@ import AddDeliveryLocation from '../Screen/AddDeliveryLocation';
 import RegistrationScreen from '../Screen/RegistrationScreen';
 import ProductViewScreen from '../Screen/ProductViewScreen.js';
 import ProductDetailScreen from '../Screen/ProductDetailScreen';
+import Cart from '../Screen/Cart';
+import Favourite from '../Screen/Favourite';
+import OtpScreen from '../Screen/OtpScreen';
 
 
 const bottomTab = createBottomTabNavigator();
@@ -49,6 +52,12 @@ const RootNavigation = ({navigation}) =>{
             <mainStack.Screen
             name="LoginScreen"
             component={LoginScreen}
+            options={{
+                headerShown:false
+            }}/>
+              <mainStack.Screen
+            name="OtpScreen"
+            component={OtpScreen}
             options={{
                 headerShown:false
             }}/>
@@ -104,7 +113,7 @@ const BottomTab = ({navigation}) =>{
     return(
         <bottomTab.Navigator screenOptions={{ 
             headerShown: false ,
-       
+            tabBarHideOnKeyboard:true,
             tabBarActiveTintColor: Light_Green,
             tabBarInactiveTintColor:Black,
             tabBarLabelStyle:{
@@ -125,7 +134,8 @@ const BottomTab = ({navigation}) =>{
                     height:5
                 },
                 shadowRadius:20,
-                elevation:5
+                elevation:5,
+                
             },
         
         }}>
@@ -151,14 +161,14 @@ const BottomTab = ({navigation}) =>{
                     tabBarIcon : ({focused})=><TabBarIcon source={require('../../assets/cart.png')} tintColor={focused ? Light_Green :Black}/>
                 }}
             name="Cart" 
-            component={Dashboard}/>
+            component={Cart}/>
               <bottomTab.Screen
               options={
                 {
                     tabBarIcon : ({focused})=><TabBarIcon source={require('../../assets/fav.png')} tintColor={focused ? Light_Green :Black}/>
                 }}
             name="Favourite" 
-            component={Dashboard}/>
+            component={Favourite}/>
               <bottomTab.Screen
               options={
                 {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ImageBackground, ScrollView, View, Text, Pressable, SafeAreaView } from 'react-native';
+import { ImageBackground, ScrollView, View, Text, Pressable, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import FilledButton from '../../Components/Filledbuton';
 import Input from '../../Components/Input';
 import LogoView from '../../Components/LogoView';
@@ -18,17 +18,21 @@ class LoginScreen extends Component
             email: '',
             password: '',
             showPassword: true,
+            openKeyboard:false
         }
     }
 
     render ()
     {
+        const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
         return (
+        
             <ImageBackground
                 source={ require( '../../../assets/background.png' ) }
                 style={ styles.mainLayout }>
+                       <ScrollView showsVerticalScrollIndicator={false}>
                 <SafeAreaView>
-                    <ScrollView>
+                  <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={keyboardVerticalOffset}>
                         <View >
                             <LogoView />
 
@@ -80,7 +84,7 @@ class LoginScreen extends Component
                                 placeholder={ "**********" }
                             />
                             <FilledButton
-                                onPress={ () => { } }
+                                onPress={ () => {this.props.navigation.navigate('OtpScreen') } }
                                 title={ "Login with OTP" } />
 
                             <Pressable>
@@ -106,13 +110,15 @@ class LoginScreen extends Component
                                 color={ Dark_Blue }
                                 source={ require( '../../../assets/facebook.png' ) }
                                 title={ "Continue with FaceBook  " } />
-                            <Pressable onPress={()=>{this.props.navigation.navigate('Home')}}>
+                            <Pressable style={{paddingBottom:"20%"}} onPress={()=>{this.props.navigation.navigate('Home')}}>
                                 <Text style={ [ styles.regularText, { color: Black, textAlign: 'center', textDecorationLine: 'underline' } ] }>Skip ></Text>
                             </Pressable>
                         </View>
-                    </ScrollView>
+                        </KeyboardAvoidingView>
                 </SafeAreaView>
+                </ScrollView>
             </ImageBackground>
+           
         );
     }
 }

@@ -36,10 +36,11 @@ const styles = StyleSheet.create( {
         marginVertical: 5
     },
     input: {
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: POPINS_REGULAR,
-        height: Platform.OS === 'ios' ? 35 : 35,
-        width: "90%"
+        height: Platform.OS === 'ios' ? 35 : null,
+        width: "90%",
+       
     },
     RegularText: {
         fontSize: 16,

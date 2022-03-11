@@ -1,8 +1,10 @@
+
+
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { screen_height } from '../../Utils/constant';
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
-import { Text_Gray } from '../../Utils/colors';
+import { Black, Gray, Text_Gray } from '../../Utils/colors';
 const styles = StyleSheet.create( {
     mainLayout: {
         height: screen_height-20,
@@ -20,7 +22,32 @@ const styles = StyleSheet.create( {
         fontFamily:POPINS_REGULAR,
         paddingVertical:5,
         color:Text_Gray  
-    }
+    },
+    underlineStyleBase: {
+        width: 30,
+    height: 45,
+    borderWidth: 0,
+    borderBottomWidth: 1,       
+        borderBottomColor:Black,
+        marginHorizontal:5,
+        color:Black,
+        fontSize:18
+       
+      },
+    
+      underlineStyleHighLighted: {  
+        
+        width: 30,
+        height: 45,
+        borderWidth: 0,
+        borderBottomWidth: 1,
+
+        borderRadius:10,
+     
+        borderColor:Black,
+        color:Black
+      },
+    
 } )
 
 export default styles;

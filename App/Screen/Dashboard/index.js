@@ -432,7 +432,9 @@ class Dashboard extends Component
                                         image ={item.images[0]?.src} 
                                         rating={item.rating_count}
                                         price ={item.price}
-                                        onPress={()=>{this.props.navigation.navigate('ProductDetailScreen')}}/>
+                                        onPress={()=>{this.props.navigation.navigate('ProductDetailScreen',{
+                                            data:item
+                                        })}}/>
                                     }
 
                                 } } />

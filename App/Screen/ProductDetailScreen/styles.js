@@ -56,7 +56,7 @@ const styles = StyleSheet.create( {
     titleText: {
         fontFamily: POPINS_BOLD,
         fontSize: 16,
-        width: screen_width / 2 - 15
+        width: screen_width / 1.4 - 5
     },
     iconStyle2: {
         height: 15,
@@ -104,8 +104,9 @@ const styles = StyleSheet.create( {
         flexDirection: "row",
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginHorizontal: 10,
+
         padding: 8,
+        
 
 
     },
@@ -125,6 +126,15 @@ const styles = StyleSheet.create( {
     },
     mainContainer:{
         height: screen_height / 1.5 - 20,
+    },
+    attributesView:{
+        height:40,
+        width:40,
+        borderRadius:10,
+        justifyContent:"center",
+        borderWidth:0.5,
+        marginHorizontal:5,
+        borderColor:Gray
     }
 
 } );
