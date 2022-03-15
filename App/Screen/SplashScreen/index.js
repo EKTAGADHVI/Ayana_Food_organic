@@ -7,7 +7,7 @@ class SplashScreen extends Component {
             <View style={{flex:1}}>
                  <Image
     style={{height:"100%",width:"100%"}}
-    source={require('../../../assets/splash2.png')}/>
+    source={require('../../../assets/splash3.png')}/>
  
             </View>
         );

@@ -242,7 +242,7 @@ class Dashboard extends Component
 
         if ( dif < 0 )
         {
-            navigation.setParams( { showTabBar: true } );
+            navigation.setParams( {  tabBarVisibilityAnimationConfig: false } );
         } else
         {
             navigation.setParams( { showTabBar: false } );
@@ -292,10 +292,7 @@ class Dashboard extends Component
                         } }
                         secureTextEntry={ false }
                         placeholder={ "Search here" } />
-                    <ScrollView showsVerticalScrollIndicator={ false } onScroll={ () =>
-                    {
-
-                    } }>
+                    <ScrollView showsVerticalScrollIndicator={ false } >
                         <View style={ {
                             height: 200,
                             width: screen_width,
@@ -334,7 +331,7 @@ class Dashboard extends Component
                         </View>
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                             <Text style={ styles.labelText }>All Categoeries</Text>
-                            <Pressable >
+                            <Pressable  onPress={()=>{this.props.navigation.navigate('SubCategories')}}>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
                         </View>

@@ -15,11 +15,16 @@ import ProductDetailScreen from '../Screen/ProductDetailScreen';
 import Cart from '../Screen/Cart';
 import Favourite from '../Screen/Favourite';
 import OtpScreen from '../Screen/OtpScreen';
-
+import HelpScreen from '../Screen/Help';
+import SubCategories from '../Screen/SubCategories';
+import Explore from '../Screen/Explore';
+import Blog from '../Screen/Blog';
+import BlogDetails from '../Screen/Blog/BlogDetails';
+// import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const bottomTab = createBottomTabNavigator();
 const mainStack = createNativeStackNavigator();
-
+// const drawer = createDrawerNavigator();
 const isTabBarVisible = (navState) => {
     console.log("nav State",navState);
     if (!navState) {
@@ -87,7 +92,7 @@ const RootNavigation = ({navigation}) =>{
             }}/>
               <mainStack.Screen
             name="Blog"
-            component={AddDeliveryLocation}
+            component={Blog}
             options={{
                 headerShown:false
             }}/>
@@ -103,10 +108,37 @@ const RootNavigation = ({navigation}) =>{
             options={{
                 headerShown:false
             }}/>
-
+             <mainStack.Screen
+            name="HelpScreen"
+            component={HelpScreen}
+            options={{
+                headerShown:false
+            }}/>
+            <mainStack.Screen
+            name="SubCategories"
+            component={SubCategories}
+            options={{
+                headerShown:false
+            }}/>
+               <mainStack.Screen
+            name="BlogDetails"
+            component={BlogDetails}
+            options={{
+                headerShown:false
+            }}/>
+  
         </mainStack.Navigator>
     );
 }
+
+// const Drawer = () =>{
+//     return(
+//         <drawer.Navigator>
+//         <drawer.Screen name="Shop" component={Dashboard} />
+//         {/* <drawer.Screen name="Article" component={Article} /> */}
+//       </drawer.Navigator>
+//     );
+// }
 
 
 const BottomTab = ({navigation}) =>{
@@ -114,6 +146,7 @@ const BottomTab = ({navigation}) =>{
         <bottomTab.Navigator screenOptions={{ 
             headerShown: false ,
             tabBarHideOnKeyboard:true,
+     
             tabBarActiveTintColor: Light_Green,
             tabBarInactiveTintColor:Black,
             tabBarLabelStyle:{
@@ -154,7 +187,7 @@ const BottomTab = ({navigation}) =>{
                     tabBarIcon : ({focused})=><TabBarIcon source={require('../../assets/explore.png')} tintColor={focused ? Light_Green :Black}/>
                 }}
             name="Explore" 
-            component={Dashboard}/>
+            component={Explore}/>
              <bottomTab.Screen
              options={
                 {

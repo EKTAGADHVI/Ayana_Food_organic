@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { screen_height } from '../../Utils/constant';
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
-import { Black, Gray, Text_Gray } from '../../Utils/colors';
+import { Black, Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 const styles = StyleSheet.create( {
     mainLayout: {
         height: screen_height-20,
@@ -47,7 +47,24 @@ const styles = StyleSheet.create( {
         borderColor:Black,
         color:Black
       },
-    
+      imageIcon:{
+          height:16,
+          width:16,
+          resizeMode:'contain',
+          tintColor:White,
+          alignSelf:'center'
+      },
+      btnStyle:{
+          height:36,
+          width:36,
+          borderRadius:18,
+          backgroundColor:Light_Green,
+          justifyContent:'center',
+          alignSelf:'flex-end'
+      },
+      bottomStyle:{
+          top:screen_height/1.6
+      }
 } )
 
 export default styles;

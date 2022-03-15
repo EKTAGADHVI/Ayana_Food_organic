@@ -8,7 +8,7 @@ const FilledButton = (props)=>{
     return(
         <TouchableOpacity style={[styles.btnStyle,props.style]}
         onPress={props.onPress}>
-            <Text style={styles.btnText}>{props.title}</Text>
+            <Text style={[styles.btnText,props.textStyle]}>{props.title}</Text>
         </TouchableOpacity>
     );
 }

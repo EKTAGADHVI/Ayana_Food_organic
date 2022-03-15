@@ -6,7 +6,7 @@ import { POPINS_REGULAR } from '../Utils/fonts';
 const SearchBox = ( props ) =>
 {
     return (
-        <View style={ styles.container }>
+        <View style={[ styles.container,props.style] }>
             <Image
                 style={ styles.iconStyle }
                 source={ require( '../../assets/search.png' ) } />

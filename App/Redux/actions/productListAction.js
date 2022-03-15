@@ -10,6 +10,14 @@ export function productListAction (){
         dispatch({
             type: PRODUCT_LIST_LOADING
         });
+
+        // fetch('',{
+        //     headers:{},
+        //     body:JSON.stringify({})
+        // }).then((res)=>res.json())
+        // .then((res)=>{
+
+        // })
         wooCommerceApi.get(`products`).
         then((response) => {
             console.log("All Product catag",response);

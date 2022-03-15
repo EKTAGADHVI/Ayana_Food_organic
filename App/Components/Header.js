@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Text, Modal, Animated, Easing, SafeAreaView } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView } from 'react-native';
 
 import { Black, Light_Green, Line_Gray, Text_Gray, White } from '../Utils/colors';
 import { screen_height, screen_width } from '../Utils/constant';
 import { POPINS_REGULAR } from '../Utils/fonts';
 import LogoView from './LogoView';
+import Modal from "react-native-modal";
 const leftPosition = new Animated.Value( 0 )
 // function mooveRL ()
 // {
@@ -45,9 +46,9 @@ const MenuItems = ( props ) =>
         </TouchableOpacity>
     )
 }
-const Header = (props) =>
+const Header = ( props ) =>
 {
-console.log("Props",props);
+    console.log( "Props", props );
 
     const [ visible, setVisible ] = useState( false )
     return (
@@ -83,11 +84,12 @@ console.log("Props",props);
 
             </View>
             <Modal
-                visible={ visible }
-                animationType='none'
+                isVisible={ visible }
+                animationIn="slideInLeft"
+                animationOut="slideOutLeft"
                 transparent={ true }
 
-                style={ styles.modal }
+                style={ { flex: 1, right: "5%" } }
                 onRequestClose={ () =>
                 {
                     setVisible( false )
@@ -111,35 +113,46 @@ console.log("Props",props);
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <View style={ { top: "10%" } }>
+                            <View style={ { marginVertical: "15%", } }>
                                 <MenuItems source={ require( '../../assets/home.png' ) }
                                     menu={ "Home" } />
                                 <MenuItems source={ require( '../../assets/info.png' ) }
-                                    menu={ "About Us" } 
-                                    OnMenuPress={()=>{
-                                        setVisible(false)
-                                        props.navigation.navigate('AboutUs')}}/>
+                                    menu={ "About Us" }
+                                    OnMenuPress={ () =>
+                                    {
+                                        setVisible( false )
+                                        props.navigation.navigate( 'AboutUs' )
+                                    } } />
                                 <MenuItems source={ require( '../../assets/contact.png' ) }
-                                    menu={ "Contact Us" } 
-                                   
-                                    OnMenuPress={()=>{
-                                        setVisible(false)
-                                        props.navigation.navigate('ContactUs')}}/>
+                                    menu={ "Contact Us" }
+
+                                    OnMenuPress={ () =>
+                                    {
+                                        setVisible( false )
+                                        props.navigation.navigate( 'ContactUs' )
+                                    } } />
                                 <MenuItems source={ require( '../../assets/blog.png' ) }
-                                    menu={ "Blog" } 
-                                    OnMenuPress={()=>{
-                                        setVisible(false)
-                                        props.navigation.navigate('Blog')}}/>
+
+                                    menu={ "Blog" }
+                                    OnMenuPress={ () =>
+                                    {
+                                        setVisible( false )
+                                        props.navigation.navigate( 'Blog' )
+                                    } } />
                                 <MenuItems source={ require( '../../assets/chat.png' ) }
-                                    menu={ "Chat With Us" } />
+                                    menu={ "Chat With Us" }
+                                    OnMenuPress={ () => { alert( "Hiii" ) } } />
                                 <MenuItems source={ require( '../../assets/help.png' ) }
-                                    menu={ "Help" } {...props} />
+                                    menu={ "Help" }
+                                    OnMenuPress={ () => { 
+                                        setVisible( false )
+                                        props.navigation.navigate( 'HelpScreen' ) } } />
                             </View>
                             <View >
-                                <Text style={ [ styles.regularText2, { color: Light_Green ,paddingVertical:"71%",textAlign:"center"} ] }>v 1.0.1</Text>
+                                <Text style={ [ styles.regularText2, { color: Light_Green, paddingVertical: "65%", textAlign: "center" } ] }>v 1.0.1</Text>
                             </View>
                             <TouchableOpacity>
-                                <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor:Line_Gray } ] }>
+                                <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray } ] }>
                                     <Image
                                         style={ styles.iconStyle }
                                         source={ require( '../../assets/logout.png' ) } />
@@ -182,7 +195,7 @@ const styles = StyleSheet.create( {
         paddingHorizontal: 10,
         paddingVertical: 2,
         justifyContent: 'space-between',
-        backgroundColor:White
+        backgroundColor: White
     },
     rightContainer: {
         flexDirection: 'row-reverse',
@@ -196,7 +209,7 @@ const styles = StyleSheet.create( {
     },
     modalContainer: {
         backgroundColor: White,
-        width: screen_width / 1.5,
+        width: screen_width / 1.6,
         height: screen_height,
         paddingHorizontal: 15
 

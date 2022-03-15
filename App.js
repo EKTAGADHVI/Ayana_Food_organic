@@ -5,9 +5,9 @@
  * @format
  * @flow strict-local
  */
-
 import React, { Component } from 'react';
-import type {Node} from 'react';
+
+
 import {
   Image,
   ImageBackground,
@@ -47,7 +47,7 @@ componentDidMount(){
     this.setState({
       isLogin:true
     })
-  },1000)
+  },3000)
 }
   render(){
    if(this.state.isLogin === false)
