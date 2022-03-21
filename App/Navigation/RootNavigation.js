@@ -20,6 +20,10 @@ import SubCategories from '../Screen/SubCategories';
 import Explore from '../Screen/Explore';
 import Blog from '../Screen/Blog';
 import BlogDetails from '../Screen/Blog/BlogDetails';
+import Profile from '../Screen/Profile';
+import MyDetails from '../Screen/Profile/MyDetails';
+import Orders from '../Screen/Orders';
+import OrderDetails from '../Screen/Orders/OrderDetails';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const bottomTab = createBottomTabNavigator();
@@ -126,6 +130,26 @@ const RootNavigation = ({navigation}) =>{
             options={{
                 headerShown:false
             }}/>
+              <mainStack.Screen
+            name="MyDetails"
+            component={MyDetails}
+            options={{
+                headerShown:false
+            }}/>
+            <mainStack.Screen
+            name="Orders"
+            component={Orders}
+            options={{
+                headerShown:false
+            }}/>
+             <mainStack.Screen
+            name="OrderDetails"
+            component={OrderDetails}
+            options={{
+                headerShown:false
+            }}/>
+            
+            
   
         </mainStack.Navigator>
     );
@@ -208,7 +232,7 @@ const BottomTab = ({navigation}) =>{
                     tabBarIcon : ({focused})=><TabBarIcon source={require('../../assets/account.png')} tintColor={focused ? Light_Green :Black}/>
                 }}
             name="Account" 
-            component={Dashboard}/>
+            component={Profile}/>
         </bottomTab.Navigator>
     );
 }

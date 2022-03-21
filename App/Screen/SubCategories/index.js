@@ -30,6 +30,7 @@ class SubCategories extends Component
         return (
             <TouchableOpacity style={ styles.ItemView }>
                 <View style={ styles.rowView }>
+                    
                     <Text style={ styles.regularText }>Categoery Name</Text>
                     <Image
                         source={ require( '../../../assets/right.png' ) }

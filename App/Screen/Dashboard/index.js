@@ -276,7 +276,7 @@ class Dashboard extends Component
     }
 
     render ()
-    {
+    {  const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
         return (
             <SafeAreaView >
                 <Header { ...this.props } />
