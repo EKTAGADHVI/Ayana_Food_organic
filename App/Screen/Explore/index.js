@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { FlatList, SafeAreaView, View ,Image,TouchableOpacity,Text} from 'react-native';
+import { connect } from 'react-redux';
+import ProgressLoader from 'rn-progress-loader';
 import BasicHeader from '../../Components/BasicHeader';
 import SearchBox from '../../Components/SearchBox';
+import { actions } from '../../Redux/actions';
+import { Light_Green, White } from '../../Utils/colors';
 import styles from './styles';
 
 class Explore extends Component
@@ -9,54 +13,11 @@ class Explore extends Component
     constructor ( props )
     {
         super( props );
+        this.props.getCategoeryList();
         this.state={
             searchValue:'',
-            categoeries: [
-                {
-                    "id": 0,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 1,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 2,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 3,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 4,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 5,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 6,
-                    "name": "Grocery1"
-                },
-                {
-                    "id": 7,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 8,
-                    "name": "Grocery1"
-                },
-                {
-                    "id": 9,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 10,
-                    "name": "Grocery1"
-                },
-              ],
+            categoeries: [],
+            visible:false
         };
     }
 
@@ -66,8 +27,9 @@ class Explore extends Component
         if ( index < 6 )
         {
             return (
-                <TouchableOpacity style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }  >
-                    <Image source={ require( '../../../assets/grocery.png' ) }
+                <TouchableOpacity style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] } 
+                onPress={()=>{this.onCategoryPress(item)}} >
+                    <Image source={{uri:item.guid !== null || item.guid !== "" ?item.guid: ""  }}
                         resizeMode={ 'contain' }
                         style={styles.ImageStyle}>
                     </Image>
@@ -77,13 +39,56 @@ class Explore extends Component
         }
 
     }
+    onCategoryPress=(data)=>{
+        let subCategoeriesData =
+        this.props?.cataegoery?.data.filter((item)=>{
+            if(item.parent === data.category_id){
+                return data;
+            }
+        });
+
+        this.props.navigation.navigate("SubCategories",{
+            subCategoeries:subCategoeriesData,
+            title:data.name
+        })
+
+    }
+    componentDidMount(){
+        this.setState({visible:true})
+        console.log("did Mount",this.props.cataegoery)
+        setTimeout(()=>{
+            if(this.props?.cataegoery?.data.length >0){
+                let mainCategoeries =
+                this.props?.cataegoery?.data.filter((data)=>{
+                    if(data.parent == "0"){
+                        return data;
+                    }
+                });
+
+                this.setState({
+                    categoeries:mainCategoeries
+                },()=>{
+                   
+                })
+                console.log("Save")
+            }
+            this.setState({visible:false})
+        },1000)
+    }
     render ()
     {
+    
         return (
+            <View style={ styles.mainLayout }>
             <SafeAreaView>
                 <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Find Product" } />
 
-                <View style={ styles.mainLayout }>
+                <ProgressLoader
+                visible={this.state.visible}
+                isModal={true} 
+                isHUD={true}
+                hudColor={White}
+                color={Light_Green} />
                     <SearchBox
 
                         value={ this.state.searchValue }
@@ -95,15 +100,42 @@ class Explore extends Component
                         } }
                         secureTextEntry={ false }
                         placeholder={ "Search here" } />
+                    <View style={styles.underLineView}>
+                    <Text style={styles.labelText}>All Categoeies</Text>
+                    </View>
                         <FlatList
+                        style={{alignSelf:'center'}}
                         numColumns={2}
                         data={this.state.categoeries}
-                        keyExtractor={(item,index)=>item.id}
+                        keyExtractor={(item,index)=>item.category_id }
                         renderItem={({item,index})=>this.renderItem(item,index)}/>
-                </View>
+              
             </SafeAreaView>
+            </View>
         );
     }
 }
+function mapStateToProps ( state, ownProps )
+{
+    // console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data)
+    return {
+        // data : state.loginReducer.data
+        products: state.productListReducer.data,
+        cataegoery:state.categoeryListReducer.data
 
-export default Explore;
+
+    };
+
+}
+
+const mapDispatchToProps = dispatch =>
+{
+    return {
+        //getPeople,
+        // login: (request) => dispatch(actions.login.apiActionCreator(request)),
+        productList: ( request ) => dispatch( actions.productListAction() ),
+        getCategoeryList:(request)=>dispatch(actions.getCategoeryListAction()),
+        dispatch,
+    };
+};
+export default connect( mapStateToProps, mapDispatchToProps )( Explore );

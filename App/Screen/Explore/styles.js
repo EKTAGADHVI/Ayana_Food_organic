@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { Black, ORENGE, White } from "../../Utils/colors";
+import { Black, Gray, ORENGE, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
-import { POPINS_REGULAR } from "../../Utils/fonts";
+import { POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts";
 
 const styles = StyleSheet.create( {
     mainLayout: {
@@ -36,6 +36,17 @@ const styles = StyleSheet.create( {
         fontFamily:POPINS_REGULAR,
         paddingVertical:2,
         textAlign:'center'
+    },
+    labelText:{
+        fontSize:16,
+        fontFamily:POPINS_REGULAR,
+        paddingVertical:15,
+       
+    },
+    underLineView:{
+        borderBottomColor:Gray,
+        borderBottomWidth:1,
+        marginHorizontal:'3%'
     }
 } );
 export default styles;

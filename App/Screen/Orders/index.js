@@ -42,7 +42,9 @@ class Orders extends Component{
          <TouchableOpacity style={styles.btnStyle} onPress={()=>{this.props.navigation.navigate('OrderDetails')}}>
                     <Text style={[styles.smallText,{color:Light_Green,fontSize:12}]}>View Order</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btnStyle}>
+                <TouchableOpacity style={styles.btnStyle} onPress={()=>{
+                    this.props.navigation.navigate('CheckOut')
+                }}>
                     <Text style={[styles.smallText,{color:Light_Green,fontSize:12}]}>Reorder</Text>
                 </TouchableOpacity>
          </View>

@@ -3,7 +3,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from "react-native";
 import { PRODUCT_LIST_ERROR, PRODUCT_LIST_LOADING, PRODUCT_LIST_SUCESS } from "../actionTypes";
-import wooCommerceApi from "../../RestApi/woo-commerceApi";
+import wooCommerceApi from "../../RestApi/ApiUrl";
 
 export function productListAction (){
     return dispatch =>{
@@ -11,13 +11,7 @@ export function productListAction (){
             type: PRODUCT_LIST_LOADING
         });
 
-        // fetch('',{
-        //     headers:{},
-        //     body:JSON.stringify({})
-        // }).then((res)=>res.json())
-        // .then((res)=>{
-
-        // })
+       
         wooCommerceApi.get(`products`).
         then((response) => {
             console.log("All Product catag",response);

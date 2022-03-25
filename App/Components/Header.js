@@ -48,7 +48,7 @@ const MenuItems = ( props ) =>
 }
 const Header = ( props ) =>
 {
-    console.log( "Props", props );
+    // console.log( "Props", props );
 
     const [ visible, setVisible ] = useState( false )
     return (
@@ -77,7 +77,7 @@ const Header = ( props ) =>
                         <Image
                             source={ require( '../../assets/Exclude.png' ) }
                             style={ styles.iconStyle } />
-                        <Text style={ styles.regularText }>Ahemdabad, 380060</Text>
+                        <Text style={ styles.regularText }>Ahmedabad, 380060</Text>
                     </View>
                 </TouchableOpacity>
 

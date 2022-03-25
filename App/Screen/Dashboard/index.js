@@ -19,11 +19,13 @@ import Header from '../../Components/Header';
 import ProductView from '../../Components/ProductView';
 import SearchBox from '../../Components/SearchBox';
 import { actions } from '../../Redux/actions';
-
+import Toast from 'react-native-toast-message';
 import { Black, Light_Green, ORENGE, Red, Text_Gray, White } from '../../Utils/colors';
 import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_BOLD, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
+import ProgressLoader from 'rn-progress-loader';
+
 let CurrentSlide = 0;
 let IntervalTime = 4000;
 
@@ -34,6 +36,7 @@ class Dashboard extends Component
     constructor ( props )
     {
         super( props );
+        this.props.getCategoeryList()
         this.state = {
             searchValue: ''
         },
@@ -111,7 +114,8 @@ class Dashboard extends Component
                 }
 
             ],
-
+            categoeryList:[],
+            visible:false
 
         }
         this.viewabilityConfig = {
@@ -164,21 +168,33 @@ class Dashboard extends Component
     {
         this._timerId = setInterval( this._goToNextPage, IntervalTime );
     };
+
+    filterMainCategory = () =>{
+
+    }
     componentDidMount ()
     {
+        this.setState({visible:true});
+
         console.log("Did Mount Called'")
+
         // this._stopAutoPlay();
         this._startAutoPlay();
-        this.props.productList();
+        this.props.getCategoeryList()
+        // this.props.productList();
+        setTimeout(() => {
+            this.setState({visible:false});
+        }, 1000);
+        
       
      
-            productList: this.props.products
+      
       
     }
     // TODO _renderItem()
     renderItem = ( item ) =>
     {
-        console.log( "Itesm", item );
+        // console.log( "Itesm", item );
         /*return <Image source={{uri: item}} style={styles.sliderItems}/>;*/
         return (
             <TouchableOpacity
@@ -217,16 +233,16 @@ class Dashboard extends Component
     }
     renderCategories = ( item, index ) =>
     {
-        console.log( index )
-        if ( index < 6 )
+        console.log( item )
+        if ( index < 4 )
         {
             return (
                 <TouchableOpacity style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }  >
                     <Image source={ require( '../../../assets/grocery.png' ) }
                         resizeMode={ 'contain' }
-                        style={ { height: 20, width: 20, alignSelf: "center" } }>
+                        style={ { height: 40, width: 40, alignSelf: "center" } }>
                     </Image>
-                    <Text style={ [ styles.smallText, { color: Black, textAlign: 'center', fontSize: 8 } ] }>{ item.name }</Text>
+                    <Text style={ [ styles.smallText, { color: Black, textAlign: 'center', fontSize: 10 } ] }>{ item.name.slice(0,6) +(item.name.length > 6 ? "..." : "") }</Text>
                 </TouchableOpacity>
             );
         }
@@ -235,7 +251,7 @@ class Dashboard extends Component
     onScroll = ( event ) =>
     {
 
-        console.log( event )
+        // console.log( event )
         const { navigation } = this.props;
         const currentOffset = event.nativeEvent.contentOffset.y;
         const dif = currentOffset - ( this.offset || 0 );
@@ -280,6 +296,12 @@ class Dashboard extends Component
         return (
             <SafeAreaView >
                 <Header { ...this.props } />
+                <ProgressLoader
+                visible={this.state.visible}
+                isModal={true} 
+                isHUD={true}
+                hudColor={White}
+                color={Light_Green} />
                 <View style={ { backgroundColor: White, height: screen_height-20 } }>
                     <SearchBox
 
@@ -330,18 +352,18 @@ class Dashboard extends Component
                             </View>
                         </View>
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
-                            <Text style={ styles.labelText }>All Categoeries</Text>
-                            <Pressable  onPress={()=>{this.props.navigation.navigate('SubCategories')}}>
+                            <Text style={ styles.labelText }>All Categories</Text>
+                            <Pressable  onPress={()=>{this.props.navigation.navigate('Explore')}}>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
                         </View>
                         <View style={ {
-                            height: 50,
+                            height: screen_width/4-20,
                             width: screen_width,
 
                         } }>
                             <FlatList
-                                data={ this.state.categoeries }
+                                data={  this.props.cataegoery?.data }
                                 horizontal={ true }
                                 initialNumToRender={ 6 }
                                 scrollEnabled={ false }
@@ -352,7 +374,7 @@ class Dashboard extends Component
                                 renderItem={ ( { item, index } ) => this.renderCategories( item, index ) }
                             />
                         </View>
-                        <Text style={ [ styles.labelText, { paddingVertical: 5, fontSize: 14, marginHorizontal: 15, marginVertical: 5 } ] }>Special Offer</Text>
+                        <Text style={ [ styles.labelText, { paddingVertical: 5, fontSize: 14, marginHorizontal: 15, marginVertical: 5 } ] }>Special Offers</Text>
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                             <View style={ [ styles.rowView ] }>
                                 <TouchableOpacity onPress={ () =>
@@ -418,7 +440,7 @@ class Dashboard extends Component
                                 keyExtractor={ ( item, index ) => index.toString() }
                                 renderItem={ ( { item, index } ) =>
                                 {
-                                    console.log("item.Images",item.images)
+                                    // console.log("item.Images",item.images)
                                     var count = 14;
                                     // let name= item.name;
                                    var title =item.name.slice(0,count) +(item.name.length > count ? "..." : "");
@@ -670,10 +692,11 @@ class Dashboard extends Component
 
 function mapStateToProps ( state, ownProps )
 {
-    console.log( " state.loginReducer.data", state.productListReducer.data )
+    console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data)
     return {
         // data : state.loginReducer.data
         products: state.productListReducer.data,
+        cataegoery:state.categoeryListReducer.data
 
 
     };
@@ -686,6 +709,7 @@ const mapDispatchToProps = dispatch =>
         //getPeople,
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         productList: ( request ) => dispatch( actions.productListAction() ),
+        getCategoeryList:(request)=>dispatch(actions.getCategoeryListAction()),
         dispatch,
     };
 };

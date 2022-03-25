@@ -7,17 +7,20 @@ import { POPINS_REGULAR } from '../Utils/fonts';
 const Input = ( props ) =>
 {
     return (
-        <View style={ styles.inputContainer }>
+        <View style={ [styles.inputContainer,props.containerStyle ]}>
             <Text style={ [styles.RegularText ,props.textStyle]}>{ props.title }</Text>
             <View style={ styles.inputView }>
                 <TextInput
+                 blurOnSubmit={false}
                     placeholderTextColor={ Text_Gray }
-                    style={ styles.input }
+                    style={ [styles.input,props.inputStyle] }
                     placeholder={ props.placeholder }
                     value={ props.value }
+                    keyboardType={props.keyboardType}
                     onChangeText={ props.onChangeText }
+                    maxLength={props.maxLength}
                     secureTextEntry={ props.secureTextEntry }
-
+                    multiline={props.multiline}
                 />
                 <TouchableOpacity onPress={ props.iconPress }>
                     <Image

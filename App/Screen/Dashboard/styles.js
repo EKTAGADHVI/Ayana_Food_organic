@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     categoeryView:{
-        height:screen_width/6 -20,
-        width:screen_width/6 -20,
+        height:screen_width/4 -20,
+        width:screen_width/4 -20,
         borderRadius:10,
         backgroundColor:ORENGE,
         marginHorizontal:10,
