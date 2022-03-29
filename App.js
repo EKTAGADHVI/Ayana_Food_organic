@@ -31,6 +31,9 @@ import SplashScreen from './App/Screen/SplashScreen';
 import RootNavigation from './App/Navigation/RootNavigation';
 import { NavigationContainer } from '@react-navigation/native';
 import { connect } from 'react-redux';
+import AuthNavigation from './App/Navigation/AuthNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LOGIN_SUCESS } from './App/Redux/actionTypes';
 
 
 
@@ -42,32 +45,57 @@ class App extends Component{
       isLogin :false
     }
   }
-componentDidMount(){
-  setTimeout(()=>{
-    this.setState({
-      isLogin:true
-    })
-  },3000)
+  async componentDidMount(){
+  // setTimeout(async()=>{
+
+  //   await  AsyncStorage.getItem('UserData')
+  //     .then((res)=>{
+  //       console.log("LOCAL STORAHE DATA",res)
+  //       if(res !== null)
+  //       {
+         
+  //             this.props.dispatch({
+  //               type:LOGIN_SUCESS,
+  //               payload:res
+  //             });
+  //             this.setState({isLogin:true})
+  //           // loggedIn = true;
+             
+  //           }
+           
+      
+        
+  //       else{
+  //         this.setState({isLogin:true})
+  //       }
+  //     })
+  //     .catch((error)=>{
+  //     console.log("Error")
+  //     // this.setState({isLogin:true})
+  //     })
+      
+  //   },2500)
+  // // setTimeout(()=>{
+  // //   this.setState({
+  // //     isLogin:true
+  // //   })
+  // // },3000)
 }
   render(){
-   if(this.state.isLogin === false)
-   {
-     return <SplashScreen/>
-   }
-   else{
+    
     return  (
       
       <NavigationContainer>
-        <RootNavigation/>
+       <RootNavigation/>
       </NavigationContainer>
     )
   }
-  }
+  
 }
 function mapStateToProps(state, ownProps) {
-  // console.log(" state.loginReducer.data", state.loginReducer.data)
+  console.log(" state.loginReducer.data", state.loginReducer.data)
     return {
-      // data : state.loginReducer.data
+      data : state.loginReducer.data
   
   
     };

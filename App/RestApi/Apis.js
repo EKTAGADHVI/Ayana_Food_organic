@@ -1,6 +1,6 @@
 
 
-import { CategoeryList_URL, Login_URL, Registration_URL } from './ApiUrl';
+import { CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, Login_URL, Registration_URL } from './ApiUrl';
 import instance from './index'
 export default class Apis
 {
@@ -8,6 +8,7 @@ export default class Apis
 
     static  loginCall ( request )
     {
+        console.log("Request",request)
         return instance.post( Login_URL, request, {
             headers: { "content-type": "application/json" }
         } );
@@ -29,6 +30,35 @@ export default class Apis
         } );
 
 
+    }  
+    
+    static getProductByCategoryId ( request )
+    {
+        console.log("Request data",request )
+        return instance.post( GET_PRODUCT_BY_CATEGORY_ID_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
     }
+    static getBestSellingProduct ( request )
+    {
+        console.log("Request data",request )
+        return instance.post( GET_PRODUCT_BY_CATEGORY_ID_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }
+    static getTopRatedProduct ( request )
+    {
+        console.log("Request data",request )
+        return instance.post( GET_PRODUCT_BY_CATEGORY_ID_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }
+
 
 }

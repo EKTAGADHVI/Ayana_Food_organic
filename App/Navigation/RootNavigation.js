@@ -26,6 +26,7 @@ import Orders from '../Screen/Orders';
 import OrderDetails from '../Screen/Orders/OrderDetails';
 import CheckOut from '../Screen/Checkout';
 import OrderPreview from '../Screen/Checkout/OrderPreview';
+import SplashScreen from '../Screen/SplashScreen';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const bottomTab = createBottomTabNavigator();
@@ -65,6 +66,12 @@ const RootNavigation = ( { navigation } ) =>
     return (
         <mainStack.Navigator>
             <mainStack.Screen
+                name="SplashScreen"
+                component={ SplashScreen }
+                options={ {
+                    headerShown: false
+                } } />
+              <mainStack.Screen
                 name="LoginScreen"
                 component={ LoginScreen }
                 options={ {

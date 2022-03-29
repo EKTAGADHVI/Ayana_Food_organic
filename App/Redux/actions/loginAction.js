@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Apis from "../../RestApi/Apis";
 import { initialState } from "../../Utils/constant";
 import { LOGIN_EROOR, LOGIN_LOADING, LOGIN_SUCESS } from "../actionTypes";
@@ -14,13 +15,25 @@ export function loginAction (request){
         return JSON.stringify(res);
     })
     .then((responce)=>{
-       
+     
         if(JSON.parse(responce).data.status == true){
+            let data = JSON.parse(responce).data;
             console.log("====== Login Responce ====== >  ", responce);
-        dispatch({
-            type:LOGIN_SUCESS,
-            payload:JSON.parse(responce).data
-        });
+            AsyncStorage.setItem('UserData',JSON.stringify(data))
+            .then(()=>{
+                dispatch({
+                    type:LOGIN_SUCESS,
+                    payload:JSON.parse(responce).data
+                });
+            })
+            .catch((error)=>{
+                console.log("====== Login ERR Responce ====== >  ", error);
+                dispatch({
+                    type:LOGIN_EROOR,
+                    payload:error
+                });
+            })
+      
         }
         else{
             console.log("====== Login ERR Responce ====== >  ", responce);

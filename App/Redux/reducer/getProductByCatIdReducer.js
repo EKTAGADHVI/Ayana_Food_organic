@@ -1,24 +1,23 @@
 import { initialState } from "../../Utils/constant";
-import { LOGIN_EROOR, LOGIN_LOADING, LOGIN_SUCESS } from "../actionTypes";
+import { PRODUCT_LIST_BY_CAT_ID_EROOR, PRODUCT_LIST_BY_CAT_ID_LOADING, PRODUCT_LIST_BY_CAT_ID_SUCESS } from "../actionTypes";
 
-export function loginReducer (state = initialState,action){
+export function getProductByCatIdReducer (state = initialState,action){
 
     
     switch(action.type){
-        case LOGIN_LOADING:
+        case PRODUCT_LIST_BY_CAT_ID_LOADING:
             return {
                 ...state,
-                isLoading:true,
-            
+                isLoading:true
             }
-        case LOGIN_SUCESS:
+        case PRODUCT_LIST_BY_CAT_ID_SUCESS:
             return {
                 ...state,
                 isLoading:false,
                 data:action.payload,
                 error:''
             }
-        case LOGIN_EROOR:
+        case PRODUCT_LIST_BY_CAT_ID_EROOR:
             return {
                 ...state,
                 isLoading:false,

@@ -8,6 +8,7 @@ import SocialMediadButton from '../../Components/SocialMediaButton';
 import { Black, Dark_Blue, Light_Blue, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_height } from '../../Utils/constant';
 import styles from './styles';
+import { CommonActions } from '@react-navigation/native';
 import { actions } from '../../Redux/actions';
 import ProgressLoader from 'rn-progress-loader';
 import Toast from 'react-native-toast-message';
@@ -52,24 +53,53 @@ class LoginScreen extends Component
             };
             this.props.loginRequest( req );
             this.setState( { visible: true } )
-            setInterval( () =>
+            setTimeout( () =>
             {
-                if ( this.props.loginData.status === true )
+             
+                setInterval(()=>{
+                    console.log("5 Secong GAP ", this.props.loginData)
+                    if ( this.props.loginData.status === true )
                 {
                     this.setState( { visible: false } )
                     ToastMessage('success','Login Sucessfull',)
-                    this.props.navigation.navigate( 'Home' );
+                    this.props.navigation.dispatch(
+                        CommonActions.reset({
+                          index: 1,
+                          routes: [
+                            { name: 'Home' },
+                          ],
+                        })
+                      );
+                    // this.props.navigation.navigate( 'Home' );
                 }
                 else
                 {
                     this.setState( { visible: false } )
                 }
+                },800)
             }, 2000 )
            
         }
 
        
 
+    }
+    componentDidMount(){
+        // setTimeout( () =>
+        // {
+        //     setInterval(()=>{
+        //         if ( this.props.loginData.status === true )
+        //     {
+        //         this.setState( { visible: false } )
+        //         ToastMessage('success','Login Sucessfull',)
+        //         this.props.navigation.navigate( 'Home' );
+        //     }
+        //     else
+        //     {
+        //         this.setState( { visible: false } )
+        //     }
+        //     },500)
+        // }, 2000 )
     }
     render ()
     {

@@ -12,7 +12,7 @@ import { actions } from '../../Redux/actions';
 import { Black, Dark_Blue, Light_Blue, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_height } from '../../Utils/constant';
 import styles from './styles';
-
+import { CommonActions } from '@react-navigation/native';
 
 class RegistrationScreen extends Component
 {
@@ -91,15 +91,25 @@ class RegistrationScreen extends Component
             }
             this.props.registerRequest( req );
             setTimeout(()=>{
+
+            setInterval(()=>{
            
                 if(this.props.registerData.status === true)
                 { this.setState({visible:false})
-                    this.props.navigation.navigate('LoginScreen');
+                this.props.navigation.dispatch(
+                    CommonActions.reset({
+                      index: 1,
+                      routes: [
+                        { name: 'LoginScreen' },
+                      ],
+                    })
+                  );
                 }
                 else{
                     this.setState({visible:false})
                     ToastMessage('error',this.props.registerData.message,'Please Check')
                 }
+            },800)
             },2000)
         }
 
@@ -143,9 +153,7 @@ class RegistrationScreen extends Component
                                             firstName: text
                                         } )
                                     } }
-                                    secureTextEntry={ false }
-
-                                 
+                                    secureTextEntry={ false }                                 
                                     placeholder={ "xyz" }
                                 />
                                 <Input

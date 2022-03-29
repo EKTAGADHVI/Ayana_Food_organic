@@ -38,8 +38,8 @@ class ProductDetailScreen extends Component
             isDiscription: false,
             isTerm: false,
             data: this.props.route.params?.data,
-            description: this.props.route.params?.data?.description,
-            price: this.props.route.params?.data?.price,
+            description: this.props.route.params?.data?.post_content,
+            price: this.props.route.params?.data?.price[0]?.meta_value,
             checked:0
         }
         this.viewabilityConfig = {
@@ -86,7 +86,9 @@ class ProductDetailScreen extends Component
             <View style={ styles.ItemContainer }>
                 <Image
                     style={ styles.ImagStyle }
-                    source={ { uri: item.src } } />
+                    // source={ { uri: item.src } } 
+                    source={item.url}
+                    />
 
 
             </View>
@@ -116,7 +118,7 @@ class ProductDetailScreen extends Component
 
 
                             <FlatList
-                                data={ this.state.data.images }
+                                data={ this.state.link }
                                 // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
                                 horizontal={ true }
                                 pagingEnabled={ true }
@@ -197,7 +199,7 @@ class ProductDetailScreen extends Component
                                 </View>
 
                             </View>
-                            {
+                            {/* {
                                 this.state.data.attributes.map( ( item, index ) =>
                                 {
                                     
@@ -238,7 +240,7 @@ class ProductDetailScreen extends Component
                                         </View>
                                     );
                                 } )
-                            }
+                            } */}
                             <View style={ [styles.container,{marginHorizontal:15,}] }>
 
                                 <View style={ styles.rowView }>

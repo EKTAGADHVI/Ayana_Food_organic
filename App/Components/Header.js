@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView } from 'react-native';
-
+import { CommonActions } from '@react-navigation/native';
 import { Black, Light_Green, Line_Gray, Text_Gray, White } from '../Utils/colors';
 import { screen_height, screen_width } from '../Utils/constant';
 import { POPINS_REGULAR } from '../Utils/fonts';
 import LogoView from './LogoView';
 import Modal from "react-native-modal";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const leftPosition = new Animated.Value( 0 )
 // function mooveRL ()
 // {
@@ -151,7 +152,26 @@ const Header = ( props ) =>
                             <View >
                                 <Text style={ [ styles.regularText2, { color: Light_Green, paddingVertical: "65%", textAlign: "center" } ] }>v 1.0.1</Text>
                             </View>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={async()=>{
+                                setVisible(false)
+                                await AsyncStorage.removeItem('UserData')
+                                .then((res)=>{
+                                   
+                                    console.log("Data Removed")
+                                  setTimeout(()=>{
+                                    props.navigation.dispatch(
+                                        CommonActions.reset({
+                                          index: 1,
+                                          routes: [
+                                            { name: 'LoginScreen' },
+                                          ],
+                                        })
+                                      );
+                                  },1000)
+                                })
+                                .catch((error)=>{
+                                    console.log("Data Not Removed")
+                                })}}>
                                 <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray } ] }>
                                     <Image
                                         style={ styles.iconStyle }
@@ -166,6 +186,12 @@ const Header = ( props ) =>
             </Modal>
         </View>
     );
+}
+onPressLogout =async()=>{
+    await AsyncStorage.removeItem('UserData')
+    .then(()=>{})
+    .catch((error)=>{
+    })
 }
 
 export default Header;

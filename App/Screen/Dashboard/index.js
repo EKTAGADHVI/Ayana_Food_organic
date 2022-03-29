@@ -40,84 +40,85 @@ class Dashboard extends Component
         this.state = {
             searchValue: ''
         },
-            
-        this.state = {
-            currentVideoIndex: 0,
-            currentIndex: 0,
-            isFeatured: true,
-            onSale: false,
-            topRate: false,
-            productList: [],
-            link: [
-                {
-                    "id": 0,
-                    "url": require( '../../../assets/banner1.png' )
-                },
-                {
-                    "id": 1,
-                    "url": require( '../../../assets/banner2.png' )
-                },
-                {
-                    "id": 2,
-                    "url": require( '../../../assets/banner1.png' )
-                }
 
-            ],
-            categoeries: [
-                {
-                    "id": 0,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 1,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 2,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 3,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 4,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 5,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 6,
-                    "name": "Grocery1"
-                },
-                {
-                    "id": 7,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 8,
-                    "name": "Grocery1"
-                },
-                {
-                    "id": 9,
-                    "name": "Grocery"
-                },
-                {
-                    "id": 10,
-                    "name": "Grocery1"
-                },
-                {
-                    "id": 11,
-                    "name": "Grocery1"
-                }
+            this.state = {
+                currentVideoIndex: 0,
+                currentIndex: 0,
+                isFeatured: true,
+                onSale: false,
+                topRate: false,
+                productList: [],
+                link: [
+                    {
+                        "id": 0,
+                        "url": require( '../../../assets/banner1.png' )
+                    },
+                    {
+                        "id": 1,
+                        "url": require( '../../../assets/banner2.png' )
+                    },
+                    {
+                        "id": 2,
+                        "url": require( '../../../assets/banner1.png' )
+                    }
 
-            ],
-            categoeryList:[],
-            visible:false
+                ],
+                categoeries: [
+                    {
+                        "id": 0,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 1,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 3,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 4,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 5,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 6,
+                        "name": "Grocery1"
+                    },
+                    {
+                        "id": 7,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 8,
+                        "name": "Grocery1"
+                    },
+                    {
+                        "id": 9,
+                        "name": "Grocery"
+                    },
+                    {
+                        "id": 10,
+                        "name": "Grocery1"
+                    },
+                    {
+                        "id": 11,
+                        "name": "Grocery1"
+                    }
 
-        }
+                ],
+                categoeryList: [],
+                specialOffers: [],
+                visible: false
+
+            }
         this.viewabilityConfig = {
             viewAreaCoveragePercentThreshold: 50,
             waitForInteraction: true,
@@ -169,27 +170,38 @@ class Dashboard extends Component
         this._timerId = setInterval( this._goToNextPage, IntervalTime );
     };
 
-    filterMainCategory = () =>{
+    filterMainCategory = () =>
+    {
 
     }
     componentDidMount ()
     {
-        this.setState({visible:true});
+        this.setState( { visible: true } );
 
-        console.log("Did Mount Called'")
+        console.log( "Did Mount Called'" )
 
         // this._stopAutoPlay();
         this._startAutoPlay();
         this.props.getCategoeryList()
+        this.props.getBestSellingProduct( {
+            "product_type": "bestselling"
+        } );
+        this.props.getTopRatedProduct( {
+            "product_type": "toprated"
+        } );
+        this.props.getRecentProduct({
+            "product_type": "recent"
+        });
         // this.props.productList();
-        setTimeout(() => {
-            this.setState({visible:false});
-        }, 1000);
-        
-      
-     
-      
-      
+        setTimeout( () =>
+        {
+            this.setState( { visible: false } );
+        }, 1500 );
+
+
+
+
+
     }
     // TODO _renderItem()
     renderItem = ( item ) =>
@@ -233,7 +245,7 @@ class Dashboard extends Component
     }
     renderCategories = ( item, index ) =>
     {
-        console.log( item )
+        // console.log( item )
         if ( index < 4 )
         {
             return (
@@ -242,7 +254,7 @@ class Dashboard extends Component
                         resizeMode={ 'contain' }
                         style={ { height: 40, width: 40, alignSelf: "center" } }>
                     </Image>
-                    <Text style={ [ styles.smallText, { color: Black, textAlign: 'center', fontSize: 10 } ] }>{ item.name.slice(0,6) +(item.name.length > 6 ? "..." : "") }</Text>
+                    <Text style={ [ styles.smallText, { color: Black, textAlign: 'center', fontSize: 10 ,padding:5,overflow:'hidden'} ] }>{ item.name.slice( 0, 15 ) + ( item.name.slice.length > 10 ? "..." : "" ) }</Text>
                 </TouchableOpacity>
             );
         }
@@ -258,7 +270,7 @@ class Dashboard extends Component
 
         if ( dif < 0 )
         {
-            navigation.setParams( {  tabBarVisibilityAnimationConfig: false } );
+            navigation.setParams( { tabBarVisibilityAnimationConfig: false } );
         } else
         {
             navigation.setParams( { showTabBar: false } );
@@ -292,17 +304,18 @@ class Dashboard extends Component
     }
 
     render ()
-    {  const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
+    {
+        const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
         return (
             <SafeAreaView >
                 <Header { ...this.props } />
                 <ProgressLoader
-                visible={this.state.visible}
-                isModal={true} 
-                isHUD={true}
-                hudColor={White}
-                color={Light_Green} />
-                <View style={ { backgroundColor: White, height: screen_height-20 } }>
+                    visible={ this.state.visible }
+                    isModal={ true }
+                    isHUD={ true }
+                    hudColor={ White }
+                    color={ Light_Green } />
+                <View style={ { backgroundColor: White, height: screen_height - 20 } }>
                     <SearchBox
 
                         value={ this.state.searchValue }
@@ -353,17 +366,17 @@ class Dashboard extends Component
                         </View>
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                             <Text style={ styles.labelText }>All Categories</Text>
-                            <Pressable  onPress={()=>{this.props.navigation.navigate('Explore')}}>
+                            <Pressable onPress={ () => { this.props.navigation.navigate( 'Explore' ) } }>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
                         </View>
                         <View style={ {
-                            height: screen_width/4-20,
+                            height: screen_width / 4 - 20,
                             width: screen_width,
 
                         } }>
                             <FlatList
-                                data={  this.props.cataegoery?.data }
+                                data={ this.props.cataegoery?.data }
                                 horizontal={ true }
                                 initialNumToRender={ 6 }
                                 scrollEnabled={ false }
@@ -406,6 +419,7 @@ class Dashboard extends Component
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( {
+                                        specialOffers: this.props.topRated.data,
                                         isFeatured: false,
                                         onSale: false,
                                         topRate: true,
@@ -419,10 +433,35 @@ class Dashboard extends Component
                             </View>
                             <Pressable onPress={ () =>
                             {
-                                this.props.navigation.navigate('ProductViewScreen',{
-                                    title: "Special Offers",
-                                    data:this.props.products
-                                })
+                                if ( this.state.isFeatured === true )
+                                {
+                                    this.props.navigation.navigate( 'ProductViewScreen', {
+                                        title: "Featured",
+                                        request: {
+                                            "product_type": "bestselling"
+                                        }
+                                    } )
+                                }
+                                else if ( this.state.onSale === true )
+                                {
+                                    this.props.navigation.navigate( 'ProductViewScreen', {
+                                        title: "On Sale",
+                                        request: {
+                                            "product_type": "bestselling"
+                                        }
+                                    } )
+                                }
+                                else
+                                {
+                                    this.props.navigation.navigate( 'ProductViewScreen', {
+                                        title: "Top Rated",
+                                        request: {
+                                            "product_type": "toprated"
+                                        }
+                                    } )
+
+                                }
+
                             } }>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
@@ -430,7 +469,7 @@ class Dashboard extends Component
                         </View>
                         <View style={ { padding: 10, } }>
                             <FlatList
-                                data={this.props.products.length >0? this.props.products :[]  }
+                                data={ this.state.specialOffers }
                                 horizontal={ true }
 
                                 maxToRenderPerBatch={ 11 }
@@ -443,17 +482,20 @@ class Dashboard extends Component
                                     // console.log("item.Images",item.images)
                                     var count = 14;
                                     // let name= item.name;
-                                   var title =item.name.slice(0,count) +(item.name.length > count ? "..." : "");
+                                    //    var title =item.name.slice(0,count) +(item.name.length > count ? "..." : "");
                                     if ( index <= 3 )
                                     {
-                                        return <ProductView 
-                                        name={ item.name.slice(0,count) +(item.name.length > count ? "..." : "") }
-                                        image ={item.images[0]?.src} 
-                                        rating={item.rating_count}
-                                        price ={item.price}
-                                        onPress={()=>{this.props.navigation.navigate('ProductDetailScreen',{
-                                            data:item
-                                        })}}/>
+                                        return <ProductView
+                                            name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
+                                            image={ item.guid }
+                                            rating={ 0 }
+                                            price={ 20 }
+                                            onPress={ () =>
+                                            {
+                                                this.props.navigation.navigate( 'ProductDetailScreen', {
+                                                    data: item
+                                                } )
+                                            } } />
                                     }
 
                                 } } />
@@ -628,14 +670,22 @@ class Dashboard extends Component
                         </ImageBackground>
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                             <Text style={ styles.labelText }>Top Selling Products</Text>
-                            <Pressable>
+                            <Pressable onPress={ () =>
+                            {
+                                this.props.navigation.navigate( "ProductViewScreen", {
+                                    request: {
+                                        "product_type": "bestselling"
+                                    },
+                                    title: "Top Selling Products"
+                                } )
+                            } }>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
                         </View>
 
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.state.categoeries }
+                                data={ this.props.bestSelling.data }
                                 numColumns={ 2 }
                                 scrollEnabled={ false }
                                 maxToRenderPerBatch={ 2 }
@@ -647,21 +697,40 @@ class Dashboard extends Component
                                 {
                                     if ( index <= 3 )
                                     {
-                                        return <ProductView />
+                                        let count = 14
+                                        return <ProductView
+                                            name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
+                                            image={ item.guid }
+                                            rating={ 0 }
+                                            price={ 20 }
+                                            onPress={ () =>
+                                            {
+                                                this.props.navigation.navigate( 'ProductDetailScreen', {
+                                                    data: item
+                                                } )
+                                            } } />
                                     }
 
                                 } } />
                         </View>
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                             <Text style={ styles.labelText }>Recent Product</Text>
-                            <Pressable>
+                            <Pressable onPress={ () =>
+                            {
+                                this.props.navigation.navigate( "ProductViewScreen", {
+                                    request: {
+                                        "product_type": "recent"
+                                    },
+                                    title: "Recent Product"
+                                } )
+                            } }>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
                         </View>
 
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.state.categoeries }
+                                data={ this.props.recentProduct.data}
                                 numColumns={ 2 }
                                 scrollEnabled={ false }
                                 maxToRenderPerBatch={ 2 }
@@ -673,7 +742,18 @@ class Dashboard extends Component
                                 {
                                     if ( index <= 3 )
                                     {
-                                        return <ProductView />
+                                        let count = 14
+                                        return <ProductView 
+                                        name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
+                                        image={ item.guid }
+                                        rating={ 0 }
+                                        price={ 20 }
+                                        onPress={ () =>
+                                        {
+                                            this.props.navigation.navigate( 'ProductDetailScreen', {
+                                                data: item
+                                            } )
+                                        } }/>
                                     }
 
                                 } } />
@@ -692,13 +772,15 @@ class Dashboard extends Component
 
 function mapStateToProps ( state, ownProps )
 {
-    console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data)
+    console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data )
     return {
         // data : state.loginReducer.data
         products: state.productListReducer.data,
-        cataegoery:state.categoeryListReducer.data
-
-
+        cataegoery: state.categoeryListReducer.data,
+        getProducts: state.getProductByCatIdReducer.data,
+        bestSelling: state.getBestSellingProductReducer.data,
+        topRated: state.getTopRatedProductReducer.data,
+        recentProduct:state.getRecentProductReducer.data
     };
 
 }
@@ -709,7 +791,11 @@ const mapDispatchToProps = dispatch =>
         //getPeople,
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         productList: ( request ) => dispatch( actions.productListAction() ),
-        getCategoeryList:(request)=>dispatch(actions.getCategoeryListAction()),
+        getCategoeryList: ( request ) => dispatch( actions.getCategoeryListAction() ),
+        getProduct: ( request ) => dispatch( actions.getProductListByCatId( request ) ),
+        getBestSellingProduct: ( request ) => dispatch( actions.getBestSellingProductAction( request ) ),
+        getTopRatedProduct: ( request ) => dispatch( actions.getTopRatedProductAction( request ) ),
+        getRecentProduct:(request)=>dispatch(actions.getRecentProductAction(request)),
         dispatch,
     };
 };

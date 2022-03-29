@@ -56,7 +56,9 @@ class SubCategories extends Component
         else{
             this.setState({visible:false})
             this.props.navigation.navigate("ProductViewScreen",{
-               categoeryId:data.category_id,
+               request:{
+                "category_id":data.category_id
+            },
                 title:data.name
             }) 
         }
