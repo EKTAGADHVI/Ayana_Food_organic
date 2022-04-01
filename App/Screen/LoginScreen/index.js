@@ -13,6 +13,9 @@ import { actions } from '../../Redux/actions';
 import ProgressLoader from 'rn-progress-loader';
 import Toast from 'react-native-toast-message';
 import { ToastMessage } from '../../Components/ToastMessage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Apis from '../../RestApi/Apis';
+import { LOGIN_EROOR, LOGIN_SUCESS } from '../../Redux/actionTypes';
 class LoginScreen extends Component
 {
     constructor ( props )
@@ -51,38 +54,97 @@ class LoginScreen extends Component
                 "username": this.state.email,
                 "password": this.state.password
             };
-            this.props.loginRequest( req );
+            // this.props.loginRequest( req );
             this.setState( { visible: true } )
-            setTimeout( () =>
-            {
-             
-                setInterval(()=>{
-                    console.log("5 Secong GAP ", this.props.loginData)
-                    if ( this.props.loginData.status === true )
-                {
+
+           
+            Apis.loginCall(req)
+            .then((res)=>{
+              return JSON.stringify(res);
+          })
+          .then((responce)=>{
+           
+              if(JSON.parse(responce).data.status == true){
+                  let data = JSON.parse(responce).data;
+                  console.log("====== Login Responce ====== >  ", responce);
+                  AsyncStorage.setItem('UserData',JSON.stringify(data))
+                  .then(()=>{
                     this.setState( { visible: false } )
-                    ToastMessage('success','Login Sucessfull',)
-                    this.props.navigation.dispatch(
-                        CommonActions.reset({
-                          index: 1,
-                          routes: [
-                            { name: 'Home' },
-                          ],
-                        })
-                      );
-                    // this.props.navigation.navigate( 'Home' );
-                }
-                else
-                {
+
+                    this.props.dispatch({
+                          type:LOGIN_SUCESS,
+                          payload:JSON.parse(responce).data
+                      });
+                      ToastMessage('success','Login Sucessfull',)
+
+                    this.next_navigation();
+                  })
+                  .catch((error)=>{
                     this.setState( { visible: false } )
-                }
-                },800)
-            }, 2000 )
+
+                      console.log("====== Login ERR Responce ====== >  ", error);
+                      this.props.dispatch({
+                          type:LOGIN_EROOR,
+                          payload:error
+                      });
+                  })
+            
+              }
+              else{
+                this.setState( { visible: false } )
+
+                  console.log("====== Login ERR Responce ====== >  ", responce);
+                  ToastMessage('error',JSON.parse(responce).data.message,'Please Check');
+                  this.props.dispatch({
+                      type:LOGIN_EROOR,
+                      payload:JSON.parse(responce).data
+                  });
+              }
+          })
+          .catch((error)=>{
+            this.setState( { visible: false } )
+
+              console.log("====Login===Error=== ", error)
+             this.props.dispatch({
+                  type:LOGIN_EROOR,
+                  payload:error
+              });
+          })   
+      
+       
            
         }
 
        
 
+    }
+
+    next_navigation = () =>{
+        AsyncStorage.getItem('PostalCode')
+        .then((res)=>{
+            if(res !== null && res !== ''){
+                this.props.navigation.dispatch(
+                    CommonActions.reset({
+                      index: 1,
+                      routes: [
+                        { name: 'Home' },
+                      ],
+                    })
+                  );
+            }
+            else{
+                this.props.navigation.dispatch(
+                    CommonActions.reset({
+                      index: 1,
+                      routes: [
+                        { name: 'AddDeliveryLocation' },
+                      ],
+                    })
+                  );  
+            }
+        })
+        .catch((err)=>{})
+        // this.props.navigation.navigate( 'Home' );
     }
     componentDidMount(){
         // setTimeout( () =>
@@ -100,6 +162,9 @@ class LoginScreen extends Component
         //     }
         //     },500)
         // }, 2000 )
+    }
+    componentWillUnmount(){
+        clearInterval();
     }
     render ()
     {
@@ -196,7 +261,7 @@ class LoginScreen extends Component
                                     color={ Dark_Blue }
                                     source={ require( '../../../assets/facebook.png' ) }
                                     title={ "Continue with FaceBook  " } />
-                                <Pressable style={ { paddingBottom: "20%" } } onPress={ () => { this.props.navigation.navigate( 'Home' ) } }>
+                                <Pressable style={ { paddingBottom: "20%" } } onPress={ () => {this.next_navigation() } }>
                                     <Text style={ [ styles.regularText, { color: Black, textAlign: 'center', textDecorationLine: 'underline' } ] }>Skip { ">" }</Text>
                                 </Pressable>
                             </View>
@@ -215,8 +280,8 @@ function mapStateToProps ( state, ownProps )
     return {
         // data : state.loginReducer.data
 
-        loginData: state.loginReducer.data
-
+        loginData: state.loginReducer.data,
+        isLoading:state.loginReducer.isLoading
     };
 
 }

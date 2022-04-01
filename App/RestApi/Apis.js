@@ -1,6 +1,6 @@
 
 
-import { CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, Login_URL, Registration_URL } from './ApiUrl';
+import { CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, HOME_PAGE_API_URL, Login_URL, PINCODE_URL, Registration_URL } from './ApiUrl';
 import instance from './index'
 export default class Apis
 {
@@ -59,6 +59,22 @@ export default class Apis
 
 
     }
+    static homePageCall ( request )
+    {
+        console.log("Request data",request )
+        return instance.post( HOME_PAGE_API_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
 
+
+    }
+    static pincode ( request )
+    {
+        return instance.post( PINCODE_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }  
 
 }

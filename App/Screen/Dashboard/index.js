@@ -25,6 +25,7 @@ import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_BOLD, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
 import ProgressLoader from 'rn-progress-loader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let CurrentSlide = 0;
 let IntervalTime = 4000;
@@ -36,7 +37,24 @@ class Dashboard extends Component
     constructor ( props )
     {
         super( props );
+        AsyncStorage.getItem('PostalCode')
+        .then((res)=>{
+            console.log("postal",JSON.parse(res).code)
+            if(res !== null ){
+            //    this.setState({postalCode:JSON.parse(res).code});
+            this.props.homePageCall({
+                "pincode":JSON.parse(res).code
+            })
+            }
+            else{
+                this.setState({postalCode:''});
+            }
+        })
+        .catch((err)=>{})
+        
         this.props.getCategoeryList()
+       
+       
         this.state = {
             searchValue: ''
         },
@@ -48,6 +66,7 @@ class Dashboard extends Component
                 onSale: false,
                 topRate: false,
                 productList: [],
+                homeData:[],
                 link: [
                     {
                         "id": 0,
@@ -80,42 +99,10 @@ class Dashboard extends Component
                         "id": 3,
                         "name": "Grocery"
                     },
-                    {
-                        "id": 4,
-                        "name": "Grocery"
-                    },
-                    {
-                        "id": 5,
-                        "name": "Grocery"
-                    },
-                    {
-                        "id": 6,
-                        "name": "Grocery1"
-                    },
-                    {
-                        "id": 7,
-                        "name": "Grocery"
-                    },
-                    {
-                        "id": 8,
-                        "name": "Grocery1"
-                    },
-                    {
-                        "id": 9,
-                        "name": "Grocery"
-                    },
-                    {
-                        "id": 10,
-                        "name": "Grocery1"
-                    },
-                    {
-                        "id": 11,
-                        "name": "Grocery1"
-                    }
-
+                  
                 ],
                 categoeryList: [],
-                specialOffers: [],
+                specialOffers: this.props.homeData?.data?.featured,
                 visible: false
 
             }
@@ -124,6 +111,8 @@ class Dashboard extends Component
             waitForInteraction: true,
         };
         this.handleViewableItemsChanged = this.handleViewableItemsChanged.bind( this );
+
+       ;
     } handleViewableItemsChanged ( info )
     {
         let getIndex = info.changed[ 0 ].index;
@@ -174,6 +163,13 @@ class Dashboard extends Component
     {
 
     }
+
+    discountInPercentage=(data)=>{
+        console.log("Prioce",data)
+        let discountPrice = data._regular_price -data._sale_price;
+        let price =(discountPrice/data._regular_price)*100;
+        return price.toFixed(1) + "%";
+    }
     componentDidMount ()
     {
         this.setState( { visible: true } );
@@ -194,13 +190,19 @@ class Dashboard extends Component
         });
         // this.props.productList();
         setTimeout( () =>
-        {
-            this.setState( { visible: false } );
-        }, 1500 );
+        {   
+            this.setState( { visible: false,
+            homeData:this.props.homePageData.data,
+            specialOffers:this.props.homePageData?.data?.featured } );
+        }, 2000 );
 
 
 
-
+     setTimeout(()=>{
+        this.setState( { 
+            homeData:this.props.homePageData.data,
+        specialOffers:this.props.homePageData?.data?.featured } );
+      },4000)
 
     }
     // TODO _renderItem()
@@ -249,7 +251,16 @@ class Dashboard extends Component
         if ( index < 4 )
         {
             return (
-                <TouchableOpacity style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }  >
+                <TouchableOpacity  
+                onPress={()=>{
+                    this.props.navigation.navigate("ProductViewScreen",{
+                        request:{
+                         "category_id":item.category_id
+                     },
+                         title:item.name
+                     }) 
+                }}
+                style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }  >
                     <Image source={ require( '../../../assets/grocery.png' ) }
                         resizeMode={ 'contain' }
                         style={ { height: 40, width: 40, alignSelf: "center" } }>
@@ -289,7 +300,7 @@ class Dashboard extends Component
                     resizeMode={ 'contain' }
                     style={ { height: 60, width: 60, alignSelf: "center" } } />
                 <View style={ { left: 5 } }>
-                    <Text style={ styles.regularText }>Catch Big Discounton Organic Products</Text>
+                    <Text style={ styles.regularText }>Catch Big Discount on Organic Products</Text>
                     <Pressable>
                         <View style={ { flexDirection: 'row', padding: 5 } }>
                             <Text style={ [ styles.labelText, { fontFamily: POPINS_SEMI_BOLD } ] }>Shop Now</Text>
@@ -303,6 +314,16 @@ class Dashboard extends Component
         );
     }
 
+    displayPrice = (data) =>{
+        let price ="";
+        if(data.length >1){
+            price = data[0].meta_value + " - " +data[data.length-1].meta_value
+        }
+        else{
+            price = data[0].meta_value
+        }
+        return price;
+    }
     render ()
     {
         const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
@@ -393,6 +414,7 @@ class Dashboard extends Component
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( {
+                                        specialOffers: this.props.homePageData?.data?.featured,
                                         isFeatured: true,
                                         onSale: false,
                                         topRate: false,
@@ -419,7 +441,7 @@ class Dashboard extends Component
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( {
-                                        specialOffers: this.props.topRated.data,
+                                        specialOffers: this.props.homePageData?.data?.toprated,
                                         isFeatured: false,
                                         onSale: false,
                                         topRate: true,
@@ -438,7 +460,7 @@ class Dashboard extends Component
                                     this.props.navigation.navigate( 'ProductViewScreen', {
                                         title: "Featured",
                                         request: {
-                                            "product_type": "bestselling"
+                                            "product_type": "featured"
                                         }
                                     } )
                                 }
@@ -471,15 +493,16 @@ class Dashboard extends Component
                             <FlatList
                                 data={ this.state.specialOffers }
                                 horizontal={ true }
-
+                                 extraData={this.state.specialOffers}
                                 maxToRenderPerBatch={ 11 }
                                 legacyImplementation={ false }
+                                extraData={this.state.specialOffers }
                                 showsHorizontalScrollIndicator={ false }
                                 showsVerticalScrollIndicator={ false }
                                 keyExtractor={ ( item, index ) => index.toString() }
                                 renderItem={ ( { item, index } ) =>
                                 {
-                                    // console.log("item.Images",item.images)
+                                    console.log("item.Images",item.price)
                                     var count = 14;
                                     // let name= item.name;
                                     //    var title =item.name.slice(0,count) +(item.name.length > count ? "..." : "");
@@ -487,9 +510,11 @@ class Dashboard extends Component
                                     {
                                         return <ProductView
                                             name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
-                                            image={ item.guid }
-                                            rating={ 0 }
-                                            price={ 20 }
+                                            image={ item.img[0].img_path }
+                                            rating={ item.rating[0].meta_value }
+                                            price={ this.displayPrice(item.price) }
+                                            discount={this.discountInPercentage(item.variation[0])}
+                                            storeName={item.seller_name}
                                             onPress={ () =>
                                             {
                                                 this.props.navigation.navigate( 'ProductDetailScreen', {
@@ -685,8 +710,9 @@ class Dashboard extends Component
 
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.props.bestSelling.data }
+                                data={ this.props.homePageData?.data?.bestselling }
                                 numColumns={ 2 }
+                                extraData={this.props.homePageData?.data?.bestselling}
                                 scrollEnabled={ false }
                                 maxToRenderPerBatch={ 2 }
                                 legacyImplementation={ false }
@@ -700,9 +726,11 @@ class Dashboard extends Component
                                         let count = 14
                                         return <ProductView
                                             name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
-                                            image={ item.guid }
-                                            rating={ 0 }
-                                            price={ 20 }
+                                            image={ item.img[0].img_path }
+                                            rating={ item.rating[0].meta_value }
+                                            price={ this.displayPrice(item.price) }
+                                            discount={this.discountInPercentage(item.variation[0])}
+                                            storeName={item.seller_name}
                                             onPress={ () =>
                                             {
                                                 this.props.navigation.navigate( 'ProductDetailScreen', {
@@ -730,10 +758,11 @@ class Dashboard extends Component
 
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.props.recentProduct.data}
+                                data={ this.props.homePageData?.data?.recent}
                                 numColumns={ 2 }
                                 scrollEnabled={ false }
                                 maxToRenderPerBatch={ 2 }
+                                extraData={this.props.homePageData?.data?.recent}
                                 legacyImplementation={ false }
                                 showsHorizontalScrollIndicator={ false }
                                 showsVerticalScrollIndicator={ false }
@@ -745,10 +774,12 @@ class Dashboard extends Component
                                         let count = 14
                                         return <ProductView 
                                         name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
-                                        image={ item.guid }
-                                        rating={ 0 }
-                                        price={ 20 }
-                                        onPress={ () =>
+                                        image={ item.img[0].img_path }
+                                        rating={ item.rating[0].meta_value }
+                                        price={ this.displayPrice(item.price)  }
+                                        discount={this.discountInPercentage(item.variation[0])}
+                                        storeName={item.seller_name} 
+                                            onPress={ () =>
                                         {
                                             this.props.navigation.navigate( 'ProductDetailScreen', {
                                                 data: item
@@ -772,7 +803,7 @@ class Dashboard extends Component
 
 function mapStateToProps ( state, ownProps )
 {
-    console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data )
+    console.log( "state.homePageReducer.data ", state.homePageReducer.data )
     return {
         // data : state.loginReducer.data
         products: state.productListReducer.data,
@@ -780,7 +811,8 @@ function mapStateToProps ( state, ownProps )
         getProducts: state.getProductByCatIdReducer.data,
         bestSelling: state.getBestSellingProductReducer.data,
         topRated: state.getTopRatedProductReducer.data,
-        recentProduct:state.getRecentProductReducer.data
+        recentProduct:state.getRecentProductReducer.data,
+        homePageData:state.homePageReducer.data
     };
 
 }
@@ -796,6 +828,7 @@ const mapDispatchToProps = dispatch =>
         getBestSellingProduct: ( request ) => dispatch( actions.getBestSellingProductAction( request ) ),
         getTopRatedProduct: ( request ) => dispatch( actions.getTopRatedProductAction( request ) ),
         getRecentProduct:(request)=>dispatch(actions.getRecentProductAction(request)),
+        homePageCall:(request)=>dispatch(actions.homePageAction(request)),
         dispatch,
     };
 };

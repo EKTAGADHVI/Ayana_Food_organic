@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, createRef } from 'react';
 import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -38,9 +39,14 @@ class ProductDetailScreen extends Component
             isDiscription: false,
             isTerm: false,
             data: this.props.route.params?.data,
+            variation:this.props.route.params?.data?.variation, 
             description: this.props.route.params?.data?.post_content,
-            price: this.props.route.params?.data?.price[0]?.meta_value,
-            checked:0
+            price:this.props.route.params?.data?.variation[0]?._price,
+            images: this.props.route.params?.data?.img,
+            raingCount:this.props.route.params?.data?.rating[0].meta_value ,
+            checked:0,
+            postalCode:''
+            
         }
         this.viewabilityConfig = {
             viewAreaCoveragePercentThreshold: 50,
@@ -51,11 +57,22 @@ class ProductDetailScreen extends Component
     }
     componentDidMount ()
     {
+        AsyncStorage.getItem('PostalCode')
+        .then((res)=>{
+            console.log("postal",JSON.parse(res).code)
+            if(res !== null ){
+               this.setState({postalCode:JSON.parse(res).code});
+            }
+            else{
+                this.setState({postalCode:''});
+            }
+        })
+        .catch((err)=>{})
 
         if ( this.state.description.includes( "<p>" ) )
         {
             this.setState( {
-                description: this.state.description.replace( "<p>", " " )
+                description: this.state.description.replace( "<p>", "" )
             } )
         }
         setTimeout( () =>
@@ -86,8 +103,8 @@ class ProductDetailScreen extends Component
             <View style={ styles.ItemContainer }>
                 <Image
                     style={ styles.ImagStyle }
-                    // source={ { uri: item.src } } 
-                    source={item.url}
+                    source={ { uri: item.img_path } } 
+                    // source={item.url}
                     />
 
 
@@ -118,7 +135,7 @@ class ProductDetailScreen extends Component
 
 
                             <FlatList
-                                data={ this.state.link }
+                                data={ this.state.images }
                                 // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
                                 horizontal={ true }
                                 pagingEnabled={ true }
@@ -152,7 +169,7 @@ class ProductDetailScreen extends Component
                                 ) ) }
                             </View>
                             <View style={ styles.bottomContainer }>
-                                <Text style={ styles.titleText }>{ this.state.data.name }</Text>
+                                <Text style={ styles.titleText }>{ this.state.data.post_title }</Text>
                                 <Image
                                     style={ styles.iconStyle }
                                     source={ require( '../../../assets/fav.png' ) } />
@@ -199,49 +216,59 @@ class ProductDetailScreen extends Component
                                 </View>
 
                             </View>
+                            <View style={ [styles.container,{marginHorizontal:15,padding:8}] } >
+                                            <Text style={ [ styles.quentityText ] }>Weight</Text>
+                                            <View style={{flexDirection:'row',marginVertical:5}}>
+                                            </View>
+                                            <View style={{flexDirection:'row'}}>
+                                      
+                                        {
+                                                // console.log("this.state.variation",this.state.variation)
+                                                    this.state.variation.map((item ,index)=>{
+                                                      let active=true;
+                                                        return(
+                                                        <View key={index}>
+                                                            {this.state.checked === index ?
+                                                               <TouchableOpacity 
+                                                               onPress={()=>{
+                                                                this.setState({price:item._price})
+                                                               }}
+                                                               style={[styles.attributesView,{ backgroundColor:"#E5F3EA"}]}>
+                                                                    <Image  style={{height:10,width:10,resizeMode:'contain',alignSelf:'center'}} source={require("../../../assets/selected.png")}/>
+                                                               <Text style={[styles.smallText,{color:Black,fontSize:9,paddingHorizontal:3,paddingVertical:3,textAlign:'center'}]}>{item.attribute_pa_weight}</Text>
+                                                           </TouchableOpacity>
+                                                           :
+                                                           <TouchableOpacity 
+                                                           onPress={()=>{
+                                                                  this.setState({checked:index,
+                                                                    price:item._price})
+                                                           }}
+                                                           style={[styles.attributesView,{ backgroundColor:White}]}>
+                                                                <Image style={{height:10,width:10,resizeMode:'contain',alignSelf:'center'}} source={require("../../../assets/unselected.png")}/>
+                                                           <Text style={[styles.smallText,{color:Black,fontSize:9,paddingHorizontal:3,paddingVertical:3,textAlign:'center'}]}>{item.attribute_pa_weight}</Text>
+                                                       </TouchableOpacity>}
+                                                        </View>
+                                                        )
+                                                    })
+                                                
+                                        }
+                                        </View>
+                                          </View>
                             {/* {
-                                this.state.data.attributes.map( ( item, index ) =>
+                                this.state.data.variation.map( ( item, index ) =>
                                 {
                                     
                                     console.log("Item Attributes",item)
 
                                     return (
-                                    <View style={ [styles.container,{marginHorizontal:15,padding:8}] } key={item.id.toString()}>
-                                            <Text style={ [ styles.quentityText ] }>{ item.name }</Text>
-                                            <View style={{flexDirection:'row',marginVertical:5}}>
-                                          {
-                                              item.options.map((item ,index)=>{
-                                                let active=true;
-                                                  return(
-                                                  <View key={index}>
-                                                      {this.state.checked === index ?
-                                                         <TouchableOpacity 
-                                                         onPress={()=>{
-                                                 
-                                                         }}
-                                                         style={[styles.attributesView,{ backgroundColor:"#E5F3EA"}]}>
-                                                              <Image  style={{height:10,width:10,resizeMode:'contain',alignSelf:'center'}} source={require("../../../assets/selected.png")}/>
-                                                         <Text style={[styles.smallText,{color:Black,fontSize:9,paddingHorizontal:3,paddingVertical:3,textAlign:'center'}]}>{item}</Text>
-                                                     </TouchableOpacity>
-                                                     :
-                                                     <TouchableOpacity 
-                                                     onPress={()=>{
-                                                            this.setState({checked:index})
-                                                     }}
-                                                     style={[styles.attributesView,{ backgroundColor:White}]}>
-                                                          <Image style={{height:10,width:10,resizeMode:'contain',alignSelf:'center'}} source={require("../../../assets/unselected.png")}/>
-                                                     <Text style={[styles.smallText,{color:Black,fontSize:9,paddingHorizontal:3,paddingVertical:3,textAlign:'center'}]}>{item}</Text>
-                                                 </TouchableOpacity>}
-                                                  </View>
-                                                  )
-                                              })
-                                          }
-                                          </View>
-                                        </View>
+                                 
+                                      
+                                        
                                     );
                                 } )
                             } */}
-                            <View style={ [styles.container,{marginHorizontal:15,}] }>
+                            <View style={ [styles.container,{marginHorizontal:10
+                                ,}] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Description</Text>
@@ -260,15 +287,15 @@ class ProductDetailScreen extends Component
 
                                 {
                                     this.state.isDiscription === true ?
-                                        <View>
-                                            <Text style={ styles.smallText }>{ this.state.description }</Text>
+                                        <View style={{ marginVertical:10}}>
+                                            <Text style={ styles.smallText }>{this.state.description }</Text>
                                         </View>
                                         : null
                                 }
                             </View>
 
                             <View style={ [styles.container,{marginHorizontal:15,}] }>
-                                <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> 380060</Text></Text>
+                                <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> {this.state.postalCode}</Text></Text>
                             </View>
 
                             <View style={ [styles.container,{marginHorizontal:15,}] }>
@@ -306,7 +333,7 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                         ratingImage={ require( '../../../assets/star.png' ) }
                                         ratingColor='#3498db'
                                         ratingBackgroundColor='#c8c7c8'
-                                        ratingCount={ 5 }
+                                        ratingCount={ this.state.raingCount }
                                         imageSize={ 15 }
                                         startingValue={ this.state.data.average_rating }
                                         onFinishRating={ this.ratingCompleted }
@@ -314,7 +341,7 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     />
                                 </View>
                                 <View >
-                                    <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>4.0</Text>
+                                    <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{this.state.raingCount} </Text>
                                     <Text style={ [ styles.smallText, { paddingVertical: 3, paddingHorizontal: 3 } ] }>Over all</Text>
                                 </View>
                             </View>

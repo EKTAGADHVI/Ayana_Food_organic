@@ -26,7 +26,7 @@ const ProductView = ( props ) =>
             }}
             source={{uri:props.image}}>
                 <View style={styles.circleView}>
-                    <Text style={styles.discountText} >20%</Text>
+                    <Text style={styles.discountText} >{props.discount}</Text>
                 </View>
             </ImageBackground>
             <Text style={styles.regularText}>{props.name}</Text>
@@ -41,8 +41,8 @@ const ProductView = ( props ) =>
                 onFinishRating={ this.ratingCompleted }
                 style={ { alignSelf:'flex-start' } }
             />
-             <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>Store Name</Text>
-             <Text style={styles.regularText}>Rs. {props.price}/-</Text>
+             <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.storeName}</Text>
+             <Text style={styles.regularText}>Rs. {props.price} /-</Text>
              <TouchableOpacity style={styles.btnView}>
                  <Image
                  style={{height:10,width:10,alignSelf:'center'}}

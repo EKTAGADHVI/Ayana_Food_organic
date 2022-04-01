@@ -13,6 +13,8 @@ import { Black, Dark_Blue, Light_Blue, Light_Green, Text_Gray, White } from '../
 import { screen_height } from '../../Utils/constant';
 import styles from './styles';
 import { CommonActions } from '@react-navigation/native';
+import Apis from '../../RestApi/Apis';
+import { REGISTER_EROOR, REGISTER_SUCESS } from '../../Redux/actionTypes';
 
 class RegistrationScreen extends Component
 {
@@ -82,20 +84,60 @@ class RegistrationScreen extends Component
         else
         {
             this.setState({visible:true})
-            let req = {
-                "firstname": this.state.firstName,
-                "username":this.state.username,
-                "phone":this.state.phone,
-                "email":this.state.email,
-                "password":this.state.password
-            }
-            this.props.registerRequest( req );
-            setTimeout(()=>{
+            // let req = {
+            //     "firstname": this.state.firstName,
+            //     "username":this.state.username,
+            //     "phone":this.state.phone,
+            //     "email":this.state.email,
+            //     "password":this.state.password
+            // }
+            // this.props.registerRequest( req );
+            this.callApi();
+            // setTimeout(()=>{
 
-            setInterval(()=>{
+            // setInterval(()=>{
            
-                if(this.props.registerData.status === true)
-                { this.setState({visible:false})
+            //     if(this.props.registerData.status === true)
+            //     { this.setState({visible:false})
+            //     this.props.navigation.dispatch(
+            //         CommonActions.reset({
+            //           index: 1,
+            //           routes: [
+            //             { name: 'LoginScreen' },
+            //           ],
+            //         })
+            //       );
+            //     }
+            //     else{
+            //         this.setState({visible:false})
+            //         ToastMessage('error',this.props.registerData.message,'Please Check')
+            //     }
+            // },800)
+            // },2000)
+        }
+
+    }
+
+    callApi = () =>{
+        let req = {
+            "firstname": this.state.firstName,
+            "username":this.state.username,
+            "phone":this.state.phone,
+            "email":this.state.email,
+            "password":this.state.password
+        }
+        Apis.registrationCall(req)
+        .then((res)=>{
+          return JSON.stringify(res);
+      })
+      .then((responce)=>{
+          if(JSON.parse(responce).data.status == true){
+              console.log("====== Registration Responce ====== >  ", responce);
+          this.props.dispatch({
+              type:REGISTER_SUCESS,
+              payload:JSON.parse(responce).data
+          });
+          this.setState({visible:false})
                 this.props.navigation.dispatch(
                     CommonActions.reset({
                       index: 1,
@@ -104,15 +146,25 @@ class RegistrationScreen extends Component
                       ],
                     })
                   );
-                }
-                else{
-                    this.setState({visible:false})
-                    ToastMessage('error',this.props.registerData.message,'Please Check')
-                }
-            },800)
-            },2000)
-        }
-
+          }
+          else{
+            this.setState({visible:false})
+            ToastMessage('error',JSON.parse(responce).data.message,'Please Check')
+             this.props.dispatch({
+                  type:REGISTER_EROOR,
+                  payload:JSON.parse(responce).data
+              });
+          }
+         
+      })
+      .catch((error)=>{
+          console.log("====Registration===Error=== ", error)
+          this.props.dispatch({
+              type:REGISTER_EROOR,
+              payload:error
+          });
+      })   
+  
     }
 
     render ()

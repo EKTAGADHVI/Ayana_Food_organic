@@ -89,6 +89,12 @@ const RootNavigation = ( { navigation } ) =>
                 options={ {
                     headerShown: false
                 } } />
+                  <mainStack.Screen
+                name="AddDeliveryLocation"
+                component={ AddDeliveryLocation }
+                options={ {
+                    headerShown: false
+                } } />
             <mainStack.Screen
                 name="Home"
                 component={ BottomTab }

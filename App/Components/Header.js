@@ -156,6 +156,9 @@ const Header = ( props ) =>
                                 setVisible(false)
                                 await AsyncStorage.removeItem('UserData')
                                 .then((res)=>{
+                                    AsyncStorage.removeItem("PostalCode")
+                                    .then(()=>{})
+                                    .catch((err)=>{})
                                    
                                     console.log("Data Removed")
                                   setTimeout(()=>{

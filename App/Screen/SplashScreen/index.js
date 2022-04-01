@@ -14,7 +14,11 @@ class SplashScreen extends Component {
             .then((response)=>{
                 console.log("response",response)
                 if(response !== null && response!== "" ){
-                    this.props.navigation.dispatch(
+
+                 AsyncStorage.getItem('PostalCode')
+                  .then((postalcode)=>{
+                    if(postalcode !== null && postalcode !== ""){
+                      this.props.navigation.dispatch(
                         CommonActions.reset({
                           index: 1,
                           routes: [
@@ -22,6 +26,20 @@ class SplashScreen extends Component {
                           ],
                         })
                       );
+                    }
+                    else{
+                      this.props.navigation.dispatch(
+                        CommonActions.reset({
+                          index: 1,
+                          routes: [
+                            { name: 'AddDeliveryLocation' },
+                          ],
+                        })
+                      );
+                    }
+                  })
+                  .catch((err)=>{})
+                   
                 }
                 else{
                     this.props.navigation.dispatch(
@@ -39,7 +57,7 @@ class SplashScreen extends Component {
                 console.log("error")
             })
           
-        },3000)
+        },2000)
     }
     render(){
         return(

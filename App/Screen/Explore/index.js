@@ -23,16 +23,25 @@ class Explore extends Component
 
     renderItem  = ( item, index ) =>
     {
-        console.log( index )
+        console.log( item )
         if ( index < 6 )
         {
             return (
                 <TouchableOpacity style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] } 
                 onPress={()=>{this.onCategoryPress(item)}} >
-                    <Image source={{uri:item.guid !== null || item.guid !== "" ?item.guid: ""  }}
+                    {
+                        item.guid === null || item.guid === "" ?
+                        <Image source={require('../../../assets/default.png')}
                         resizeMode={ 'contain' }
                         style={styles.ImageStyle}>
                     </Image>
+                    :
+                    <Image source={{uri:item.guid !== null || item.guid !== "" ?item.guid: ""  }}
+                    resizeMode={ 'contain' }
+                    style={styles.ImageStyle}>
+                </Image>
+                    }
+                   
                     <Text style={styles.regularText}>{ item.name }</Text>
                 </TouchableOpacity>
             );
@@ -106,6 +115,7 @@ class Explore extends Component
                         <FlatList
                         style={{alignSelf:'center'}}
                         numColumns={2}
+                        extraData={this.state.categoeries}
                         data={this.state.categoeries}
                         keyExtractor={(item,index)=>item.category_id }
                         renderItem={({item,index})=>this.renderItem(item,index)}/>
