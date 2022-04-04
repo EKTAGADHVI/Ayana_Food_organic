@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { Black, Light_Green, Line_Gray, Text_Gray, White } from '../Utils/colors';
@@ -7,6 +7,8 @@ import { POPINS_REGULAR } from '../Utils/fonts';
 import LogoView from './LogoView';
 import Modal from "react-native-modal";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { connect } from 'react-redux';
+import { actions } from '../Redux/actions';
 const leftPosition = new Animated.Value( 0 )
 // function mooveRL ()
 // {
@@ -51,7 +53,26 @@ const Header = ( props ) =>
 {
     // console.log( "Props", props );
 
-    const [ visible, setVisible ] = useState( false )
+    const [ visible, setVisible ] = useState( false );
+    const [logoutVisible,setLogoutVisible]=useState(false);
+    useEffect(()=>{
+        AsyncStorage.getItem('UserData')
+                                .then((res)=>{
+                                    
+                                   if(res!== null){
+                                    setLogoutVisible(true);
+                                   }
+                                   else{
+                                        setLogoutVisible(false)
+                                   }
+                                    
+                                
+                                })
+                                .catch((error)=>{
+                                    console.log("Data Not Removed")
+                                })
+    },[])
+
     return (
         <View style={ styles.mainContainer }>
             <View style={ styles.leftContainer }>
@@ -152,36 +173,42 @@ const Header = ( props ) =>
                             <View >
                                 <Text style={ [ styles.regularText2, { color: Light_Green, paddingVertical: "65%", textAlign: "center" } ] }>v 1.0.1</Text>
                             </View>
-                            <TouchableOpacity onPress={async()=>{
-                                setVisible(false)
-                                await AsyncStorage.removeItem('UserData')
-                                .then((res)=>{
-                                    AsyncStorage.removeItem("PostalCode")
-                                    .then(()=>{})
-                                    .catch((err)=>{})
-                                   
-                                    console.log("Data Removed")
-                                  setTimeout(()=>{
-                                    props.navigation.dispatch(
-                                        CommonActions.reset({
-                                          index: 1,
-                                          routes: [
-                                            { name: 'LoginScreen' },
-                                          ],
-                                        })
-                                      );
-                                  },1000)
-                                })
-                                .catch((error)=>{
-                                    console.log("Data Not Removed")
-                                })}}>
-                                <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray } ] }>
-                                    <Image
-                                        style={ styles.iconStyle }
-                                        source={ require( '../../assets/logout.png' ) } />
-                                    <Text style={ styles.regularText2 }>Logout</Text>
-                                </View>
-                            </TouchableOpacity>
+                            {
+                                logoutVisible === true ?
+                                <TouchableOpacity onPress={async()=>{
+                                    setVisible(false)
+                                    props.logout();
+                                    await AsyncStorage.removeItem('UserData')
+                                    .then((res)=>{
+                                        AsyncStorage.removeItem("PostalCode")
+                                        .then(()=>{})
+                                        .catch((err)=>{})
+                                       
+                                        console.log("Data Removed")
+                                      setTimeout(()=>{
+                                        props.navigation.dispatch(
+                                            CommonActions.reset({
+                                              index: 1,
+                                              routes: [
+                                                { name: 'LoginScreen' },
+                                              ],
+                                            })
+                                          );
+                                      },1000)
+                                    })
+                                    .catch((error)=>{
+                                        console.log("Data Not Removed")
+                                    })}}>
+                                    <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray } ] }>
+                                        <Image
+                                            style={ styles.iconStyle }
+                                            source={ require( '../../assets/logout.png' ) } />
+                                        <Text style={ styles.regularText2 }>Logout</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                :null
+                            }
+                        
                         </View>
                     </SafeAreaView>
                 </View>
@@ -197,7 +224,30 @@ onPressLogout =async()=>{
     })
 }
 
-export default Header;
+function mapStateToProps ( state, ownProps )
+{
+    // console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data)
+    return {
+        // data : state.loginReducer.data
+       
+    
+
+
+    };
+
+}
+
+const mapDispatchToProps = dispatch =>
+{
+    return {
+        //getPeople,
+        // login: (request) => dispatch(actions.login.apiActionCreator(request)),
+        logout:(request)=>dispatch(actions.logoutAction()),
+        dispatch,
+    };
+};
+export default connect( mapStateToProps, mapDispatchToProps )( Header );
+;
 
 const styles = StyleSheet.create( {
     logoStyle: {

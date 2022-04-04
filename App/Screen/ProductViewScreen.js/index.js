@@ -66,6 +66,12 @@ displayPrice = (data) =>{
     }
     return price;
 }
+discountInPercentage=(data)=>{
+    console.log("Prioce",data)
+    let discountPrice = data._regular_price -data._sale_price;
+    let price =(discountPrice/data._regular_price)*100;
+    return price.toFixed(1) + "%";
+}
 
     componentWillUnmount ()
     {
@@ -91,7 +97,7 @@ displayPrice = (data) =>{
                         hudColor={ White }
                         color={ Light_Green } />
                  {
-                     this.state.categoeries.length >0?
+                     this.state.categoeries &&     this.state.categoeries.length>0?
                      <FlatList
                      data={ this.state.categoeries }
                      numColumns={ 2 }
@@ -107,9 +113,10 @@ displayPrice = (data) =>{
                          var count = 14;
                          return <ProductView
                              name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
-                             image={ item.guid }
+                             image={ item.img[0].img_path }
                              // image={ item.img[0].img_path }
-                             rating={ 2 }
+                             rating={ item.rating[0].meta_value }
+                             discount={this.discountInPercentage(item.variation[0])}
                              price={ this.displayPrice(item.price) }
                              storeName={ item.seller_name }
                              onPress={ () =>

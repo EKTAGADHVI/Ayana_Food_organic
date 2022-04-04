@@ -74,6 +74,7 @@ class AddDeliveryLocation extends Component
 
     onGetCurrentLocation = () =>
     {
+        this.setState({visible:true})
         Geolocation.getCurrentPosition(
             ( position ) =>
             {
@@ -89,7 +90,9 @@ class AddDeliveryLocation extends Component
                                return data.long_name[0];
                             }
                         })
-                        this.setState({deliveryCode:PostalCode[0].long_name})
+                        this.setState({
+                            visible:false,
+                            deliveryCode:PostalCode[0].long_name})
                         // console.log( addressComponent );
                         console.log( "posatl code", PostalCode );
                     } )

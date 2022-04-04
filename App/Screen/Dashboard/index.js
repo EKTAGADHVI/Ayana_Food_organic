@@ -42,9 +42,9 @@ class Dashboard extends Component
             console.log("postal",JSON.parse(res).code)
             if(res !== null ){
             //    this.setState({postalCode:JSON.parse(res).code});
-            this.props.homePageCall({
-                "pincode":JSON.parse(res).code
-            })
+            // this.props.homePageCall({
+            //     "pincode":JSON.parse(res).code
+            // })
             }
             else{
                 this.setState({postalCode:''});
@@ -102,7 +102,7 @@ class Dashboard extends Component
                   
                 ],
                 categoeryList: [],
-                specialOffers: this.props.homeData?.data?.featured,
+                specialOffers: [],
                 visible: false
 
             }
@@ -179,30 +179,42 @@ class Dashboard extends Component
         // this._stopAutoPlay();
         this._startAutoPlay();
         this.props.getCategoeryList()
-        this.props.getBestSellingProduct( {
-            "product_type": "bestselling"
-        } );
+     
         this.props.getTopRatedProduct( {
             "product_type": "toprated"
+        } );
+          this.props.getFeaturedProduct({
+            "product_type": "featured"
+        });
+        this.props.getOnSaleProduct({
+            "product_type": "onsale"
+        });
+        this.props.bestOffersCall();
+        this.props.getOrganicWorldProduct({
+            "product_type": "organic-world"
+        });
+        this.props.getBestSellingProduct( {
+            "product_type": "bestselling"
         } );
         this.props.getRecentProduct({
             "product_type": "recent"
         });
+      
         // this.props.productList();
         setTimeout( () =>
         {   
             this.setState( { visible: false,
             homeData:this.props.homePageData.data,
-            specialOffers:this.props.homePageData?.data?.featured } );
+            specialOffers:this.props.featured?.data } );
         }, 2000 );
 
 
 
-     setTimeout(()=>{
-        this.setState( { 
-            homeData:this.props.homePageData.data,
-        specialOffers:this.props.homePageData?.data?.featured } );
-      },4000)
+    //  setTimeout(()=>{
+    //     this.setState( { 
+    //         homeData:this.props.homePageData.data,
+    //     specialOffers:this.props.homePageData?.data?.featured } );
+    //   },4000)
 
     }
     // TODO _renderItem()
@@ -261,10 +273,19 @@ class Dashboard extends Component
                      }) 
                 }}
                 style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }  >
-                    <Image source={ require( '../../../assets/grocery.png' ) }
+                                      
+                    {
+                        item.guid === null || item.guid === "" ?
+                        <Image source={require('../../../assets/default.png')}
                         resizeMode={ 'contain' }
                         style={ { height: 40, width: 40, alignSelf: "center" } }>
                     </Image>
+                    :
+                    <Image source={{uri:item.guid !== null || item.guid !== "" ?item.guid: ""  }}
+                    resizeMode={ 'contain' }
+                    style={ { height: 40, width: 40, alignSelf: "center" } }>
+                </Image>
+                    }
                     <Text style={ [ styles.smallText, { color: Black, textAlign: 'center', fontSize: 10 ,padding:5,overflow:'hidden'} ] }>{ item.name.slice( 0, 15 ) + ( item.name.slice.length > 10 ? "..." : "" ) }</Text>
                 </TouchableOpacity>
             );
@@ -290,17 +311,29 @@ class Dashboard extends Component
 
         this.offset = currentOffset;
     }
-
+ removeTags=(str)=> {
+     console.log("hsdgfuysdgf",str)
+        if ((str===null) || (str===''))
+            return '';
+        else
+            str = str.toString();
+              
+        // Regular expression to identify HTML tags in 
+        // the input string. Replacing the identified 
+        // HTML tag with a null string.
+        return str.replace( /(<([^>]+)>)/ig, '');
+    }
     renderOffer = ( item, index ) =>
     {
+       
         return (
             <View style={ [ styles.offerBannerContainer, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }>
                 <Image
                     source={ require( '../../../assets/grocery.png' ) }
                     resizeMode={ 'contain' }
                     style={ { height: 60, width: 60, alignSelf: "center" } } />
-                <View style={ { left: 5 } }>
-                    <Text style={ styles.regularText }>Catch Big Discount on Organic Products</Text>
+                <View style={ { left: 5,width:"80%" } }>
+                    <Text style={ [styles.regularText,{width:"80%"}] }>{this.removeTags(item.ad_text)}</Text>
                     <Pressable>
                         <View style={ { flexDirection: 'row', padding: 5 } }>
                             <Text style={ [ styles.labelText, { fontFamily: POPINS_SEMI_BOLD } ] }>Shop Now</Text>
@@ -414,7 +447,7 @@ class Dashboard extends Component
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( {
-                                        specialOffers: this.props.homePageData?.data?.featured,
+                                        specialOffers: this.props.featured?.data,
                                         isFeatured: true,
                                         onSale: false,
                                         topRate: false,
@@ -428,6 +461,7 @@ class Dashboard extends Component
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( {
+                                        specialOffers:this.props.onSale?.data,
                                         isFeatured: false,
                                         onSale: true,
                                         topRate: false,
@@ -441,7 +475,7 @@ class Dashboard extends Component
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( {
-                                        specialOffers: this.props.homePageData?.data?.toprated,
+                                        specialOffers: this.props.topRated?.data,
                                         isFeatured: false,
                                         onSale: false,
                                         topRate: true,
@@ -469,7 +503,7 @@ class Dashboard extends Component
                                     this.props.navigation.navigate( 'ProductViewScreen', {
                                         title: "On Sale",
                                         request: {
-                                            "product_type": "bestselling"
+                                            "product_type": "onsale"
                                         }
                                     } )
                                 }
@@ -599,13 +633,20 @@ class Dashboard extends Component
 
                         <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                             <Text style={ styles.labelText }>Organic World</Text>
-                            <Pressable>
+                            <Pressable onPress={()=>{
+                                 this.props.navigation.navigate( 'ProductViewScreen', {
+                                    title: "Organic World",
+                                    request: {
+                                        "product_type": "organic-world"
+                                    }
+                                } )
+                            }}>
                                 <Text style={ styles.smallText }>see more</Text>
                             </Pressable>
                         </View>
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.state.categoeries }
+                                data={ this.props.organicWorld?.data }
                                 horizontal={ true }
                                 scrollEnabled={ true }
                                 maxToRenderPerBatch={ 2 }
@@ -615,11 +656,26 @@ class Dashboard extends Component
                                 keyExtractor={ ( item, index ) => index.toString() }
                                 renderItem={ ( { item, index } ) =>
                                 {
+                                    console.log("item.Images",item.price)
+                                    var count = 14;
+                                    // let name= item.name;
+                                    //    var title =item.name.slice(0,count) +(item.name.length > count ? "..." : "");
                                     if ( index <= 3 )
                                     {
-                                        return <ProductView />
+                                        return <ProductView
+                                            name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
+                                            image={ item.img[0].img_path }
+                                            rating={ item.rating[0].meta_value }
+                                            price={ this.displayPrice(item.price) }
+                                            discount={this.discountInPercentage(item.variation[0])}
+                                            storeName={item.seller_name}
+                                            onPress={ () =>
+                                            {
+                                                this.props.navigation.navigate( 'ProductDetailScreen', {
+                                                    data: item
+                                                } )
+                                            } } />
                                     }
-
                                 } } />
                         </View>
 
@@ -631,7 +687,7 @@ class Dashboard extends Component
                         </View>
                         <View style={ { padding: 10, } }>
                             <FlatList
-                                data={ this.state.categoeries }
+                                data={ this.props.bestOffer?.data }
                                 horizontal={ true }
                                 maxToRenderPerBatch={ 11 }
                                 legacyImplementation={ false }
@@ -710,9 +766,9 @@ class Dashboard extends Component
 
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.props.homePageData?.data?.bestselling }
+                                data={ this.props.bestSelling?.data }
                                 numColumns={ 2 }
-                                extraData={this.props.homePageData?.data?.bestselling}
+                                extraData={this.props.bestSelling?.data}
                                 scrollEnabled={ false }
                                 maxToRenderPerBatch={ 2 }
                                 legacyImplementation={ false }
@@ -758,11 +814,11 @@ class Dashboard extends Component
 
                         <View style={ { padding: 10, justifyContent: "center", } }>
                             <FlatList
-                                data={ this.props.homePageData?.data?.recent}
+                                data={ this.props.recentProduct?.data}
                                 numColumns={ 2 }
                                 scrollEnabled={ false }
                                 maxToRenderPerBatch={ 2 }
-                                extraData={this.props.homePageData?.data?.recent}
+                                extraData={this.props.recentProduct?.data}
                                 legacyImplementation={ false }
                                 showsHorizontalScrollIndicator={ false }
                                 showsVerticalScrollIndicator={ false }
@@ -811,7 +867,11 @@ function mapStateToProps ( state, ownProps )
         getProducts: state.getProductByCatIdReducer.data,
         bestSelling: state.getBestSellingProductReducer.data,
         topRated: state.getTopRatedProductReducer.data,
+        featured:state.getFeaturedProductReducer.data,
+        onSale:state.getOnSaleProductReducer.data,
+        organicWorld:state.getOrganicWorldProductReducer.data,
         recentProduct:state.getRecentProductReducer.data,
+        bestOffer:state.getBestOfferReducer.data,
         homePageData:state.homePageReducer.data
     };
 
@@ -827,8 +887,12 @@ const mapDispatchToProps = dispatch =>
         getProduct: ( request ) => dispatch( actions.getProductListByCatId( request ) ),
         getBestSellingProduct: ( request ) => dispatch( actions.getBestSellingProductAction( request ) ),
         getTopRatedProduct: ( request ) => dispatch( actions.getTopRatedProductAction( request ) ),
+        getFeaturedProduct: ( request ) => dispatch( actions.getFeaturedProductAction( request ) ),
+        getOnSaleProduct: ( request ) => dispatch( actions.getOnSaleProductAction( request ) ),
+        getOrganicWorldProduct: ( request ) => dispatch( actions.getOrganicWorldProductAction( request ) ),
         getRecentProduct:(request)=>dispatch(actions.getRecentProductAction(request)),
         homePageCall:(request)=>dispatch(actions.homePageAction(request)),
+        bestOffersCall:(request)=>dispatch(actions.getBestOfferAction(request)),
         dispatch,
     };
 };

@@ -1,10 +1,16 @@
+import { getBestOfferAction } from "./getBestOfferAction";
 import { getBestSellingProductAction } from "./getBestSellingProductAction";
 import { getCategoeryListAction } from "./getCategoeryListaction";
+import { getFeaturedProductAction } from "./getFeaturedProductAction";
+import { getOnSaleProductAction } from "./getOnSaleProductAction";
+import { getOrganicWorldProductAction } from "./getOrganicWorldProductAction";
+import { getProductByIdAction } from "./getProductByIdAction";
 import {getProductListByCatId } from "./getProductListByCatId";
 import { getRecentProductAction } from "./getRecentProductAction";
 import { getTopRatedProductAction } from "./getTopRatedProductAction";
 import { homePageAction } from "./homePageAction";
 import { loginAction } from "./loginAction";
+import { logoutAction } from "./logoutAction";
 import { pincodeAction } from "./pincodeAction";
 import { productListAction } from "./productListAction";
 import { registerAction } from "./registrationAction";
@@ -20,6 +26,12 @@ getProductListByCatId:getProductListByCatId,
 getBestSellingProductAction:getBestSellingProductAction,
 getTopRatedProductAction:getTopRatedProductAction,
 getRecentProductAction:getRecentProductAction,
+getFeaturedProductAction:getFeaturedProductAction,
+getOnSaleProductAction:getOnSaleProductAction,
 homePageAction:homePageAction,
-pincodeAction:pincodeAction
+pincodeAction:pincodeAction,
+getOrganicWorldProductAction:getOrganicWorldProductAction,
+logoutAction:logoutAction,
+getProductByIdAction:getProductByIdAction,
+getBestOfferAction:getBestOfferAction
 }
