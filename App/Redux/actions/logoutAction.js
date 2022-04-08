@@ -30,7 +30,7 @@ export function logoutAction (request){
         else{
             console.log("====== Login ERR Responce ====== >  ", responce);
             dispatch({
-                type:LOGIN_EROOR,
+                type:LOG_OUT_ERROR,
                 payload:JSON.parse(responce).data
             });
         }

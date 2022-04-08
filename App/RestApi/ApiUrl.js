@@ -9,3 +9,4 @@ export const HOME_PAGE_API_URL= BASE_URL+"/home-product-list.php?apicall=homepag
 export const PINCODE_URL=BASE_URL+'/pincode.php';
 export const LOGOUT_URL=BASE_URL+'/logout.php';
 export const BEST_OFFERS_URL=BASE_URL+"/home-banners.php?apicall=banners";
+export const BLOGS_URL=BASE_URL+'/blogs.php?apicall=blog'

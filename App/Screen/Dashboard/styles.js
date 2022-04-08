@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Light_Green, ORENGE } from "../../Utils/colors";
+import { Black, Light_Green, ORENGE, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts";
 
@@ -80,6 +80,30 @@ const styles = StyleSheet.create({
         paddingVertical:5,
         textAlign:'right',
         paddingHorizontal:15
+    },
+    normalText:{
+        fontSize:14,
+        fontFamily:POPINS_SEMI_BOLD,
+        color:Black,
+        paddingVertical:3
+    },
+    bottomView:{
+        width:screen_width-40,
+        padding:5,
+        borderRadius:20,
+        backgroundColor:Light_Green,
+        marginHorizontal:'5%',
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        paddingHorizontal:"5%",
+        position:'absolute',
+        bottom:10
+    },
+    modalStyles:{
+        flex:1,
+        backgroundColor:White,
+        margin:-15
     }
     
 

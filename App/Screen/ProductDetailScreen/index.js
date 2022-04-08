@@ -19,34 +19,26 @@ class ProductDetailScreen extends Component
     {
         super( props );
         this.state = {
-            link: [
-                {
-                    "id": 0,
-                    "url": require( '../../../assets/product.png' )
-                },
-                {
-                    "id": 1,
-                    "url": require( '../../../assets/product.png' )
-                },
-                {
-                    "id": 2,
-                    "url": require( '../../../assets/product.png' )
-                }
 
-            ],
             currentIndex: 0,
             quentity: 1,
             isDiscription: false,
             isTerm: false,
             data: this.props.route.params?.data,
-            variation:this.props.route.params?.data?.variation, 
+            variation: this.props.route.params?.data?.variation,
             description: this.props.route.params?.data?.post_content,
-            price:this.props.route.params?.data?.variation[0]?._price,
+            price: this.props.route.params?.data?.variation[ 0 ]?._price,
             images: this.props.route.params?.data?.img,
-            raingCount:this.props.route.params?.data?.rating[0].meta_value ,
-            checked:0,
-            postalCode:''
-            
+            raingCount: this.props.route.params?.data?.rating[ 0 ].meta_value,
+            checked: 0,
+            postalCode: '',
+            isFav: false,
+            selectedVarinat:"",
+            cartSellPrice:this.props.route.params?.data?.variation[ 0 ]?._sale_price,
+            cartRegularPrice:this.props.route.params?.data?.variation[ 0 ]?._regular_price,
+            instock:this.props.route.params?.data?.variation[ 0 ]?._stock_status,
+            regPrice:this.props.route.params?.data?.variation[ 0 ]?._regular_price,
+            sPrice:this.props.route.params?.data?.variation[ 0 ]?._sale_price
         }
         this.viewabilityConfig = {
             viewAreaCoveragePercentThreshold: 50,
@@ -57,17 +49,20 @@ class ProductDetailScreen extends Component
     }
     componentDidMount ()
     {
-        AsyncStorage.getItem('PostalCode')
-        .then((res)=>{
-            console.log("postal",JSON.parse(res).code)
-            if(res !== null ){
-               this.setState({postalCode:JSON.parse(res).code});
-            }
-            else{
-                this.setState({postalCode:''});
-            }
-        })
-        .catch((err)=>{})
+        AsyncStorage.getItem( 'PostalCode' )
+            .then( ( res ) =>
+            {
+                console.log( "postal", JSON.parse( res ).code )
+                if ( res !== null )
+                {
+                    this.setState( { postalCode: JSON.parse( res ).code } );
+                }
+                else
+                {
+                    this.setState( { postalCode: '' } );
+                }
+            } )
+            .catch( ( err ) => { } )
 
         if ( this.state.description.includes( "<p>" ) )
         {
@@ -97,15 +92,212 @@ class ProductDetailScreen extends Component
         } );
 
     }
+    addToCart = async ( item ) =>
+    {
+        let alreadyAdded = false;
+        try
+        {
+            await AsyncStorage.getItem( 'AddToCart' )
+                .then( ( res ) =>
+                {
+                    console.log( "DashBoard Cart", res )
+                    let cart = JSON.parse( res );
+                    if ( res !== null && cart.length > 0 )
+                    {
+                        // this.setState( { cartItem: cart.length } )
+                        alreadyAdded = cart.filter( ( data ) =>
+                        {
+
+                            console.log( "DHDHDH", data );
+                            if ( data.ID === item.ID )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        } );
+                    }
+                    else
+                    {
+                        alreadyAdded=false;
+                    }
+                } )
+                .catch( ( error ) =>
+                {
+                    console.log( "Error", error )
+                    // this.setState( { cartData: [] } )
+                } )
+
+                console.log("Alreday Added",alreadyAdded)
+            if ( alreadyAdded === false )
+            {
+                let cartData = [];
+              
+
+                let finalItem ={
+                    ...item,
+                    selectedVariation:this.state.selectedVarinat,
+                    cartPrice:this.state.price * this.state.quentity,
+                    cartRegularPrice:this.state.cartRegularPrice,
+                    cartQuentity:this.state.quentity,
+                    regPrice:this.state.regPrice,
+                    sPrice:this.state.sPrice
+                };
+                cartData.push( finalItem );
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( cartData ) )
+                    .then( ( res ) =>
+                    {
+                        this.props.navigation.navigate('Cart');
+                        console.log( "Sucessfully Added" );
+                    } )
+                    .catch( ( error ) =>
+                    {
+                        console.log( "error", error );
+                    } )
+            }
+            else
+            {
+                alert( "Item Already added" )
+            }
+        }
+        catch ( error )
+        {
+
+        }
+    }
+    removeItem = async ( id ) =>
+    {
+        await AsyncStorage.getItem( 'addToFav' )
+            .then( ( res ) =>
+            {
+                console.log( 'Fav DATA', res )
+
+                if ( res !== null )
+                {
+                    let data = JSON.parse( res )
+                    let remove = data.filter( ( data ) =>
+                    {
+                        return data.ID !== id
+                    } );
+                     AsyncStorage.setItem( 'addToFav', JSON.stringify( remove ) )
+                        .then( ( res ) =>
+                        {
+                            this.setState( { isFav: false } )
+                            // this.setState( { favData: remove } )
+                        } )
+                        .catch( ( error ) =>
+                        {
+                            console.log( "Error", error )
+
+                        } )
+
+                }
+                else
+                {
+                    // this.setState( {
+                    //     favData: [],
+                    //     // visible: false
+                    // } )
+                }
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Error", error )
+                this.setState( { favData: [] } )
+            } )
+
+
+    }
+
+    addToFav = async ( item ) =>
+    {
+        let alreadyAdded = false;
+        try
+        {
+            await AsyncStorage.getItem( 'addToFav' )
+                .then( ( res ) =>
+                {
+                    console.log( "DashBoard Cart", res )
+                    let cart = JSON.parse( res );
+                    if ( res !== null && cart.length > 0 )
+                    {
+                        this.setState( { cartItem: cart.length } )
+                        alreadyAdded = cart.filter( ( data ) =>
+                        {
+
+                            console.log( "DHDHDH", data );
+                            if ( data.ID === item.ID )
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        } );
+                    }
+                    else
+                    {
+
+                    }
+                } )
+                .catch( ( error ) =>
+                {
+                    console.log( "Error", error )
+                    this.setState( { cartData: [] } )
+                } )
+            if ( alreadyAdded === false )
+            {
+                let cartData = [];
+                cartData.push( item );
+                await AsyncStorage.setItem( 'addToFav', JSON.stringify( cartData ) )
+                    .then( ( res ) =>
+                    {
+                        this.setState( { isFav: true } )
+                        console.log( "Sucessfully Added" );
+                    } )
+                    .catch( ( error ) =>
+                    {
+                        this.setState( { isFav: false } )
+                        console.log( "error", error );
+                    } )
+            }
+            else
+            {
+                this.setState( { isFav: true } )
+                alert( "Item Already added" )
+            }
+        }
+        catch ( error )
+        {
+
+        }
+    }
+
+    removeTags = ( str ) =>
+    {
+
+        if ( ( str === null ) || ( str === '' ) )
+            return '';
+        else
+            str = str.toString();
+
+        // Regular expression to identify HTML tags in 
+        // the input string. Replacing the identified 
+        // HTML tag with a null string.
+        return str.replace( /(<([^>]+)>)/ig, '' );
+    }
     renderImages = ( item, index ) =>
     {
         return (
             <View style={ styles.ItemContainer }>
                 <Image
                     style={ styles.ImagStyle }
-                    source={ { uri: item.img_path } } 
-                    // source={item.url}
-                    />
+                    source={ { uri: item.img_path } }
+                // source={item.url}
+                />
 
 
             </View>
@@ -170,9 +362,25 @@ class ProductDetailScreen extends Component
                             </View>
                             <View style={ styles.bottomContainer }>
                                 <Text style={ styles.titleText }>{ this.state.data.post_title }</Text>
-                                <Image
-                                    style={ styles.iconStyle }
-                                    source={ require( '../../../assets/fav.png' ) } />
+                                { this.state.isFav === false ?
+                                    <TouchableOpacity onPress={ () =>
+                                    {
+                                        this.addToFav( this.state.data )
+                                    } }>
+                                        <Image
+                                            style={ styles.iconStyle }
+                                            source={ require( '../../../assets/fav.png' ) } />
+                                    </TouchableOpacity> :
+                                    <TouchableOpacity
+                                        onPress={ () =>
+                                        {
+                                            this.removeItem( this.state.data.ID )
+                                        } }>
+                                        <Image
+                                            style={ styles.iconStyle }
+                                            source={ require( '../../../assets/fill_fav.png' ) } />
+                                    </TouchableOpacity>
+                                }
                             </View>
 
                         </View>
@@ -208,52 +416,70 @@ class ProductDetailScreen extends Component
                                 </View>
 
                                 <View style={ { padding: 8 } }>
-                                    <Text style={ [ styles.quentityText, { textAlign: 'right',fontSize:16, paddingHorizontal:5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
+                                    <Text style={ [ styles.quentityText, { textAlign: 'right', fontSize: 16, paddingHorizontal: 5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
                                     <Text style={ [ styles.quentityText, { color: Light_Green, textAlign: 'right' } ] }>Avaibility : <Text style={ [ styles.quentityText, {
                                         color:
                                             Black, fontFamily: POPINS_REGULAR,
-                                    } ] }> 20 in Stock</Text></Text>
+                                    } ] }> {this.state.instock}</Text></Text>
                                 </View>
 
                             </View>
-                            <View style={ [styles.container,{marginHorizontal:15,padding:8}] } >
-                                            <Text style={ [ styles.quentityText ] }>Weight</Text>
-                                            <View style={{flexDirection:'row',marginVertical:5}}>
-                                            </View>
-                                            <View style={{flexDirection:'row'}}>
-                                      
+                            <View style={ [ styles.container, { marginHorizontal: 15, padding: 8 } ] } >
+                                <Text style={ [ styles.quentityText ] }>Weight</Text>
+                                <View style={ { flexDirection: 'row', marginVertical: 5 } }>
+                                </View>
+                                <View style={ { flexDirection: 'row' } }>
+
+                                    {
+                                        // console.log("this.state.variation",this.state.variation)
+                                        this.state.variation.map( ( item, index ) =>
                                         {
-                                                // console.log("this.state.variation",this.state.variation)
-                                                    this.state.variation.map((item ,index)=>{
-                                                      let active=true;
-                                                        return(
-                                                        <View key={index}>
-                                                            {this.state.checked === index ?
-                                                               <TouchableOpacity 
-                                                               onPress={()=>{
-                                                                this.setState({price:item._price})
-                                                               }}
-                                                               style={[styles.attributesView,{ backgroundColor:"#E5F3EA"}]}>
-                                                                    <Image  style={{height:10,width:10,resizeMode:'contain',alignSelf:'center'}} source={require("../../../assets/selected.png")}/>
-                                                               <Text style={[styles.smallText,{color:Black,fontSize:9,paddingHorizontal:3,paddingVertical:3,textAlign:'center'}]}>{item.attribute_pa_weight}</Text>
-                                                           </TouchableOpacity>
-                                                           :
-                                                           <TouchableOpacity 
-                                                           onPress={()=>{
-                                                                  this.setState({checked:index,
-                                                                    price:item._price})
-                                                           }}
-                                                           style={[styles.attributesView,{ backgroundColor:White}]}>
-                                                                <Image style={{height:10,width:10,resizeMode:'contain',alignSelf:'center'}} source={require("../../../assets/unselected.png")}/>
-                                                           <Text style={[styles.smallText,{color:Black,fontSize:9,paddingHorizontal:3,paddingVertical:3,textAlign:'center'}]}>{item.attribute_pa_weight}</Text>
-                                                       </TouchableOpacity>}
-                                                        </View>
-                                                        )
-                                                    })
-                                                
-                                        }
-                                        </View>
-                                          </View>
+                                            let active = true;
+                                            return (
+                                                <View key={ index }>
+                                                    {this.state.checked === index ?
+                                                        <TouchableOpacity
+                                                            onPress={ () =>
+                                                            {
+                                                                this.setState( { price: item._price,
+                                                                selectedVarinat: item.attribute_pa_weight,
+                                                                cartSellPrice:item._sale_price,
+                                                                cartRegularPrice:item._regular_price,
+                                                                instock:item._stock_status,
+                                                                regPrice:item._regular_price,
+                                                                sPrice:item._sale_price
+                                                     } )    
+                                                            } }
+                                                            style={ [ styles.attributesView, { backgroundColor: "#E5F3EA" } ] }>
+                                                            <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/selected.png" ) } />
+                                                            <Text style={ [ styles.smallText, { color: Black, fontSize: 9, paddingHorizontal: 3, paddingVertical: 3, textAlign: 'center' } ] }>{ item.attribute_pa_weight }</Text>
+                                                        </TouchableOpacity>
+                                                        :
+                                                        <TouchableOpacity
+                                                            onPress={ () =>
+                                                            {
+                                                                this.setState( {
+                                                                    checked: index,
+                                                                    price: item._price,
+                                                                    selectedVarinat:item.attribute_pa_weight ,
+                                                                    cartSellPrice:item._sale_price,
+                                                                cartRegularPrice:item._regular_price,
+                                                                instock:item._stock_status,
+                                                                regPrice:item._regular_price,
+                                                                sPrice:item._sale_price
+                                                                } )
+                                                            } }
+                                                            style={ [ styles.attributesView, { backgroundColor: White } ] }>
+                                                            <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/unselected.png" ) } />
+                                                            <Text style={ [ styles.smallText, { color: Black, fontSize: 9, paddingHorizontal: 3, paddingVertical: 3, textAlign: 'center' } ] }>{ item.attribute_pa_weight }</Text>
+                                                        </TouchableOpacity> }
+                                                </View>
+                                            )
+                                        } )
+
+                                    }
+                                </View>
+                            </View>
                             {/* {
                                 this.state.data.variation.map( ( item, index ) =>
                                 {
@@ -267,8 +493,10 @@ class ProductDetailScreen extends Component
                                     );
                                 } )
                             } */}
-                            <View style={ [styles.container,{marginHorizontal:10
-                                ,}] }>
+                            <View style={ [ styles.container, {
+                                marginHorizontal: 10
+                                ,
+                            } ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Description</Text>
@@ -287,18 +515,18 @@ class ProductDetailScreen extends Component
 
                                 {
                                     this.state.isDiscription === true ?
-                                        <View style={{ marginVertical:10}}>
-                                            <Text style={ styles.smallText }>{this.state.description }</Text>
+                                        <View style={ { marginVertical: 10 } }>
+                                            <Text style={ styles.smallText }>{ this.removeTags( this.state.description ) }</Text>
                                         </View>
                                         : null
                                 }
                             </View>
 
-                            <View style={ [styles.container,{marginHorizontal:15,}] }>
-                                <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> {this.state.postalCode}</Text></Text>
+                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
+                                <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> { this.state.postalCode }</Text></Text>
                             </View>
 
-                            <View style={ [styles.container,{marginHorizontal:15,}] }>
+                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>More Offers</Text>
@@ -325,7 +553,7 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
 :null
 } */}
                             </View>
-                            <View style={ [ styles.container, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 10 , marginHorizontal:16} ] }>
+                            <View style={ [ styles.container, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 10, marginHorizontal: 16 } ] }>
                                 <View>
                                     <Text style={ [ styles.quentityText, { marginVertical: 3, } ] }>Review</Text>
                                     <Rating
@@ -341,17 +569,17 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     />
                                 </View>
                                 <View >
-                                    <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{this.state.raingCount} </Text>
+                                    <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{ this.state.raingCount } </Text>
                                     <Text style={ [ styles.smallText, { paddingVertical: 3, paddingHorizontal: 3 } ] }>Over all</Text>
                                 </View>
                             </View>
-                            <View style={ [styles.container,{marginHorizontal:15,}] }>
+                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Term & Condition</Text>
                                     <TouchableOpacity onPress={ () =>
                                     {
-                                        this.setState( { isTerm: !this.state.isTerm } )
+                                        this.props.navigation.navigate();
                                     } }>{
                                             this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
                                                 : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
@@ -372,7 +600,7 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                        :null
                        } */}
                             </View>
-                            <View style={ [styles.container,{marginHorizontal:15,}] }>
+                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
@@ -402,7 +630,7 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                             <View style={ [ styles.rowView, { justifyContent: 'space-evenly', paddingVertical: "10%" } ] }>
                                 <FilledButton
                                     style={ { width: screen_width / 2 - 30 } }
-                                    onPress={ () => { } }
+                                    onPress={ () => { this.addToCart( this.state.data ) } }
                                     title={ "Add to Cart " } />
                                 <FilledButton
                                     style={ { width: screen_width / 2 - 30 } }

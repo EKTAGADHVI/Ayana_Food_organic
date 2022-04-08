@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from 'react';
 import { SafeAreaView, View, Image, Text, TouchableOpacity } from 'react-native';
 import BasicHeader from '../../Components/BasicHeader';
@@ -9,6 +10,9 @@ class Profile extends Component
     constructor ( props )
     {
         super( props );
+        this.state={
+            userData:[]
+        }
     }
 
     renderProfileMenu = ( menu ) =>
@@ -26,6 +30,18 @@ class Profile extends Component
                 </View>
             </TouchableOpacity>
         );
+    }
+    async componentDidMount(){
+        await AsyncStorage.getItem('UserData')
+        .then((res)=>{
+            console.log("UserRes",res)
+            if(res !== null){
+                this.setState({userData:JSON.parse(res).data})
+            }
+            else{
+                this.setState({userData:[]})
+            }
+        }).catch((error)=>{})
     }
     render ()
     {

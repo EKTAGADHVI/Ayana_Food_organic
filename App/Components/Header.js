@@ -137,7 +137,12 @@ const Header = ( props ) =>
                         <View>
                             <View style={ { marginVertical: "15%", } }>
                                 <MenuItems source={ require( '../../assets/home.png' ) }
-                                    menu={ "Home" } />
+                                    menu={ "Home" } 
+                                    OnMenuPress={ () =>
+                                        {
+                                            setVisible( false )
+                                            props.navigation.navigate( 'Home' )
+                                        } }/>
                                 <MenuItems source={ require( '../../assets/info.png' ) }
                                     menu={ "About Us" }
                                     OnMenuPress={ () =>

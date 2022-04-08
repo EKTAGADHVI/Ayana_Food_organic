@@ -3,7 +3,9 @@ import { combineReducers } from "redux";
 import { categoeryListReducer } from "./categoeryListReducer";
 import { getBestOfferReducer } from "./getBestOfferReducer";
 import { getBestSellingProductReducer } from "./getBestSellingProductReducer";
+import { getBlogsReducer } from "./getBlogsReducer";
 import { getFeaturedProductReducer } from "./getFeaturedProductReducer";
+import { getKeywordProductReducer } from "./getKeywordProductReducer";
 import { getOnSaleProductReducer } from "./getOnSaleProductReducer";
 import { getOrganicWorldProductReducer } from "./getOrganicWorldProductReducer";
 import { getProductByCatIdReducer } from "./getProductByCatIdReducer";
@@ -36,4 +38,6 @@ export default  combineReducers({
     logoutReducer:logoutReducer,
     getProductByIdReducer:getProductByIdReducer,
     getBestOfferReducer:getBestOfferReducer,
+    getBlogsReducer:getBlogsReducer,
+    getKeywordProductReducer:getKeywordProductReducer
     });

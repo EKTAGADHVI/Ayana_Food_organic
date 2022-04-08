@@ -1,7 +1,9 @@
 import { getBestOfferAction } from "./getBestOfferAction";
 import { getBestSellingProductAction } from "./getBestSellingProductAction";
+import { getBlogsAction } from "./getBlogsAction";
 import { getCategoeryListAction } from "./getCategoeryListaction";
 import { getFeaturedProductAction } from "./getFeaturedProductAction";
+import { getKeywordProduct } from "./getKeywordProduct";
 import { getOnSaleProductAction } from "./getOnSaleProductAction";
 import { getOrganicWorldProductAction } from "./getOrganicWorldProductAction";
 import { getProductByIdAction } from "./getProductByIdAction";
@@ -33,5 +35,7 @@ pincodeAction:pincodeAction,
 getOrganicWorldProductAction:getOrganicWorldProductAction,
 logoutAction:logoutAction,
 getProductByIdAction:getProductByIdAction,
-getBestOfferAction:getBestOfferAction
+getBestOfferAction:getBestOfferAction,
+getBlogsAction:getBlogsAction,
+getKeywordProduct:getKeywordProduct,
 }

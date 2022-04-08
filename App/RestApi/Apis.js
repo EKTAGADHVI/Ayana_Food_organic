@@ -1,6 +1,6 @@
 
 
-import { BEST_OFFERS_URL, CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, Registration_URL } from './ApiUrl';
+import { BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, Registration_URL } from './ApiUrl';
 import instance from './index'
 export default class Apis
 {
@@ -87,6 +87,15 @@ export default class Apis
     static getBestOfferCall ( request )
     {
         return instance.post( BEST_OFFERS_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }  
+
+    static getBlogCall ( request )
+    {
+        return instance.get( BLOGS_URL, request, {
             headers: { "content-type": "application/json" }
         } );
 

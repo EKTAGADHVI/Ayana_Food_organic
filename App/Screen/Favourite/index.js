@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from 'react';
 import { FlatList, Image, SafeAreaView, Text, View, TouchableOpacity } from 'react-native';
 import BasicHeader from '../../Components/BasicHeader';
@@ -27,12 +28,71 @@ class Favourite extends Component
                 }
 
             ],
-            quentity: 0
+            quentity: 0,
+            favData:[]
         }
     }
 
+    async componentDidMount(){
+        await AsyncStorage.getItem( 'addToFav' )
+        .then( ( res ) =>
+        {
+            console.log('Fav DATA',res)
+       
+            if ( res !== null )
+            {
+                this.setState( { favData: JSON.parse( res ),
+                visible:false } )
+              
+            }
+            else
+            {
+                this.setState( { favData: [],
+                visible:false } )
+            }
+        } )
+        .catch( ( error ) =>
+        {
+            console.log( "Error", error )
+            this.setState( { favData: [] } )
+        } )
+    }
+    displayPrice = ( data ) =>
+    {
+        let price = "";
+        if ( data.length > 1 )
+        {
+            price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+        }
+        else
+        {
+            price = data[ 0 ].meta_value
+        }
+        return price;
+    }
+
+    removeItem = async ( id ) =>
+    {
+        let remove = this.state.favData.filter( ( data ) =>
+        {
+            return data.ID !== id
+        } );
+        await AsyncStorage.setItem( 'addToFav', JSON.stringify( remove ) )
+            .then( ( res ) =>
+            {
+                
+                this.setState( { favData: remove } )
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Error", error )
+               
+            } )
+
+    }
     renderItem = ( item, index ) =>
     {
+        console.log("Image",item.img[0].img_path);
         return (
             <View style={ styles.ItemView }>
                 
@@ -46,7 +106,10 @@ class Favourite extends Component
                         padding:3,
                         borderRadius:9,
                         justifyContent:"center"
-                    } }>
+                    } } 
+                    onPress={()=>{
+                        this.removeItem( item.ID )
+                    }}>
                         <Image
                             style={ [ styles.iconStyle2,{tintColor:White,} ] }
 
@@ -54,13 +117,13 @@ class Favourite extends Component
                     </TouchableOpacity>
                     <Image
                         style={ styles.ImageStyle }
-                        source={ require( '../../../assets/product.png' ) } />
+                        source={ {uri:item.img[0].img_path}} />
                     </View>
         
                     <View style={ styles.middleContainer }>
-                        <Text style={ styles.normalText }>Product Name</Text>
-                        <Text style={ styles.smallText }>store name</Text>
-                        <Text style={ [styles.normalText,{fontSize:12}] }>Rs. 25000</Text>
+                        <Text style={ styles.normalText }>{ item.post_title.slice( 0, 18 ) + ( item.post_title.length > 20 ? "..." : "" ) }</Text>
+                        <Text style={ styles.smallText }>{item.seller_name}</Text>
+                        <Text style={ [styles.normalText,{fontSize:12}] }>Rs. {this.displayPrice( item.price )}</Text>
                     </View>
                 </View>
                 <View style={ styles.endContainer }>
@@ -89,7 +152,8 @@ class Favourite extends Component
                         this.state.link.length > 0 ?
                             <View style={ { height: screen_height / 1.2 - 30, } }>
                                 <FlatList
-                                    data={ this.state.link }
+                                    data={ this.state.favData }
+                                    extraData={this.state.favData}
                                     scrollEnabled={ true }
                                     legacyImplementation={ false }
                                     showsHorizontalScrollIndicator={ false }

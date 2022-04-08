@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ImageBackground, ScrollView, View, Text, Pressable, SafeAreaView, KeyboardAvoidingView } from 'react-native';
+import { ImageBackground, ScrollView, View, Text, Pressable, SafeAreaView, KeyboardAvoidingView, Linking } from 'react-native';
 import { connect } from 'react-redux';
 import FilledButton from '../../Components/Filledbuton';
 import Input from '../../Components/Input';
@@ -246,8 +246,9 @@ class LoginScreen extends Component
                                 <View style={ { flexDirection: 'row', justifyContent: 'center', marginVertical: 5 } }>
                                     <Text style={ [ styles.regularText, { color: Black, textAlign: 'center' } ] }> Don't have account ? </Text>
                                     <Pressable onPress={ () =>
-                                    {
-                                        this.props.navigation.navigate( 'RegistrationScreen' )
+
+                                    {   Linking.openURL('https://ayanafoodorganic.com/my-account/?login=true&back=home&page=1')
+                                        // this.props.navigation.navigate( 'RegistrationScreen' )
                                     } }>
                                         <Text style={ [ styles.regularText, { color: Light_Green, textAlign: 'center' } ] }> Sign Up</Text>
                                     </Pressable>

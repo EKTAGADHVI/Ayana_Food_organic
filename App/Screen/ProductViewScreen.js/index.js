@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from 'react';
 import { FlatList, SafeAreaView, View,Image,Text } from 'react-native';
 import { connect } from 'react-redux';
@@ -44,6 +45,62 @@ class ProductViewScreen extends Component
         }, 2500 )
 
     }
+    addToCart = async(item) =>{
+        let  alreadyAdded=false;
+        try{
+            await AsyncStorage.getItem('AddToCart')
+            .then((res)=>{
+                console.log("DashBoard Cart",res)
+                let cart= JSON.parse(res);
+                if(res !== null && cart.length >0 ){
+                    this.setState({cartItem:cart.length})
+              alreadyAdded = cart.filter((data)=>{
+
+                console.log("DHDHDH",data);
+                   if( data.ID === item.ID){
+                       return true;
+                   }
+                   else{
+                       return false;
+                   }
+                });
+                }
+                else{
+                  
+                }
+            })
+            .catch((error)=>{
+                console.log("Error",error)
+                this.setState({cartData:[]})
+            })
+           if(alreadyAdded === false){
+            let cartData=[];
+            let finalItem ={
+                ...item,
+                selectedVariation:item.variation[ 0 ]?.attribute_pa_weight,
+                cartPrice:item.variation[ 0 ]?._price,
+                cartRegularPrice:item.variation[ 0 ]?._regular_price,
+                cartQuentity:1
+            };
+            cartData.push( finalItem );
+            // cartData.push(item);
+            await AsyncStorage.setItem('AddToCart',JSON.stringify(cartData))
+            .then((res)=>{
+
+                console.log("Sucessfully Added");
+            })
+            .catch((error)=>{
+                console.log("error",error);
+            })
+           }
+           else{
+               alert("Item Already added")
+           }
+        }
+        catch(error){
+
+        }
+    }
 timeOut =() =>{
     setInterval( () =>
     {
@@ -67,7 +124,7 @@ displayPrice = (data) =>{
     return price;
 }
 discountInPercentage=(data)=>{
-    console.log("Prioce",data)
+
     let discountPrice = data._regular_price -data._sale_price;
     let price =(discountPrice/data._regular_price)*100;
     return price.toFixed(1) + "%";
@@ -125,6 +182,9 @@ discountInPercentage=(data)=>{
                                      data: item
                                  } )
                              } }
+                             onAdd={()=>{
+                                this.addToCart(item);
+                            }}
                          />
 
 

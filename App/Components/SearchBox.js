@@ -11,8 +11,12 @@ const SearchBox = ( props ) =>
                 style={ styles.iconStyle }
                 source={ require( '../../assets/search.png' ) } />
             <TextInput
+                editable={props.editable}
+                onEndEditing={props.onEndEditing}
                 placeholderTextColor={ Text_Gray }
                 style={ styles.input }
+                onFocus={props.onFocus}
+                autoFocus={props.autoFocus}
                 placeholder={ props.placeholder }
                 value={ props.value }
                 onChangeText={ props.onChangeText }
