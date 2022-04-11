@@ -14,9 +14,24 @@ class BlogDetails extends Component
     {
         super( props )
         this.state = {
-            comment: ''
+            comment: '',
+            data:this.props.route.params.data
         }
     }
+    removeTags = ( str ) =>
+    {
+       
+        if ( ( str === null ) || ( str === '' ) )
+            return '';
+        else
+            str = str.toString();
+
+        // Regular expression to identify HTML tags in 
+        // the input string. Replacing the identified 
+        // HTML tag with a null string.
+        return str.replace( /(<([^>]+)>)/ig, '' );
+    }
+
     render ()
     {  const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
         return (

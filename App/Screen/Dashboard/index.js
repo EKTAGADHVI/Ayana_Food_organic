@@ -27,7 +27,7 @@ import styles from './styles';
 import ProgressLoader from 'rn-progress-loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
-
+import { EventRegister } from 'react-native-event-listeners';
 let CurrentSlide = 0;
 let IntervalTime = 4000;
 
@@ -184,7 +184,7 @@ class Dashboard extends Component
         this.setState( { visible: true } );
 
         console.log( "Did Mount Called'" )
-
+        EventRegister.emit('total-cart-item')
         // this._stopAutoPlay();
         this._startAutoPlay();
         this.props.getCategoeryList()
@@ -221,6 +221,8 @@ class Dashboard extends Component
                         cartViewVisible: true,
                         cartItem: cart.length
                     } )
+                    // EventRegister.emit('total-cart-item',cart.length)
+                   
                 }
                 else
                 {
@@ -275,6 +277,11 @@ class Dashboard extends Component
         );
     }
 
+    totalCartItems= EventRegister.addEventListener('total-cart-item', (data)=>{
+        this.setState({
+            cartItem:data
+        })
+    })
 
     addToCart = async ( item ) =>
     {
@@ -289,6 +296,7 @@ class Dashboard extends Component
                     if ( res !== null && cart.length > 0 )
                     {
                         this.setState( { cartItem: cart.length } )
+                        EventRegister.emit('total-cart-item',cart.length)
                         alreadyAdded = cart.filter( ( data ) =>
                         {
 
@@ -321,14 +329,16 @@ class Dashboard extends Component
                     selectedVariation: item.variation[ 0 ]?.attribute_pa_weight,
                     cartPrice: item.variation[ 0 ]?._price,
                     cartRegularPrice: item.variation[ 0 ]?._regular_price,
-                    cartQuentity: 1
+                    cartQuentity: 1,
+                    regPrice:item.variation[ 0 ]?._regular_price,
+                    sPrice:item.variation[ 0 ]?._price
                 };
                 cartData.push( finalItem );
                 // cartData.push(item);
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( cartData ) )
                     .then( ( res ) =>
                     {
-
+                        EventRegister.emit('Add-to-cart')
                         console.log( "Sucessfully Added" );
                     } )
                     .catch( ( error ) =>

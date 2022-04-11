@@ -8,6 +8,7 @@ import NetInfo from "@react-native-community/netinfo";
 const instance = axios.create({
  
   baseURL: 'https://ayanafoodorganic.com/api',
+
 });
 
 export default instance;

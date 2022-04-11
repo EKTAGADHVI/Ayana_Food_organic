@@ -33,7 +33,7 @@ class ProductDetailScreen extends Component
             checked: 0,
             postalCode: '',
             isFav: false,
-            selectedVarinat:"",
+            selectedVarinat:this.props.route.params?.data?.variation[ 0 ]?.attribute_pa_weight,
             cartSellPrice:this.props.route.params?.data?.variation[ 0 ]?._sale_price,
             cartRegularPrice:this.props.route.params?.data?.variation[ 0 ]?._regular_price,
             instock:this.props.route.params?.data?.variation[ 0 ]?._stock_status,

@@ -42,7 +42,7 @@ class Blog extends Component
         // this.props.blogRequest();
     }
 
-    componentDidMount(){
+   async componentDidMount(){
         try{
             this.setState({visible:true})
             Apis.getBlogCall()
@@ -124,7 +124,9 @@ class Blog extends Component
                     <FilledButton title="Read more"
                         style={ { borderRadious: 20,paddingVertical:0 } }
                         textStyle={ { fontSize: 10, paddingVertical: 5 , paddingHorizontal:15} }
-                        onPress={ () => {this.props.navigation.navigate('BlogDetails') } } />
+                        onPress={ () => {this.props.navigation.navigate('BlogDetails',{
+                            data:item,
+                        }) } } />
 
                         <TouchableOpacity style={styles.btnStyle}>
                             <View style={styles.rowView}>
@@ -143,6 +145,12 @@ class Blog extends Component
         return (
             <View style={ styles.mainLayout }>
                 <SafeAreaView>
+                <ProgressLoader
+                            visible={ this.state.visible }
+                            isModal={ true }
+                            isHUD={true}
+                            hudColor={White}
+                            color={ Light_Green } />
                     <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ 'Blog' } />
                     <SearchBox
                         style={ styles.searchBox }
@@ -157,12 +165,7 @@ class Blog extends Component
                         placeholder={ "Search here" } />
                         
                     <View>
-                    <ProgressLoader
-                            visible={ this.state.visible }
-                            isModal={ true }
-                            isHUD={true}
-                            hudColor={White}
-                            color={ Light_Green } />
+                  
                         <FlatList
                             data={ this.state.data }
                             extraData={this.state.data}

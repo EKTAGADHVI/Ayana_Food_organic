@@ -7,7 +7,10 @@ import { Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_height } from '../../Utils/constant';
 import { POPINS_REGULAR } from '../../Utils/fonts';
 import styles from './styles';
+import { useIsFocused } from '@react-navigation/native';
+import { EventRegister } from 'react-native-event-listeners';
 let final=0
+
 class Cart extends Component
 {
     constructor ( props )
@@ -36,10 +39,34 @@ class Cart extends Component
             visible:false,
             variation:''
         }
+        
     }
+ listener = EventRegister.addEventListener('Add-to-cart', async() => {
+    await AsyncStorage.getItem( 'AddToCart' )
+    .then( ( res ) =>
+    {
+        console.log('CartItem',res);
+        if ( res !== null )
+        {
+            this.setState( { cartData: JSON.parse( res ),
+            visible:false } )
+            this.callFinalCheckOut();
+        }
+        else
+        {
+            this.setState( { cartData: [],
+            visible:false } )
+        }
+    } )
+    .catch( ( error ) =>
+    {
+        console.log( "Error", error )
+        this.setState( { cartData: [] } )
+    } )
+    })
     async componentDidMount ()
     {
-       
+      
         setTimeout( async () =>
         {
             this.setState( {
@@ -68,6 +95,9 @@ class Cart extends Component
         }, 1000 )
 
 
+    }
+    componentWillUnmount(){
+       
     }
 
     removeItem = async ( id ) =>

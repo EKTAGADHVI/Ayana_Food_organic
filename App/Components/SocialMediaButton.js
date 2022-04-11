@@ -7,15 +7,16 @@ const SocialMediadButton = ( props ) =>
 {
 
     return (
-        <View style={[styles.btnContainer,{ backgroundColor: props.color,}]}>
+        <TouchableOpacity style={[styles.btnContainer,{ backgroundColor: props.color,}]}
+        onPress={ props.onPress }>
             <Image
             style={styles.iconStyle}
             source={props.source}/>
-            <TouchableOpacity style={ styles.btnStyle }
-                onPress={ props.onPress }>
+            <View style={ styles.btnStyle }
+               >
                 <Text style={ styles.btnText }>{ props.title }</Text>
-            </TouchableOpacity>
-        </View>
+            </View>
+        </TouchableOpacity>
     );
 }
 

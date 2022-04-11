@@ -16,7 +16,28 @@ import { ToastMessage } from '../../Components/ToastMessage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Apis from '../../RestApi/Apis';
 import { LOGIN_EROOR, LOGIN_SUCESS } from '../../Redux/actionTypes';
-class LoginScreen extends Component
+import { Settings, LoginManager ,Profile,AccessToken,GraphRequest} from 'react-native-fbsdk-next'
+import {
+    GoogleSignin,
+    GoogleSigninButton,
+    statusCodes,
+  } from '@react-native-google-signin/google-signin';
+  
+  GoogleSignin.configure({
+    // scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
+    webClientId: '565933835520-7337294km3iarrrmdpcg86j4on30akru.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+    offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    // hostedDomain: '', // specifies a hosted domain restriction
+    // forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+    // accountName: '', // [Android] specifies an account name on the device that should be used
+    // iosClientId: '', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+    // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
+    // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+    // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+  });
+  Settings.setAppID('280246270981141');
+  Settings.initializeSDK();
+  class LoginScreen extends Component
 {
     constructor ( props )
     {
@@ -26,10 +47,43 @@ class LoginScreen extends Component
             password: '',
             showPassword: true,
             openKeyboard: false,
-            visible: false
+            visible: false,
+            userDetail:null
         }
     }
 
+
+    onPressFB=()=>{
+        LoginManager.logInWithPermissions(["public_profile"]).then(
+            function(result) {
+              if (result.isCancelled) {
+                console.log("Login cancelled");
+              } else {
+                console.log(
+                  "Login success with permissions: " +
+                    result.grantedPermissions.toString()
+                );
+
+                const currentProfile = Profile.getCurrentProfile().then(
+                    function(currentProfile) {
+                      if (currentProfile) {
+                        console.log("The current logged user is: " +
+                          currentProfile.name
+                          + ". His profile id is: " +
+                          currentProfile.userID
+                        );
+                      }
+                    }
+                  );
+              }
+            },
+            function(error) {
+              console.log("Login fail with error: " + error);
+            }
+          );
+            }
+        
+    
     onLoginPress = () =>
     {
         let reg = ( /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/ );
@@ -146,6 +200,25 @@ class LoginScreen extends Component
         .catch((err)=>{})
         // this.props.navigation.navigate( 'Home' );
     }
+    signIn = async () => {
+        try {
+          await GoogleSignin.hasPlayServices();
+          const userInfo = await GoogleSignin.signIn();
+          this.setState({ userDetail:userInfo });
+          console.log("userDetails", userInfo)
+        } catch (error) {
+            console.log(error)
+          if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            // user cancelled the login flow
+          } else if (error.code === statusCodes.IN_PROGRESS) {
+            // operation (e.g. sign in) is in progress already
+          } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+            // play services not available or outdated
+          } else {
+            // some other error happened
+          }
+        }
+      };
     componentDidMount(){
         // setTimeout( () =>
         // {
@@ -257,9 +330,11 @@ class LoginScreen extends Component
                                 <SocialMediadButton
                                     color={ Light_Blue }
                                     source={ require( '../../../assets/google.png' ) }
-                                    title={ "Continue with Google " } />
+                                    title={ "Continue with Google " } 
+                                    onPress={()=>{this.signIn()}}/>
                                 <SocialMediadButton
                                     color={ Dark_Blue }
+                                    onPress={()=>{this.onPressFB()}}
                                     source={ require( '../../../assets/facebook.png' ) }
                                     title={ "Continue with FaceBook  " } />
                                 <Pressable style={ { paddingBottom: "20%" } } onPress={ () => {this.next_navigation() } }>

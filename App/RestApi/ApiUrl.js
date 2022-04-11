@@ -10,3 +10,4 @@ export const PINCODE_URL=BASE_URL+'/pincode.php';
 export const LOGOUT_URL=BASE_URL+'/logout.php';
 export const BEST_OFFERS_URL=BASE_URL+"/home-banners.php?apicall=banners";
 export const BLOGS_URL=BASE_URL+'/blogs.php?apicall=blog'
+export const PRODUCT_FILTER_URL=BASE_URL+'/product-filter.php?apicall=product';

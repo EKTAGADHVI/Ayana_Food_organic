@@ -14,6 +14,7 @@ import { homePageAction } from "./homePageAction";
 import { loginAction } from "./loginAction";
 import { logoutAction } from "./logoutAction";
 import { pincodeAction } from "./pincodeAction";
+import { productFilterAction } from "./productFilterAction";
 import { productListAction } from "./productListAction";
 import { registerAction } from "./registrationAction";
 
@@ -38,4 +39,5 @@ getProductByIdAction:getProductByIdAction,
 getBestOfferAction:getBestOfferAction,
 getBlogsAction:getBlogsAction,
 getKeywordProduct:getKeywordProduct,
+productFilterAction:productFilterAction
 }

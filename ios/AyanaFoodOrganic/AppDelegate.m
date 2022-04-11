@@ -1,4 +1,7 @@
+#import <Firebase.h>
 #import "AppDelegate.h"
+  
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -27,6 +30,8 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+ 
+  [FIRApp configure];   
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
@@ -36,6 +41,9 @@ static void InitializeFlipper(UIApplication *application) {
                                                    moduleName:@"AyanaFoodOrganic"
                                             initialProperties:nil];
 
+  [FBSDKApplicationDelegate.sharedInstance initializeSDK];
+  [[FBSDKApplicationDelegate sharedInstance] application:application
+                       didFinishLaunchingWithOptions:launchOptions];
   if (@available(iOS 13.0, *)) {
       rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
@@ -44,11 +52,12 @@ static void InitializeFlipper(UIApplication *application) {
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
+  rootViewController.view = rootView; 
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
 }
+
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {

@@ -55,6 +55,7 @@ const Header = ( props ) =>
 
     const [ visible, setVisible ] = useState( false );
     const [logoutVisible,setLogoutVisible]=useState(false);
+    const [postalCode,setPostalCode]=useState('')
     useEffect(()=>{
         AsyncStorage.getItem('UserData')
                                 .then((res)=>{
@@ -71,6 +72,22 @@ const Header = ( props ) =>
                                 .catch((error)=>{
                                     console.log("Data Not Removed")
                                 })
+
+                                // AsyncStorage.getItem('PostalCode')
+                                // .then((res)=>{
+                                    
+                                //    if(res!== null){
+                                //     setPostalCode(res)
+                                //    }
+                                //    else{
+                                //         setLogoutVisible(false)
+                                //    }
+                                    
+                                
+                                // })
+                                // .catch((error)=>{
+                                //     console.log("Data Not Removed")
+                                // })
     },[])
 
     return (

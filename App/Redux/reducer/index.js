@@ -16,6 +16,7 @@ import { homePageReducer } from "./homePageReducer";
 import { loginReducer } from "./loginReducer";
 import { logoutReducer } from "./logoutReducer";
 import { pincodeReducer } from "./pincodeReucer";
+import { productFilterReducer } from "./productFilterReducer";
 import { productListReducer } from "./productListReducer";
 import { registerReducer } from "./registerReducer";
 
@@ -39,5 +40,6 @@ export default  combineReducers({
     getProductByIdReducer:getProductByIdReducer,
     getBestOfferReducer:getBestOfferReducer,
     getBlogsReducer:getBlogsReducer,
-    getKeywordProductReducer:getKeywordProductReducer
+    getKeywordProductReducer:getKeywordProductReducer,
+    productFilterReducer:productFilterReducer
     });
