@@ -1,6 +1,6 @@
 
 
-import { BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, PRODUCT_FILTER_URL, Registration_URL } from './ApiUrl';
+import { BANNERS_URL, BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, GET_PROFILE_URL, HELp_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, PRODUCT_FILTER_URL, Registration_URL, SEARCH_BLOG_URL, VIDEO_URL } from './ApiUrl';
 import instance from './index'
 export default class Apis
 {
@@ -86,7 +86,7 @@ export default class Apis
     }  
     static getBestOfferCall ( request )
     {
-        return instance.post( BEST_OFFERS_URL, request, {
+        return instance.get( BEST_OFFERS_URL, request, {
             headers: { "content-type": "application/json" }
         } );
 
@@ -111,5 +111,50 @@ export default class Apis
 
 
     }  
+    static bannersCall ( request )
+    {
+        console.log("Request",request)
+        return instance.get( BANNERS_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
 
+
+    }  
+    static videosCall ( request )
+    {
+        console.log("Request",request)
+        return instance.get( VIDEO_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }  
+    static helpCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post( HELp_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }  
+
+
+    static getProfileCall ( request )
+    {
+        console.log("Request",request)
+        return instance.get( GET_PROFILE_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }   
+
+    static searchBlogCall ( request )
+    {
+        console.log("Request",request)
+        return instance.get(SEARCH_BLOG_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }   
 }

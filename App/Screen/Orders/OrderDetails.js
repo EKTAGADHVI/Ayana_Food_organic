@@ -3,8 +3,9 @@ import { Component } from 'react';
 import { Image, SafeAreaView, TouchableOpacity, View, Text, ScrollView } from 'react-native';
 import { color } from 'react-native-reanimated';
 import BasicHeader from '../../Components/BasicHeader';
+import FilledButton from '../../Components/Filledbuton';
 import { Black, Light_Green, Text_Gray } from '../../Utils/colors';
-import { screen_width } from '../../Utils/constant';
+import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
 
@@ -21,7 +22,7 @@ class OrderDetails extends Component
                 <SafeAreaView>
                     <ScrollView>
                     <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ 'Order Details' } />
-                    <View>
+                    <View >
                         <View style={ styles.cardView }>
 
                             <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 } }>
@@ -90,6 +91,7 @@ United Kingdom - 380015</Text>
                             </View>
                         </View>
                     </View>
+                  
                     </ScrollView>
                 </SafeAreaView>
             </View>

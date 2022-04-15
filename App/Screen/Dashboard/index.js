@@ -21,13 +21,14 @@ import SearchBox from '../../Components/SearchBox';
 import { actions } from '../../Redux/actions';
 import Toast from 'react-native-toast-message';
 import { Black, Light_Green, ORENGE, Red, Text_Gray, White } from '../../Utils/colors';
-import { screen_height, screen_width } from '../../Utils/constant';
+import { initialState, screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_BOLD, POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
 import ProgressLoader from 'rn-progress-loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
 import { EventRegister } from 'react-native-event-listeners';
+import { PRODUCT_BY_KEYWORD_SUCESS } from '../../Redux/actionTypes';
 let CurrentSlide = 0;
 let IntervalTime = 4000;
 
@@ -38,24 +39,7 @@ class Dashboard extends Component
     constructor ( props )
     {
         super( props );
-        AsyncStorage.getItem( 'PostalCode' )
-            .then( ( res ) =>
-            {
-                console.log( "postal", JSON.parse( res ).code )
-                if ( res !== null )
-                {
-                    //    this.setState({postalCode:JSON.parse(res).code});
-                    // this.props.homePageCall({
-                    //     "pincode":JSON.parse(res).code
-                    // })
-                }
-                else
-                {
-                    this.setState( { postalCode: '' } );
-                }
-            } )
-            .catch( ( err ) => { } )
-
+    
         this.props.getCategoeryList()
 
 
@@ -198,6 +182,7 @@ class Dashboard extends Component
         this.props.getOnSaleProduct( {
             "product_type": "onsale"
         } );
+        this.props.videosCall();
         this.props.bestOffersCall();
         this.props.getOrganicWorldProduct( {
             "product_type": "organic-world"
@@ -313,7 +298,20 @@ class Dashboard extends Component
                     }
                     else
                     {
-
+                        // let Updated = cart.map((data)=>{
+                        //     if(data.ID==item.id){
+                        //         let qu=data.cartQuentity +1;
+                        //        let updated= {
+                        //             ...data,
+                        //             selectedVariation: data.variation[ 0 ]?.attribute_pa_weight,
+                        //             cartPrice: data.variation[ 0 ]?._price*qu,
+                        //             cartRegularPrice: data.variation[ 0 ]?._regular_price*qu,
+                        //             cartQuentity: qu,
+                        //             regPrice:data.variation[ 0 ]?._regular_price,
+                        //             sPrice:data.variation[ 0 ]?._price
+                        //         }
+                        //     }
+                        // });
                     }
                 } )
                 .catch( ( error ) =>
@@ -348,7 +346,8 @@ class Dashboard extends Component
             }
             else
             {
-                alert( "Item Already added" )
+                
+                // alert( "Item Already added" )
             }
         }
         catch ( error )
@@ -365,7 +364,7 @@ class Dashboard extends Component
                 <VideoPlayer
 
                     resizeMode={ 'cover' }
-                    video={ require( '../../../assets/videoplayback.mp4' ) }
+                    video={ {uri:item.guid}}
                     videoWidth={ screen_width }
                     videoHeight={ 200 }
                     endThumbnail={ require( '../../../assets/videoBanner.png' ) }
@@ -448,7 +447,7 @@ class Dashboard extends Component
         return (
             <View style={ [ styles.offerBannerContainer, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }>
                 <Image
-                    source={ require( '../../../assets/grocery.png' ) }
+                    source={ {uri:item.img} }
                     resizeMode={ 'contain' }
                     style={ { height: 60, width: 60, alignSelf: "center" } } />
                 <View style={ { left: 5, width: "80%" } }>
@@ -706,7 +705,7 @@ class Dashboard extends Component
                                                 } }
                                                 onAdd={ () =>
                                                 {
-                                                    this.addToCart( item );
+                                                    // this.addToCart( item );
                                                 } } />
                                         }
 
@@ -749,7 +748,7 @@ class Dashboard extends Component
                             <View style={ { justifyContent: "center", } }>
 
                                 <FlatList style={ { backgroundColor: White } }
-                                    data={ this.state.link }
+                                    data={ this.props.video.data }
                                     contentContainerStyle={ { width: `${ 100 * IntervalTime }%` } }
                                     horizontal={ true }
                                     pagingEnabled={ true }
@@ -831,7 +830,7 @@ class Dashboard extends Component
                                                 } }
                                                 onAdd={ () =>
                                                 {
-                                                    this.addToCart( item );
+                                                    // this.addToCart( item );
                                                 } } />
                                         }
                                     } } />
@@ -953,7 +952,7 @@ class Dashboard extends Component
                                                 } }
                                                 onAdd={ () =>
                                                 {
-                                                    this.addToCart( item );
+                                                    // this.addToCart( item );
                                                 } } />
                                         }
 
@@ -1005,7 +1004,7 @@ class Dashboard extends Component
                                                 } }
                                                 onAdd={ () =>
                                                 {
-                                                    this.addToCart( item );
+                                                    // this.addToCart( item );
                                                 } } />
                                         }
 
@@ -1030,6 +1029,13 @@ class Dashboard extends Component
                         onRequestClose={ () =>
                         {
                             this.setState( { modalVisible: false } )
+                            this.setState({keyword:''})
+                            this.props.dispatch(
+                                {
+                                    type:PRODUCT_BY_KEYWORD_SUCESS,
+                                     payload:initialState
+                                }
+                            )
                             // mooveRL();
                         } }>
                         <View style={ styles.modalStyles }>
@@ -1041,6 +1047,13 @@ class Dashboard extends Component
                              }}
                              onPress={()=>{
                                  this.setState({modalVisible:false})
+                                 this.setState({keyword:''})
+                                 this.props.dispatch(
+                                    {
+                                        type:PRODUCT_BY_KEYWORD_SUCESS,
+                                         payload:initialState
+                                    }
+                                )
                              }}>
                              <Image
                                 style={ {
@@ -1097,7 +1110,7 @@ class Dashboard extends Component
                                                 } }
                                                 onAdd={ () =>
                                                 {
-                                                    this.addToCart( item );
+                                                    // this.addToCart( item );
                                                 } } />
                                         
 
@@ -1109,7 +1122,7 @@ class Dashboard extends Component
                     </Modal>
 
                 </SafeAreaView>
-                {this.state.cartItem > 0 && this.state.cartViewVisible === true ? this.renderCartView() : null }
+                {/* {this.state.cartItem > 0 && this.state.cartViewVisible === true ? this.renderCartView() : null } */}
             </>
         )
     }
@@ -1131,7 +1144,8 @@ function mapStateToProps ( state, ownProps )
         recentProduct: state.getRecentProductReducer.data,
         bestOffer: state.getBestOfferReducer.data,
         homePageData: state.homePageReducer.data,
-        keyWordProduct:state.getKeywordProductReducer.data
+        keyWordProduct:state.getKeywordProductReducer.data,
+        video:state.getVideosReducer.data
     };
 
 }
@@ -1153,6 +1167,7 @@ const mapDispatchToProps = dispatch =>
         homePageCall: ( request ) => dispatch( actions.homePageAction( request ) ),
         bestOffersCall: ( request ) => dispatch( actions.getBestOfferAction( request ) ),
         byKeyWord:(request)=>dispatch(actions.getKeywordProduct(request)),
+        videosCall:(request)=>dispatch(actions.getVideosAction(request)),
         dispatch,
     };
 };

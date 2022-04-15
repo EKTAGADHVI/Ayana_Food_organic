@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Light_Green, White } from "../../Utils/colors";
+import { Gray, Light_Green, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
 
 const styles = StyleSheet.create({
@@ -31,6 +31,13 @@ const styles = StyleSheet.create({
     containerStyle:{
         width:screen_width-30
     },
+    attributesView:{
+             
+      alignItems:'center',
+       marginVertical:5,
+      
+        borderColor:Gray
+    }
     
 })
 

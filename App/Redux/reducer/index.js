@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 
 import { categoeryListReducer } from "./categoeryListReducer";
+import { getBannersReducer } from "./getBannersReducer";
 import { getBestOfferReducer } from "./getBestOfferReducer";
 import { getBestSellingProductReducer } from "./getBestSellingProductReducer";
 import { getBlogsReducer } from "./getBlogsReducer";
@@ -10,8 +11,10 @@ import { getOnSaleProductReducer } from "./getOnSaleProductReducer";
 import { getOrganicWorldProductReducer } from "./getOrganicWorldProductReducer";
 import { getProductByCatIdReducer } from "./getProductByCatIdReducer";
 import { getProductByIdReducer } from "./getProductByIdReducer";
+import { getProfileReducer } from "./getProfileReducer";
 import { getRecentProductReducer } from "./getRecentProductReducer";
 import { getTopRatedProductReducer } from "./getTopRatedProductReducer";
+import { getVideosReducer } from "./getVideosReducer";
 import { homePageReducer } from "./homePageReducer";
 import { loginReducer } from "./loginReducer";
 import { logoutReducer } from "./logoutReducer";
@@ -41,5 +44,8 @@ export default  combineReducers({
     getBestOfferReducer:getBestOfferReducer,
     getBlogsReducer:getBlogsReducer,
     getKeywordProductReducer:getKeywordProductReducer,
-    productFilterReducer:productFilterReducer
+    productFilterReducer:productFilterReducer,
+    getBannersReducer:getBannersReducer,
+    getVideosReducer:getVideosReducer,
+    getProfileReducer:getProfileReducer,
     });

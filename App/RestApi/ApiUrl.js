@@ -11,3 +11,9 @@ export const LOGOUT_URL=BASE_URL+'/logout.php';
 export const BEST_OFFERS_URL=BASE_URL+"/home-banners.php?apicall=banners";
 export const BLOGS_URL=BASE_URL+'/blogs.php?apicall=blog'
 export const PRODUCT_FILTER_URL=BASE_URL+'/product-filter.php?apicall=product';
+ export const BANNERS_URL=BASE_URL+'/sliders.php?apicall=sliders'
+ export const VIDEO_URL=BASE_URL+'/videos.php?apicall=video';
+ export const HELp_URL=BASE_URL+'/help.php';
+ export const BLOG_COMMENT_URL=BASE_URL+'';
+ export const GET_PROFILE_URL=BASE_URL+'/user.php'
+ export const SEARCH_BLOG_URL=BASE_URL+'/search-blog.php'

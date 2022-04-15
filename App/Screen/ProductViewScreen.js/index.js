@@ -145,7 +145,7 @@ class ProductViewScreen extends Component
     {
         setInterval( () =>
         {
-            this.setState( { categoeries: this.props.getProductsListByCatId.data } );
+            this.setState( { categoeries: this.props.getProductsListByCatId.data ?this.props.getProductsListByCatId.data:[] } );
 
             this.setState( {
                 visible: false
@@ -181,7 +181,7 @@ class ProductViewScreen extends Component
     filterDisplay = () =>
     {
         let data = [];
-        this.state.categoeries.length ? this.state.categoeries.map( ( item, index ) =>
+        this.state.categoeries.length >0? this.state.categoeries.map( ( item, index ) =>
         {
             let filterData = {
                 "category_id": item.category[ 0 ].category_id,
@@ -277,7 +277,7 @@ class ProductViewScreen extends Component
                         hudColor={ White }
                         color={ Light_Green } />
                     {
-                        this.state.categoeries && this.state.categoeries.length > 0 ?
+                        this.state.categoeries && this.state.categoeries.length > 0  ?
                             <FlatList
                                 data={ this.state.categoeries }
                                 numColumns={ 2 }
@@ -305,24 +305,26 @@ class ProductViewScreen extends Component
                                                 data: item
                                             } )
                                         } }
-                                        onAdd={ () =>
-                                        {
-                                            this.addToCart( item );
-                                        } }
+                                        // onAdd={ () =>
+                                        // {
+                                        //     this.addToCart( item );
+                                        // } }
                                     />
 
 
 
                                 } } />
                             :
-                            <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
-                                <Image
-                                    style={ styles.emptyCart }
-                                    source={ require( '../../../assets/emptyCart.png' ) } />
+                          this.state.visible===false?
+                          <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
+                          <Image
+                              style={ styles.emptyCart }
+                              source={ require( '../../../assets/emptyCart.png' ) } />
 
-                                <Text style={ styles.titleText }>Oops</Text>
-                                <Text style={ [ styles.normalText, { fontSize: 18, fontFamily: POPINS_REGULAR, textAlign: 'center' } ] }>Product Not Fount !</Text>
-                            </View>
+                          <Text style={ styles.titleText }>Oops</Text>
+                          <Text style={ [ styles.normalText, { fontSize: 18, fontFamily: POPINS_REGULAR, textAlign: 'center' } ] }>Product Not Found !</Text>
+                      </View>:
+                      null
                     }
                     <Modal
                         isVisible={ this.state.modalvisible }

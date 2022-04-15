@@ -1,7 +1,9 @@
 import React from 'react';
 import { Component } from 'react';
 import { View, SafeAreaView, TouchableOpacity, Image, Text, TextInput } from 'react-native';
+import { connect } from 'react-redux';
 import BasicHeader from '../../Components/BasicHeader';
+import { actions } from '../../Redux/actions';
 import { Light_Green } from '../../Utils/colors';
 import { POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
@@ -12,7 +14,7 @@ class MyDetails extends Component
     {
         super( props );
         this.state = {
-            email: 'Admin@gmail.com',
+            email: '',
             phone: '+91 9285004531',
             strit: 'Ahemdabad',
             city: 'Ahemdabad',
@@ -38,6 +40,16 @@ class MyDetails extends Component
                 </View>
             </View>
         );
+    }
+
+    componentDidMount(){
+        console.log('this.props.routes.params.data',this.props.route.params.data);
+        this.setState({
+            email:this.props.route.params.data[0].user_email
+        })
+        // this.props.profileCall({
+        //    "request":this.state.us
+        // })
     }
     render ()
     {
@@ -93,4 +105,24 @@ class MyDetails extends Component
     }
 }
 
-export default MyDetails;
+function mapStateToProps ( state, ownProps )
+{
+    console.log( "state.getProfileReducer.data",state.getProfileReducer.data )
+    return {
+        
+        profile:state.getProfileReducer.data
+
+    };
+
+}
+
+const mapDispatchToProps = dispatch =>
+{
+    return {
+        //getPeople,    
+        // login: (request) => dispatch(actions.login.apiActionCreator(request)),
+        profileCall: ( request ) => dispatch( actions.getProfileAction(request)),       
+        dispatch,
+    };
+};
+export default connect( mapStateToProps, mapDispatchToProps )( MyDetails );

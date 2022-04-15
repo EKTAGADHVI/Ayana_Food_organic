@@ -21,7 +21,7 @@ export function getBestOfferAction (request){
             });
         }
         else{
-            console.log("======GET_ORGANIC_WORLD_PRODUCT_LOADING ====== >  ", JSON.parse(responce).data);
+            console.log("======GET_BEST_OFFERS_SUCESS ====== >  ", JSON.parse(responce).data);
             dispatch({
                 type:GET_BEST_OFFERS_ERROR,
                 payload:JSON.parse(responce).data
@@ -34,7 +34,7 @@ export function getBestOfferAction (request){
             type:GET_BEST_OFFERS_ERROR,
             payload:error
         });
-        console.log("==== GET_ORGANIC_WORLD_PRODUCT_LOADING ", error)
+        console.log("==== GET_BEST_OFFERS_SUCESS", error)
     })   
 
  

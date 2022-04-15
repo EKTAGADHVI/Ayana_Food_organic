@@ -72,6 +72,7 @@ import {
                           + ". His profile id is: " +
                           currentProfile.userID
                         );
+                        this.next_navigation()
                       }
                     }
                   );
@@ -206,6 +207,7 @@ import {
           const userInfo = await GoogleSignin.signIn();
           this.setState({ userDetail:userInfo });
           console.log("userDetails", userInfo)
+          this.next_navigation()
         } catch (error) {
             console.log(error)
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {

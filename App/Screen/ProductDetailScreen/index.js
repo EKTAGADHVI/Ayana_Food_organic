@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, createRef } from 'react';
-import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Rating } from 'react-native-ratings';
+import { connect } from 'react-redux';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
+import { actions } from '../../Redux/actions';
 import { Black, Gray, Light_Green, White } from '../../Utils/colors';
 import { screen_width } from '../../Utils/constant';
 import { POPINS_REGULAR } from '../../Utils/fonts';
@@ -15,15 +17,19 @@ class ProductDetailScreen extends Component
 {
     flatList = createRef();
 
+
     constructor ( props )
     {
         super( props );
+        this.props.productById({
+            'product_id':this.props.route.params?.data.ID
+        });
         this.state = {
-
             currentIndex: 0,
             quentity: 1,
             isDiscription: false,
             isTerm: false,
+            // id:this.props.route.params?.data?.ID,
             data: this.props.route.params?.data,
             variation: this.props.route.params?.data?.variation,
             description: this.props.route.params?.data?.post_content,
@@ -40,6 +46,7 @@ class ProductDetailScreen extends Component
             regPrice:this.props.route.params?.data?.variation[ 0 ]?._regular_price,
             sPrice:this.props.route.params?.data?.variation[ 0 ]?._sale_price
         }
+       
         this.viewabilityConfig = {
             viewAreaCoveragePercentThreshold: 50,
             waitForInteraction: true,
@@ -93,7 +100,9 @@ class ProductDetailScreen extends Component
 
     }
     addToCart = async ( item ) =>
-    {
+    { 
+        let added=false;
+        let previousData=null;
         let alreadyAdded = false;
         try
         {
@@ -102,6 +111,7 @@ class ProductDetailScreen extends Component
                 {
                     console.log( "DashBoard Cart", res )
                     let cart = JSON.parse( res );
+                    previousData=JSON.parse( res );
                     if ( res !== null && cart.length > 0 )
                     {
                         // this.setState( { cartItem: cart.length } )
@@ -110,17 +120,24 @@ class ProductDetailScreen extends Component
 
                             console.log( "DHDHDH", data );
                             if ( data.ID === item.ID )
-                            {
+                            {   
+                                if(data.selectedVariation===this.state.selectedVarinat){
+                                    added =true;
+                                }
+                                else{
+                                    added=false
+                                }
                                 return true;
                             }
-                            else
-                            {
+                            else;
+                            {   added=false;
                                 return false;
                             }
                         } );
                     }
                     else
                     {
+                        added=false;
                         alreadyAdded=false;
                     }
                 } )
@@ -130,8 +147,8 @@ class ProductDetailScreen extends Component
                     // this.setState( { cartData: [] } )
                 } )
 
-                console.log("Alreday Added",alreadyAdded)
-            if ( alreadyAdded === false )
+                console.log("Alreday Added",added)
+            if ( added === false )
             {
                 let cartData = [];
               
@@ -145,7 +162,7 @@ class ProductDetailScreen extends Component
                     regPrice:this.state.regPrice,
                     sPrice:this.state.sPrice
                 };
-                cartData.push( finalItem );
+                cartData.push(finalItem );
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( cartData ) )
                     .then( ( res ) =>
                     {
@@ -159,7 +176,8 @@ class ProductDetailScreen extends Component
             }
             else
             {
-                alert( "Item Already added" )
+                
+                // alert( "Item Already added" )
             }
         }
         catch ( error )
@@ -327,7 +345,7 @@ class ProductDetailScreen extends Component
 
 
                             <FlatList
-                                data={ this.state.images }
+                                data={this.state.images}
                                 // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
                                 horizontal={ true }
                                 pagingEnabled={ true }
@@ -532,7 +550,7 @@ class ProductDetailScreen extends Component
                                     <Text style={ [ styles.quentityText ] }>More Offers</Text>
                                     <TouchableOpacity onPress={ () =>
                                     {
-                                        this.setState( { isTerm: !this.state.isTerm } )
+
                                     } }>{
                                             this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
                                                 : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
@@ -579,16 +597,22 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     <Text style={ [ styles.quentityText ] }>Term & Condition</Text>
                                     <TouchableOpacity onPress={ () =>
                                     {
-                                        this.props.navigation.navigate();
+                                       this.setState({isTerm:!this.state.isTerm})
                                     } }>{
                                             this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
                                                 : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
                                         }
 
                                     </TouchableOpacity>
-
+                                     
 
                                 </View>
+                                {
+                                             this.state.isTerm === true ?
+                                           <View style={{padding:10}}>
+                                                 <Text>{this.removeTags(this.props.product.data[0].seller_terms.refund_policy)}</Text>
+                                           </View>:null
+                                        }
 
                                 {/* {
                            this.state.isDiscription === true ?
@@ -606,7 +630,7 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
                                     <TouchableOpacity onPress={ () =>
                                     {
-                                        this.setState( { isTerm: !this.state.isTerm } )
+                                       this.props.navigation.navigate('HelpScreen');
                                     } }>{
                                             this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
                                                 : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
@@ -634,7 +658,14 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     title={ "Add to Cart " } />
                                 <FilledButton
                                     style={ { width: screen_width / 2 - 30 } }
-                                    onPress={ () => { } }
+                                    onPress={ () => { 
+                                        try{
+                                            Linking.openURL('whatsapp://send?text=Hello Ayana Food Organic , I am interest ORGANIC SITARASOI/SABHUT MOONG DAL and want to buy this product https://ayanafoodorganic.com/product/green-gram-seeds/ Please Send me Details.&phone=+917388600191')
+                                           }
+                                           catch(error){
+                                               alert("Failed to Open WhatsApp")
+                                           }
+                                    } }
                                     title={ "WhatsApp " } />
                             </View>
                         </View>
@@ -646,5 +677,28 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
         )
     }
 }
+function mapStateToProps ( state, ownProps )
+{
+    console.log( "state.getProductByIdReducer.data",state.getProductByIdReducer.data )
+    return {
+        // data : state.loginReducer.data
+        // products: state.productListReducer.data,
+        // getProductsListByCatId: state.getProductByCatIdReducer.data,
+        // filteredProduct:state.productFilterReducer.data,
+        product:state.getProductByIdReducer.data
 
-export default ProductDetailScreen;
+    };
+
+}
+
+const mapDispatchToProps = dispatch =>
+{
+    return {
+        //getPeople,    
+        // login: (request) => dispatch(actions.login.apiActionCreator(request)),
+        productById: ( request ) => dispatch( actions.getProductByIdAction(request)),
+       
+        dispatch,
+    };
+};
+export default connect( mapStateToProps, mapDispatchToProps )( ProductDetailScreen );

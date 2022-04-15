@@ -1,11 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { Component } from 'react';
 import { SafeAreaView, View, TouchableOpacity, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Toast from 'react-native-toast-message';
+import ProgressLoader from 'rn-progress-loader';
 
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
 import Input from '../../Components/Input';
+import { ToastMessage } from '../../Components/ToastMessage';
 import { Black, Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_width } from '../../Utils/constant';
 import styles from './styles';
@@ -28,18 +32,101 @@ class CheckOut extends Component
             state_Value: '',
             pinCode: '',
             billingPhone: '',
-            billingEmail: ''
+            billingEmail: '',
+            viewBtn:false,
+            product:'',
+            totalPrice:this.props.route.params.totalPrice,
+            CheckOutData:this.props.route.params.checkoutData,
+            visible:false
         }
     }
 
+   async componentDidMount(){
+      await  AsyncStorage.getItem('PostalCode')
+        .then((res)=>{
+            console.log("ressfiusgdfg",res)
+           if(res!== null){
+            this.setState({pinCode: JSON.parse(res).code})
+           }
+           else{
+           
+           }
+            
+        
+        })
+        .catch((error)=>{
+            console.log("Data Not Removed")
+        })
+    }
+    validation =()=>{
+            if(this.state.fName === ""){
+                ToastMessage('error','Enter  First Name','Please Check')
+            }
+            else if(this.state.lName== ""){
+                ToastMessage('error','Enter  Last Name','Please Check')
+            }else if(this.state.stretAddress==""){
+                ToastMessage('error','Enter  Street Address','Please Check')
+            }
+            else if(this.state.city == ""){
+                ToastMessage('error','Enter City Name' ,'Please Check')
+            }
+            else if(this.state.state_Value == ''){
+                ToastMessage('error','Enter State Name' ,'Please Check')
+            }
+            else if(this.state.pinCode==''){
+                ToastMessage('error','Enter Pincode' ,'Please Check')
+            }
+            else if(this.state.billingPhone== ''){
+                ToastMessage('error','Enter Billing Phone' ,'Please Check')
+            }
+            else if(this.state.billingEmail == ''){
+                // this.setState({viewBtn:true})
+                ToastMessage('error','Enter Billing Email' ,'Please Check')
+            }
+            else{
+              
+                let billingData={
+                    fName: this.state.fName,
+                    lName: this.state.lName,
+                    compnyName: this.state.compnyName,
+                    stretAddress: this.state.stretAddress,
+                    city: this.state.city,
+                    state_Value: this.state.state_Value,
+                    pinCode: this.state.pinCode,
+                    billingPhone: this.state.billingPhone,
+                    billingEmail: this.state.billingEmail,
+                };
+                
+                  setTimeout(()=>{
+                    this.setState({visible:false})
+                    this.props.navigation.navigate('OrderPreview',{
+                        totalPrice:this.state.totalPrice,
+                        data:this.state.CheckOutData,
+                        billigData:billingData
+                    })
+                  
+                  },1500)
+              
+            }
+    }
     render ()
     {
         return (
             <View style={ styles.mainLayout }>
+               
+                   <Toast  />
                 <SafeAreaView>
+             
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? "padding" :"height"} keyboardVerticalOffset={20}>
                     <ScrollView showsVerticalScrollIndicator={false} automaticallyAdjustContentInsets={true} >
+
                         <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Checkout" } />
+                    <ProgressLoader
+                    visible={ this.state.visible }
+                    isModal={ true }
+                    isHUD={ true }
+                    hudColor={ White }
+                    color={ Light_Green } />
                         <View style={ [ styles.rowView, { borderBottomColor: Gray, borderBottomWidth: 0.5 } ] }>
                             <Text style={ [ styles.normalText, { color: Light_Green } ] }> Billing Details</Text>
                             <TouchableOpacity style={ styles.minusButton }>
@@ -53,6 +140,9 @@ class CheckOut extends Component
                                     textStyle={{color:Black}}
                                     title={ "First Name" }
                                     value={ this.state.fName }
+                                    onEndEditing={()=>{
+                                        this.setState({viewBtn:false})
+                                    }}
                                     onChangeText={ ( text ) =>
                                     {
                                         this.setState( {
@@ -74,6 +164,9 @@ class CheckOut extends Component
                                             lName: text
                                         } )
                                     } }
+                                    onEndEditing={()=>{
+                                        this.setState({viewBtn:false})
+                                    }}
                                     containerStyle={ { marginHorizontal: 10 } }
                                     secureTextEntry={ false }
                                     inputStyle={ { width: screen_width / 2 - 30, } }
@@ -85,6 +178,9 @@ class CheckOut extends Component
                                   textStyle={{color:Black}}
                                 title={ "Company Name (Optional)" }
                                 value={ this.state.compnyName }
+                                // onEndEditing={()=>{
+                                //     this.setState({viewBtn:false})
+                                // }}
                                 onChangeText={ ( text ) =>
                                 {
                                     this.setState( {
@@ -100,6 +196,9 @@ class CheckOut extends Component
                                   textStyle={{color:Black}}
                                 title={ "Street Address" }
                                 value={ this.state.stretAddress }
+                                onEndEditing={()=>{
+                                    this.setState({viewBtn:false})
+                                }}
                                 onChangeText={ ( text ) =>
                                 {
                                     this.setState( {
@@ -116,6 +215,10 @@ class CheckOut extends Component
                                   textStyle={{color:Black}}
                                 title={ "Town/City *" }
                                 value={ this.state.city }
+
+                                onEndEditing={()=>{
+                                    this.setState({viewBtn:false})
+                                }}
                                 onChangeText={ ( text ) =>
                                 {
                                     this.setState( {
@@ -129,7 +232,7 @@ class CheckOut extends Component
                             />
 
 
-                            <Text style={ [ styles.normalText, { fontSize: 16, color: Black, } ] }>State *</Text>
+                            {/* <Text style={ [ styles.normalText, { fontSize: 16, color: Black, } ] }>State *</Text>
                             <DropDownPicker
                                 open={ this.state.openState }
                                 value={ this.state.state }
@@ -175,11 +278,32 @@ class CheckOut extends Component
                                     backgroundColor: White
                                 } }
 
+                            /> */}
+                                <Input
+                                  textStyle={{color:Black}}
+                                title={ "State *" }
+                                onEndEditing={()=>{
+                                    this.setState({viewBtn:false})
+                                }}
+                                value={ this.state.state_Value }
+                                onChangeText={ ( text ) =>
+                                {
+                                    this.setState( {
+                                        state_Value: text
+                                    } )
+                                } }
+                                // containerStyle={ { marginHorizontal: 10 } }
+                                secureTextEntry={ false }
+                                inputStyle={ { width: screen_width - 30, } }
+                                placeholder={ "Enter Your State Name" }
                             />
 
                             <Input
                                   textStyle={{color:Black}}
                                 title={ "PinCode *" }
+                                onEndEditing={()=>{
+                                    this.setState({viewBtn:false})
+                                }}
                                 value={ this.state.pinCode }
                                 onChangeText={ ( text ) =>
                                 {
@@ -196,8 +320,12 @@ class CheckOut extends Component
 
                             <Input
                                   textStyle={{color:Black}}
+                                  onEndEditing={()=>{
+                                    this.setState({viewBtn:false})
+                                }}
                                 title={ "Billing Phone Number *" }
                                 value={ this.state.billingPhone }
+                                keyboardType={'number-pad'}
                                 onChangeText={ ( text ) =>
                                 {
                                     this.setState( {
@@ -214,6 +342,9 @@ class CheckOut extends Component
                             <Input
                               textStyle={{color:Black}}
                                 title={ "Billing Email *" }
+                                onEndEditing={()=>{
+                                    this.setState({viewBtn:true})
+                                }}
                                 value={ this.state.billingEmail }
                                 onChangeText={ ( text ) =>
                                 {
@@ -229,9 +360,10 @@ class CheckOut extends Component
                             />
 
                             <FilledButton title="Apply and Continue"
+                            // disabled={this.state.viewBtn === true ?true :false}
                                 style={ { width: screen_width - 30, borderRadious: 15, marginVertical: "6%", alignSelf: "center", } }
                                 textStyle={ { fontSize: 16, paddingVertical: 8 } }
-                                onPress={ () => {this.props.navigation.navigate('OrderPreview') } } />
+                                onPress={ () => {this.validation() } } />
  
                         </View>
                       

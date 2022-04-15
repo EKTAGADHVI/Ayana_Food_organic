@@ -1,3 +1,4 @@
+import { getBannersAction } from "./getBannersAction";
 import { getBestOfferAction } from "./getBestOfferAction";
 import { getBestSellingProductAction } from "./getBestSellingProductAction";
 import { getBlogsAction } from "./getBlogsAction";
@@ -8,8 +9,10 @@ import { getOnSaleProductAction } from "./getOnSaleProductAction";
 import { getOrganicWorldProductAction } from "./getOrganicWorldProductAction";
 import { getProductByIdAction } from "./getProductByIdAction";
 import {getProductListByCatId } from "./getProductListByCatId";
+import { getProfileAction } from "./getProfileAction";
 import { getRecentProductAction } from "./getRecentProductAction";
 import { getTopRatedProductAction } from "./getTopRatedProductAction";
+import { getVideosAction } from "./getVideosAction";
 import { homePageAction } from "./homePageAction";
 import { loginAction } from "./loginAction";
 import { logoutAction } from "./logoutAction";
@@ -39,5 +42,8 @@ getProductByIdAction:getProductByIdAction,
 getBestOfferAction:getBestOfferAction,
 getBlogsAction:getBlogsAction,
 getKeywordProduct:getKeywordProduct,
-productFilterAction:productFilterAction
+productFilterAction:productFilterAction,
+getBannersAction:getBannersAction,
+getVideosAction:getVideosAction,
+getProfileAction:getProfileAction
 }

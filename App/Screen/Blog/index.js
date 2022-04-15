@@ -36,28 +36,47 @@ class Blog extends Component
             //     }
 
             // ],
-            data:this.props.blogs.data,
+            data:[],
             visible:false
         }
         // this.props.blogRequest();
     }
 
-   async componentDidMount(){
+
+    searchBlog = () =>{
+        Apis.searchBlogCall({
+            "keyword":this.state.searchValue
+        })
+        .then((res)=> {return JSON.stringify(res)})
+        .then((response)=>{
+            console.log("Search Data",response);
+            let data = JSON.parse(response).data.data
+        }).
+        catch((error)=>{
+            console.log("ERROR",error)
+        })
+    }
+   componentDidMount(){
+    this.setState({visible:true})
         try{
-            this.setState({visible:true})
+            
             Apis.getBlogCall()
             .then((res)=> {
                 return JSON.stringify(res);
             })
             .then((responce)=>{
                 if(JSON.parse(responce).data.status == true){
-                    this.setState({visible:false})
+                   
                     console.log("====== GET_BLOG_LIST_LOADING ====== >  ", JSON.parse(responce).data);
                     this.setState({data:JSON.parse(responce).data.data})
                     this.props.dispatch({
                         type:GET_BLOG_LIST_SUCESS,
                         payload:JSON.parse(responce).data
                     });
+                    
+                    setTimeout(()=>{
+                        this.setState({visible:false})
+                    },1000)
                    
                 }
                 else{
@@ -98,7 +117,7 @@ class Blog extends Component
 
     renderItem = ( item, index ) =>
     {
-        console.log("iteam",item)
+    
         return (
             <View style={styles.itemView}>
                 <View style={styles.rowView}>
@@ -160,6 +179,7 @@ class Blog extends Component
                             this.setState( {
                                 searchValue: text
                             } )
+                            this.searchBlog()
                         } }
                         secureTextEntry={ false }
                         placeholder={ "Search here" } />
@@ -196,6 +216,7 @@ const mapDispatchToProps = dispatch =>
         //getPeople,
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         blogRequest: ( request ) => dispatch( actions.getBlogsAction( request ) ),
+        
         dispatch
     };
 };

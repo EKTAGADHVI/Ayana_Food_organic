@@ -18,7 +18,8 @@ const styles = StyleSheet.create( {
         borderBottomColor: Gray,
         borderBottomWidth: 0.52,
         alignItems: 'center',
-        marginVertical: "5%"
+        marginVertical: "5%",
+        width:screen_width-30
     },
     imageStyle: {
         height: screen_width * 0.2,
@@ -33,7 +34,7 @@ const styles = StyleSheet.create( {
     normalText: {
         fontFamily: POPINS_REGULAR,
         fontSize: 18,
-
+      
     },
     iconStyle: {
         height: 18,

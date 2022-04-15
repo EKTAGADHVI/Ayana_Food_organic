@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView, Linking } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { Black, Light_Green, Line_Gray, Text_Gray, White } from '../Utils/colors';
 import { screen_height, screen_width } from '../Utils/constant';
@@ -73,21 +73,21 @@ const Header = ( props ) =>
                                     console.log("Data Not Removed")
                                 })
 
-                                // AsyncStorage.getItem('PostalCode')
-                                // .then((res)=>{
-                                    
-                                //    if(res!== null){
-                                //     setPostalCode(res)
-                                //    }
-                                //    else{
-                                //         setLogoutVisible(false)
-                                //    }
+                                AsyncStorage.getItem('PostalCode')
+                                .then((res)=>{
+                                    console.log("ressfiusgdfg",res)
+                                   if(res!== null){
+                                    setPostalCode(JSON.parse(res).disPlay)
+                                   }
+                                   else{
+                                    setPostalCode('')
+                                   }
                                     
                                 
-                                // })
-                                // .catch((error)=>{
-                                //     console.log("Data Not Removed")
-                                // })
+                                })
+                                .catch((error)=>{
+                                    console.log("Data Not Removed")
+                                })
     },[])
 
     return (
@@ -111,12 +111,14 @@ const Header = ( props ) =>
                         source={ require( '../../assets/Bell.png' ) }
                         style={ styles.iconStyle } />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>{
+                    props.navigation.navigate('AddDeliveryLocation');
+                }}>
                     <View style={ styles.leftContainer }>
                         <Image
                             source={ require( '../../assets/Exclude.png' ) }
                             style={ styles.iconStyle } />
-                        <Text style={ styles.regularText }>Ahmedabad, 380060</Text>
+                        <Text style={ styles.regularText }>{postalCode}</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -185,7 +187,14 @@ const Header = ( props ) =>
                                     } } />
                                 <MenuItems source={ require( '../../assets/chat.png' ) }
                                     menu={ "Chat With Us" }
-                                    OnMenuPress={ () => { alert( "Hiii" ) } } />
+                                    OnMenuPress={ () => { 
+                                       try{
+                                        Linking.openURL('whatsapp://send?text=Hello Ayana Food Organic , I am interest ORGANIC SITARASOI/SABHUT MOONG DAL and want to buy this product https://ayanafoodorganic.com/product/green-gram-seeds/ Please Send me Details.&phone=+917388600191')
+                                       }
+                                       catch(error){
+                                           alert("Failed to Open WhatsApp")
+                                       }
+                                     } } />
                                 <MenuItems source={ require( '../../assets/help.png' ) }
                                     menu={ "Help" }
                                     OnMenuPress={ () => { 

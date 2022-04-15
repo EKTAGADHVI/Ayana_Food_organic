@@ -37,7 +37,8 @@ class Cart extends Component
             quentity: 1,
             checkOutPrice:0.0,
             visible:false,
-            variation:''
+            variation:'',
+            checkOutData:[]
         }
         
     }
@@ -130,6 +131,7 @@ class Cart extends Component
         
     }
 onDecrement =(id,value,index,item)=>{  
+    console.log('item',item.ID);
         let onIncrement = value - 1;
 
         console.log("Before update: ", this.state.cartData[index]);
@@ -203,8 +205,7 @@ onDecrement =(id,value,index,item)=>{
     }
     renderItem = ( item, index ) =>
     {
-    //    this.callFinalCheckOut(item.cartPrice)
-    //    this.setState({checkOutPrice:this.state.checkOutPrice + parseFloat(item.cartPrice)})
+  
         return (
             <View style={ styles.ItemView }>
                 <View style={ { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', } }>
@@ -286,7 +287,7 @@ onDecrement =(id,value,index,item)=>{
                     hudColor={ White }
                     color={ Light_Green } />
                     {
-                        this.state.cartData.length > 0 && this.state.visible ===false?
+                        this.state.cartData.length > 0 ?
                             <View style={ { height: screen_height / 1.2 - 30, } }>
                                 <FlatList
                                     data={ this.state.cartData }
@@ -298,23 +299,30 @@ onDecrement =(id,value,index,item)=>{
                                     keyExtractor={ ( item, index ) => index.toString() }
                                     renderItem={ ( { item, index } ) => this.renderItem( item, index ) }
                                 />
-                                <View style={ styles.bottomView }>
+                                <TouchableOpacity 
+                                onPress={()=>{this.props.navigation.navigate('CheckOut',{
+                                    totalPrice:this.state.checkOutPrice,
+                                    checkoutData:this.state.cartData
+                                })}}
+                                style={ styles.bottomView }>
                                         <Image
                                         style={styles.iconStyle}
                                         source={require('../../../assets/basket.png')}/>
                                             <Text style={[styles.normalText,{fontFamily:POPINS_REGULAR,fontSize:16,color:White}]}>Go to Checkout</Text>
                                         <Text style={[styles.normalText,{fontFamily:POPINS_REGULAR,fontSize:14,color:White,backgroundColor:"#489E67"}]}> Rs. {this.state.checkOutPrice} </Text>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                             :
-                            <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
-                                <Image
-                                    style={ styles.emptyCart }
-                                    source={ require( '../../../assets/emptyCart.png' ) } />
+                          this.state.visible ==false?
+                          <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
+                          <Image
+                              style={ styles.emptyCart }
+                              source={ require( '../../../assets/emptyCart.png' ) } />
 
-                                <Text style={ styles.titleText }>Oops</Text>
-                                <Text style={ [ styles.normalText, { fontSize: 18, fontFamily: POPINS_REGULAR, textAlign: 'center' } ] }>Your Cart is Empty</Text>
-                            </View>
+                          <Text style={ styles.titleText }>Oops</Text>
+                          <Text style={ [ styles.normalText, { fontSize: 18, fontFamily: POPINS_REGULAR, textAlign: 'center' } ] }>Your Cart is Empty</Text>
+                      </View>
+                      :null
                     }
 
                 </SafeAreaView>

@@ -16,7 +16,7 @@ class BlogDetails extends Component
         this.state = {
             comment: '',
             data:this.props.route.params.data
-        }
+        }   
     }
     removeTags = ( str ) =>
     {
@@ -44,13 +44,21 @@ class BlogDetails extends Component
                         <Text style={ [ styles.normalText, { color: Light_Green, fontSize: 14, paddingVertical: 8 } ] }>Importance of Organic Food  in today’s Lifestyle</Text>
                     </View>
                     <View style={ styles.viewContainer }>
-                        <Image
-                            source={ require( '../../../assets/product.png' ) }
-                            style={ { height: 200, width: 200, alignSelf: 'center', resizeMode: 'contain' } } />
+                    {
+                       this.state.data.img.length>0?
+                        <Image 
+                        source={{uri:this.state.data.img[0].img_path}}
+                        style={{ height: 200, width: 200, alignSelf: 'center', resizeMode: 'contain' }  } />:
+                        <Image 
+                        source={require('../../../assets/default.png')}
+                        style={{ height: 200, width: 200, alignSelf: 'center', resizeMode: 'contain' }  } />
+                    }
+                        {/* <Image
+                            source={ {uri:this.state.data.img[0].img_path} }
+                            style={ { height: 200, width: 200, alignSelf: 'center', resizeMode: 'contain' } } /> */}
                     </View>
                     <View style={ styles.viewContainer }>
-                        <Text style={ [ styles.normalText, { fontFamily: POPINS_REGULAR, fontSize: 14, paddingVertical: 10 } ] }>Black salt rice is a very high quality rice variety. Due to the black husk, its name is black salt rice. Its importance can be gauged from the fact that this rice is believed to be directly associated with Lord Buddha and hence it is also called ‘Mahaprasad of Mahatma Buddha’.
- Click on the link to order or for more information</Text>
+                        <Text style={ [ styles.normalText, { fontFamily: POPINS_REGULAR, fontSize: 14, paddingVertical: 10 } ] }>{this.removeTags(this.state.data.post_content)}</Text>
 
                     </View>
                     <View>

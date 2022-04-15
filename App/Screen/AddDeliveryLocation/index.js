@@ -26,7 +26,8 @@ class AddDeliveryLocation extends Component
         this.state = {
             deliveryCode: '',
             currentLocation: '',
-            visible: false
+            visible: false,
+            localArea:""
         }
     }
 
@@ -90,11 +91,19 @@ class AddDeliveryLocation extends Component
                                return data.long_name[0];
                             }
                         })
+                        let AddreesCode= addressComponent.filter((data)=>{
+                            console.log("data",data)
+                        if(data.types[0]=== 'locality'){
+                           return data.long_name[0];
+                        }
+                    })
                         this.setState({
                             visible:false,
-                            deliveryCode:PostalCode[0].long_name})
+                            deliveryCode:PostalCode[0].long_name,
+                            localArea:AddreesCode[0].long_name
+                         })
                         // console.log( addressComponent );
-                        console.log( "posatl code", PostalCode );
+                        console.log( "posatl code",AddreesCode[0].long_name+','+PostalCode[0].long_name );
                     } )
                     .catch( error => console.warn( error ) );
             },
@@ -128,9 +137,10 @@ class AddDeliveryLocation extends Component
                         type: PINCODE_SUCESS,
                         payload: JSON.parse( responce ).data
                     } );
-                  
+                        let display=this.state.localArea.toString() +' , '+this.state.deliveryCode.toString();
                         AsyncStorage.setItem( 'PostalCode', JSON.stringify( {
                             code: this.state.deliveryCode,
+                            disPlay:display,
                             isAdded: true
                         } ) )
                             .then( ( response ) =>
@@ -219,10 +229,10 @@ class AddDeliveryLocation extends Component
                             </View>
                             <View >
                                 <Input
-
+                                   
                                     title={ "Add Your Delivery Location" }
                                     value={ this.state.deliveryCode }
-                                    maxLength={ 6 }
+                                    maxLength={6}
                                     onChangeText={ ( text ) =>
                                     {
                                         this.setState( {

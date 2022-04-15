@@ -12,6 +12,7 @@ const Input = ( props ) =>
             <View style={ styles.inputView }>
                 <TextInput
                  blurOnSubmit={false}
+                 onEndEditing={props.onEndEditing}
                     placeholderTextColor={ Text_Gray }
                     style={ [styles.input,props.inputStyle] }
                     placeholder={ props.placeholder }
