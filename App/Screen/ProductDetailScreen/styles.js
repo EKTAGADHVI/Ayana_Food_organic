@@ -5,7 +5,7 @@ import { POPINS_BOLD, POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts
 
 const styles = StyleSheet.create( {
     mainLayout: {
-        height: screen_height,
+        
         // backgroundColor:White
     },
     ImageContainer: {

@@ -9,7 +9,8 @@ import { Black, Gray, Light_Gray, Light_Green, Text_Gray, White } from '../../Ut
 import { screen_height } from '../../Utils/constant';
 import { POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
-
+import RazorpayCheckout from 'react-native-razorpay';
+// import PayuMoney,{HashGenerator} from 'react-native-payumoney';
 class OrderPreview extends Component
 {
     constructor ( props )
@@ -29,11 +30,75 @@ class OrderPreview extends Component
             }],
             checked:0
         }
+       
     }
-    async componentDidMount ()
+    RazaroPayment =()=>{
+        var options = {
+          description: 'Credits towards consultation',
+          image: 'https://i.imgur.com/3g7nmJC.png',
+          currency: 'INR',
+          key: 'rzp_test_f6l6m6k12uB9NY', // Your api key
+          amount: '100',
+          name: 'foo',
+          prefill: {
+            email: 'himanshu@uniqdatasolution.com',
+            contact: '7285004531',
+            name: 'Razorpay Software'
+          },
+          theme: {color: '#F37254'}
+        }
+        RazorpayCheckout.open(options).then((data) => {
+          // handle success
+          alert(`Success: ${data.razorpay_payment_id}`);
+        }).catch((error) => {
+          // handle failure
+          alert(`Error: ${error.code} | ${error.description}`);
+        });
+      }
+
+    initiatePayment=()=>{
+        let code=HashGenerator({
+            key: '3TnMpV',
+            amount: '1.0',
+            email: 'himanshu@uniqdatasolution.com',
+            txnId: '1594976828726',
+            productName: 'ring',
+            firstName: 'Himanshu',
+            salt: 'g0nGFe03',
+        });
+
+        console.log("Code",code)
+        const payData = {
+            amount: '1.0',
+            txnId: '1594976828726',     
+            productName: 'ring',
+            firstName: 'Himanshu',
+            email: 'himanshu@uniqdatasolution.com',
+            phone: '7285004531',
+            merchantId: '8552038',
+            key: '3TnMpV',
+            successUrl: 'https://www.payumoney.com/mobileapp/payumoney/success.php',
+            failedUrl: 'https://www.payumoney.com/mobileapp/payumoney/failure.php',
+            isDebug: false,
+            hash:code,
+        }
+
+        PayuMoney(payData).then((data) => {
+            // Payment Success
+            console.log(data)
+        }).catch((e) => {
+            // Payment Failed
+            console.log(e)
+        })
+        
+    }
+        async componentDidMount ()
     {
         // await AsyncStorage.getItem('add')
     }
+
+    OrderSucess =()=>{}
+    OrderFailure = ()=>{}
     render ()
     {
         return (
@@ -115,14 +180,15 @@ class OrderPreview extends Component
                             );
                         })
                     }
-                    <View style={{height:200}}></View>
+                    <View style={{height:100}}></View>
                        <View style={{paddingVertical:10}}>
                            <Text style={[styles.normalText,{fontSize:10,textAlign:'center',color:Text_Gray,}]}>Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
 </Text>
                        <FilledButton
                                     onPress={ () =>
                                     {
-                                       
+                                    // this.initiatePayment()
+                                    this.RazaroPayment()
                                     } }
                                     title={ "Place Order " } />
                        </View>

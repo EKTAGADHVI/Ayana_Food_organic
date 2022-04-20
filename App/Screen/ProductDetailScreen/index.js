@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, createRef } from 'react';
 import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Rating } from 'react-native-ratings';
 import { connect } from 'react-redux';
@@ -8,7 +9,7 @@ import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
 import { actions } from '../../Redux/actions';
 import { Black, Gray, Light_Green, White } from '../../Utils/colors';
-import { screen_width } from '../../Utils/constant';
+import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_REGULAR } from '../../Utils/fonts';
 import styles from './styles';
 let removeString = "<p></p>";
@@ -31,9 +32,11 @@ class ProductDetailScreen extends Component
             isTerm: false,
             // id:this.props.route.params?.data?.ID,
             data: this.props.route.params?.data,
-            variation: this.props.route.params?.data?.variation,
+            // variation: this.props.route.params?.data?.variation,
+            variation: [],
             description: this.props.route.params?.data?.post_content,
-            price: this.props.route.params?.data?.variation[ 0 ]?._price,
+            // price: this.props.route.params?.data?.variation[ 0 ]?._price,
+              price: 50,
             images: this.props.route.params?.data?.img,
             raingCount: this.props.route.params?.data?.rating[ 0 ].meta_value,
             checked: 0,
@@ -152,7 +155,7 @@ class ProductDetailScreen extends Component
             {
                 let cartData = [];
               
-
+                // previousData=[];
                 let finalItem ={
                     ...item,
                     selectedVariation:this.state.selectedVarinat,
@@ -162,11 +165,14 @@ class ProductDetailScreen extends Component
                     regPrice:this.state.regPrice,
                     sPrice:this.state.sPrice
                 };
-                cartData.push(finalItem );
-                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( cartData ) )
+               previousData.push(finalItem );
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
                     .then( ( res ) =>
-                    {
+                    { EventRegister.emit('Add-to-cart')
+                       
+                       setTimeout(()=>{
                         this.props.navigation.navigate('Cart');
+                       },1000)
                         console.log( "Sucessfully Added" );
                     } )
                     .catch( ( error ) =>
@@ -176,7 +182,58 @@ class ProductDetailScreen extends Component
             }
             else
             {
-                
+                // let finalItem ={
+                //     ...item,
+                //     selectedVariation:this.state.selectedVarinat,
+                //     cartPrice:this.state.price * this.state.quentity + 1,
+                //     cartRegularPrice:this.state.cartRegularPrice,
+                //     cartQuentity:this.state.quentity,
+                //     regPrice:this.state.regPrice,
+                //     sPrice:this.state.sPrice
+                // };
+                // previousData.push(finalItem );
+               let UpdatedData= previousData.filter((data)=>{
+                    if(data.ID===item.ID)
+                    {
+                        if(data.selectedVariation!==this.state.selectedVarinat){
+                            // let finalItem ={
+                            //     ...data,
+                            //     selectedVariation:this.state.selectedVarinat,
+                            //     cartPrice:this.state.price * this.state.quentity + 1,
+                            //     cartRegularPrice:this.state.cartRegularPrice,
+                            //     cartQuentity:this.state.quentity,
+                            //     regPrice:this.state.regPrice,
+                            //     sPrice:this.state.sPrice
+                            // };
+                            return data
+                        }
+                    }
+                });
+                console.log("DAATTATATTATA",UpdatedData)
+                this.setState({quentity:this.state.quentity+1})
+                UpdatedData.push({
+                   
+                                ...item,
+                                selectedVariation:this.state.selectedVarinat,
+                                cartPrice:this.state.price * this.state.quentity,
+                                cartRegularPrice:this.state.cartRegularPrice,
+                                cartQuentity:this.state.quentity ,
+                                regPrice:this.state.regPrice,
+                                sPrice:this.state.sPrice
+                            
+                })
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedData ) )
+                    .then( ( res ) =>
+                    {
+
+                        EventRegister.emit('Add-to-cart')
+                        this.props.navigation.navigate('Cart');
+                        console.log( "Sucessfully Added" );
+                    } )
+                    .catch( ( error ) =>
+                    {
+                        console.log( "error", error );
+                    } )
                 // alert( "Item Already added" )
             }
         }
@@ -334,8 +391,9 @@ class ProductDetailScreen extends Component
     {
         return (
             <View style={ styles.mainLayout }>
-                <SafeAreaView style={ { backgroundColor: White } }>
-                    <ScrollView>
+              
+                <SafeAreaView style={ { backgroundColor: White,height:screen_height } }>
+                <ScrollView>
                         <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } }
                             style={ { backgroundColor: Gray } }
                             title={ "Product Detail" }
@@ -498,19 +556,7 @@ class ProductDetailScreen extends Component
                                     }
                                 </View>
                             </View>
-                            {/* {
-                                this.state.data.variation.map( ( item, index ) =>
-                                {
-                                    
-                                    console.log("Item Attributes",item)
-
-                                    return (
-                                 
-                                      
-                                        
-                                    );
-                                } )
-                            } */}
+                          
                             <View style={ [ styles.container, {
                                 marginHorizontal: 10
                                 ,
@@ -614,17 +660,9 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                            </View>:null
                                         }
 
-                                {/* {
-                           this.state.isDiscription === true ?
-                           <View>
-                           <Text style={styles.smallText}>Crafted with handpicked potatoes, Parle’s wafers are delightfully crunchy and light. 
-Available in exciting flavours: Cream n Onion, Masala Masti, Tangy Tomato, Classic Salted, Piri Piri, Aloo Chaat, Subtle Onion.
-Parle presents their authentic and flavourful range of sweets and snacks that are made from high-quality ingredients that are delectable to the palate and will make you crave for more with every bite.</Text>
-                       </View>
-                       :null
-                       } */}
+                             
                             </View>
-                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
+                            <View style={ [ styles.container, { marginHorizontal: 15,} ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
@@ -641,17 +679,9 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
 
                                 </View>
 
-                                {/* {
-   this.state.isDiscription === true ?
-   <View>
-   <Text style={styles.smallText}>Crafted with handpicked potatoes, Parle’s wafers are delightfully crunchy and light. 
-Available in exciting flavours: Cream n Onion, Masala Masti, Tangy Tomato, Classic Salted, Piri Piri, Aloo Chaat, Subtle Onion.
-Parle presents their authentic and flavourful range of sweets and snacks that are made from high-quality ingredients that are delectable to the palate and will make you crave for more with every bite.</Text>
-</View>
-:null
-} */}
+                           
                             </View>
-                            <View style={ [ styles.rowView, { justifyContent: 'space-evenly', paddingVertical: "10%" } ] }>
+                            <View style={ [ styles.rowView, { justifyContent: 'space-evenly', marginVertical:20 } ] }>
                                 <FilledButton
                                     style={ { width: screen_width / 2 - 30 } }
                                     onPress={ () => { this.addToCart( this.state.data ) } }
@@ -669,10 +699,10 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     title={ "WhatsApp " } />
                             </View>
                         </View>
-                    </ScrollView>
+                        </ScrollView>
                 </SafeAreaView>
 
-
+               
             </View>
         )
     }

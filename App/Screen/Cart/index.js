@@ -101,16 +101,17 @@ class Cart extends Component
        
     }
 
-    removeItem = async ( id ) =>
+    removeItem = async ( id,index2 ) =>
     {
-        let remove = this.state.cartData.filter( ( data ) =>
+        console.log("Index",index2)
+        let remove = this.state.cartData.filter( ( data,index ) =>
         {
-            return data.ID !== id
+            return  index!==index2
         } );
         await AsyncStorage.setItem( 'AddToCart', JSON.stringify( remove ) )
             .then( ( res ) =>
             {
-                
+                EventRegister.emit('Add-to-cart')
                 this.setState( { cartData: remove } )
             } )
             .catch( ( error ) =>
@@ -130,16 +131,17 @@ class Cart extends Component
         this.setState({checkOutPrice:total})
         
     }
-onDecrement =(id,value,index,item)=>{  
+onDecrement =(id,value,index2,item)=>{  
     console.log('item',item.ID);
-        let onIncrement = value - 1;
-
-        console.log("Before update: ", this.state.cartData[index]);
      
-        const UpdatedArray=this.state.cartData.map((item)=>{
+        console.log("Before update: ", this.state.cartData[index2]);
+     
+        const UpdatedArray=this.state.cartData.map((item,index)=>{
            
            
-             if( item.ID===id ) {
+             if( item.ID===id && index==index2 ) {
+                let onIncrement = value - 1;
+
                     console.log("value",item.variation?._price)
                       let data={
                         ...item,                      
@@ -147,14 +149,15 @@ onDecrement =(id,value,index,item)=>{
                         cartRegularPrice:item.regPrice * onIncrement,
                         cartQuentity:parseInt(onIncrement)
                       }
-                      this.setState({checkOutPrice:item.sPrice * onIncrement})
+                      EventRegister.emit('Add-to-cart')
+                    //   this.setState({checkOutPrice:item.sPrice * onIncrement})
                       return data;
                      
                     }
                     else{
                         return item
                     }
-                   
+                 
                 
         });
         console.log('updatedAttya', UpdatedArray)
@@ -167,15 +170,16 @@ onDecrement =(id,value,index,item)=>{
             console.log("error",error)
         });
     }
-    onIncrement =(id,value,index,item)=>{  
-        let onIncrement = value +1;
-
-        console.log("Before update: ", this.state.cartData[index]);
+    onIncrement =(id,value,index2,item)=>{  
+       
+        console.log("Before update: ", this.state.cartData[index2]);
      
-        const UpdatedArray=this.state.cartData.map((item)=>{
+        const UpdatedArray=this.state.cartData.map((item,index)=>{
            
            
-             if( item.ID===id ) {
+             if( item.ID===id && index==index2  ) {
+                let onIncrement = value +1;
+                EventRegister.emit('Add-to-cart')
                     console.log("value",item.variation?._price)
                       let data={
                         ...item,                      
@@ -183,7 +187,8 @@ onDecrement =(id,value,index,item)=>{
                         cartRegularPrice:item.regPrice * onIncrement,
                         cartQuentity:parseInt(onIncrement)
                       }
-                      this.setState({checkOutPrice:item.sPrice * onIncrement})
+                   
+                    //   this.setState({checkOutPrice:item.sPrice * onIncrement})
                       return data;
                      
                     }
@@ -207,7 +212,11 @@ onDecrement =(id,value,index,item)=>{
     {
   
         return (
-            <View style={ styles.ItemView }>
+            <TouchableOpacity onPress ={()=>{
+                this.props.navigation.navigate( 'ProductDetailScreen', {
+                    data: item
+                } )
+            }}style={ styles.ItemView }>
                 <View style={ { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', } }>
                  {
                      item.img.length>0?
@@ -254,7 +263,7 @@ onDecrement =(id,value,index,item)=>{
                     } }
                         onPress={ () =>
                         {
-                            this.removeItem( item.ID )
+                            this.removeItem( item.ID,index )
                         } }>
                         <Image
                             style={ [ styles.iconStyle2, { tintColor: Gray, } ] }
@@ -263,14 +272,14 @@ onDecrement =(id,value,index,item)=>{
                     <View style={ {
                         top: "30%", alignSelf: 'flex-end'
                     } }>
-                        <Text style={ [ styles.smallText, { textDecorationLine: 'line-through', textDecorationStyle: 'solid' } ] }>Rs. { item.cartRegularPrice }</Text>
+                        <Text style={ [ styles.smallText, { textDecorationLine: 'line-through', textDecorationStyle: 'solid' } ] }>Rs. { item.regPrice }</Text>
 
 
 
-                        <Text style={ [ styles.normalText ] }>Rs. { item.cartPrice }</Text>
+                        <Text style={ [ styles.normalText ] }>Rs. { item.sPrice }</Text>
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     }
 

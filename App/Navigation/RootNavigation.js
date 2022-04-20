@@ -1,6 +1,6 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator , CardStyleInterpolators,   } from '@react-navigation/native-stack';
 import LoginScreen from '../Screen/LoginScreen';
 import Dashboard from '../Screen/Dashboard';
 import { Black, Gray, Light_Green, Text_Gray, White } from '../Utils/colors';
@@ -64,7 +64,7 @@ const TabBarIcon = ( props ) =>
 const RootNavigation = ( { navigation } ) =>
 {
     return (
-        <mainStack.Navigator>
+        <mainStack.Navigator >
             <mainStack.Screen
                 name="SplashScreen"
                 component={ SplashScreen }

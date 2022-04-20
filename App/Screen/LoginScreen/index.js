@@ -53,17 +53,42 @@ import {
     }
 
 
-    onPressFB=()=>{
+    onPressFB=async()=>{
         LoginManager.logInWithPermissions(["public_profile"]).then(
-            function(result) {
+            (result)=> {
+                AsyncStorage.getItem('PostalCode')
+                .then((res)=>{
+                    if(res !== null && res !== ''){
+                        this.props.navigation.dispatch(
+                            CommonActions.reset({
+                              index: 1,
+                              routes: [
+                                { name: 'Home' },
+                              ],
+                            })
+                          );
+                    }
+                    else{
+                        this.props.navigation.dispatch(
+                            CommonActions.reset({
+                              index: 1,
+                              routes: [
+                                { name: 'AddDeliveryLocation' },
+                              ],
+                            })
+                          );  
+                    }
+                })
+                .catch((err)=>{})
               if (result.isCancelled) {
                 console.log("Login cancelled");
               } else {
+             
                 console.log(
                   "Login success with permissions: " +
                     result.grantedPermissions.toString()
                 );
-
+          
                 const currentProfile = Profile.getCurrentProfile().then(
                     function(currentProfile) {
                       if (currentProfile) {
@@ -72,7 +97,7 @@ import {
                           + ". His profile id is: " +
                           currentProfile.userID
                         );
-                        this.next_navigation()
+                       
                       }
                     }
                   );

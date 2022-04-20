@@ -485,16 +485,21 @@ class Dashboard extends Component
 
     displayPrice = ( data ) =>
     {
+       
         let price = "";
         if ( data.length > 1 )
         {
-            price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+           price=data.reduce(function(prev, curr) {
+                return prev._sale_price < curr._sale_price ? prev : curr;
+            });
+            console.log("MIN",price)
+            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-            price = data[ 0 ].meta_value
+            price = data[ 0 ]._sale_price
         }
-        return price;
+        return price._sale_price;
     }
     render ()
     {
@@ -684,6 +689,7 @@ class Dashboard extends Component
                                     keyExtractor={ ( item, index ) => index.toString() }
                                     renderItem={ ( { item, index } ) =>
                                     {
+                                        // console.log("Ite,")
 
                                         var count = 14;
                                         // let name= item.name;
@@ -694,8 +700,9 @@ class Dashboard extends Component
                                                 name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                                 image={ item.img[ 0 ].img_path }
                                                 rating={ item.rating[ 0 ].meta_value }
-                                                price={ this.displayPrice( item.price ) }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                // price={ this.displayPrice( item.variation ) }
+                                                price={ 50 }
+                                                // discount={ this.discountInPercentage( item.variation[ 0 ] ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -712,7 +719,7 @@ class Dashboard extends Component
                                     } } />
                             </View>
 
-                            <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
+                            {/* <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                                 <Text style={ styles.labelText }>Best Deals</Text>
                                 <Pressable>
                                     <Text style={ styles.smallText }>see more</Text>
@@ -737,7 +744,7 @@ class Dashboard extends Component
                                         }
 
                                     } } />
-                            </View>
+                            </View> */}
                             <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                                 <Text style={ styles.labelText }>Premium Videos</Text>
                                 <Pressable>
@@ -819,8 +826,9 @@ class Dashboard extends Component
                                                 name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                                 image={ item.img[ 0 ].img_path }
                                                 rating={ item.rating[ 0 ].meta_value }
-                                                price={ this.displayPrice( item.price ) }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                // price={ this.displayPrice( item.variation ) }
+                                                price={ 50 }
+                                                // discount={ this.discountInPercentage( item.variation[ 0 ] ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -862,8 +870,8 @@ class Dashboard extends Component
                             </View>
 
 
-                            <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
-                                <Text style={ styles.labelText }>Best Sallers</Text>
+                            {/* <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
+                                <Text style={ styles.labelText }>Best Sellers</Text>
                                 <Pressable>
                                     <Text style={ styles.smallText }>see more</Text>
                                 </Pressable>
@@ -887,7 +895,7 @@ class Dashboard extends Component
                                         }
 
                                     } } />
-                            </View>
+                            </View> */}
                             <ImageBackground style={ styles.bannerStyle }
                                 source={ require( '../../../assets/bannerImage.png' ) }>
                                 <Text style={ styles.banerText }>FOOD,HELTH,ORGANIC</Text>
@@ -941,8 +949,9 @@ class Dashboard extends Component
                                                 name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                                 image={ item.img[ 0 ].img_path }
                                                 rating={ item.rating[ 0 ].meta_value }
-                                                price={ this.displayPrice( item.price ) }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                // price={ this.displayPrice( item.variation ) }
+                                                price={ 50 }
+                                                // discount={ this.discountInPercentage( item.variation[ 0 ] ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -993,8 +1002,9 @@ class Dashboard extends Component
                                                 name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                                 image={ item.img[ 0 ].img_path }
                                                 rating={ item.rating[ 0 ].meta_value }
-                                                price={ this.displayPrice( item.price ) }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                // price={ this.displayPrice( item.variation ) }
+                                                  price={50  }
+                                                // discount={ this.discountInPercentage( item.variation[ 0 ] ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -1099,8 +1109,9 @@ class Dashboard extends Component
                                                 name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                                 image={ item.img[ 0 ].img_path }
                                                 rating={ item.rating[ 0 ].meta_value }
-                                                price={ this.displayPrice( item.price ) }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                // price={ this.displayPrice( item.variation ) }
+                                                price={50 }
+                                                // discount={ this.discountInPercentage( item.variation[ 0 ] ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
