@@ -1,10 +1,12 @@
 import Apis from "../../RestApi/Apis";
+import { initialState } from "../../Utils/constant";
 import { CATEGOERIES_LIST_EROOR, CATEGOERIES_LIST_LOADING, CATEGOERIES_LIST_SUCESS } from "../actionTypes";
 
 export function getCategoeryListAction (request){
     return dispatch =>{
         dispatch({
-            type: CATEGOERIES_LIST_LOADING
+            type: CATEGOERIES_LIST_LOADING,
+           
         });
 
       Apis.getCategoeryListCall(request)

@@ -6,7 +6,9 @@ import { POPINS_REGULAR } from '../Utils/fonts';
 const FilledButton = (props)=>{
 
     return(
-        <TouchableOpacity disabled={props.disabled} style={[styles.btnStyle,props.style]}
+        <TouchableOpacity 
+        
+        disabled={props.disabled} style={[styles.btnStyle,props.style,]}
         onPress={props.onPress}>
             <Text style={[styles.btnText,props.textStyle]}>{props.title}</Text>
         </TouchableOpacity>
@@ -18,7 +20,8 @@ const styles= StyleSheet.create({
     btnStyle:{
         borderRadius:19,
         backgroundColor:Light_Green,
-        marginVertical:10
+        marginVertical:10,
+        
     },
     btnText:{
         color:White,

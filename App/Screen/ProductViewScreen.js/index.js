@@ -158,16 +158,45 @@ class ProductViewScreen extends Component
     }
     displayPrice = ( data ) =>
     {
+
         let price = "";
         if ( data.length > 1 )
         {
-            price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+            price = data.reduce( function ( prev, curr )
+            {
+                return prev._sale_price < curr._sale_price ? prev : curr;
+            } );
+            console.log( "MIN", price )
+            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-            price = data[ 0 ].meta_value
+            price = data[ 0 ]._sale_price
         }
-        return price;
+        return price._sale_price;
+    
+
+    }
+    displayWeight = ( data ) =>
+    {
+
+        let price = "";
+        if ( data.length > 1 )
+        {
+            price = data.reduce( function ( prev, curr )
+            {
+                return prev._sale_price < curr._sale_price ? prev : curr;
+            } );
+            console.log( "MIN", price )
+            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+        }
+        else
+        {
+            price = data[ 0 ].attribute_pa_weight
+        }
+        return price.attribute_pa_weight;
+    
+
     }
     discountInPercentage = ( data ) =>
     {
@@ -296,8 +325,9 @@ class ProductViewScreen extends Component
                                         image={ item.img[ 0 ].img_path }
                                         // image={ item.img[0].img_path }
                                         rating={ item.rating[ 0 ].meta_value }
+                                        weight={this.displayWeight(item.variation)}
                                         discount={ this.discountInPercentage( item.variation[ 0 ] ) }
-                                        price={ this.displayPrice( item.price ) }
+                                        price={ this.displayPrice( item.variation ) }
                                         storeName={ item.seller_name }
                                         onPress={ () =>
                                         {

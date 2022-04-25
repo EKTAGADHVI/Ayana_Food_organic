@@ -56,7 +56,7 @@ class Orders extends Component{
         return(
             <View style={styles.mainLayout}>
                 <SafeAreaView>
-                <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ 'Orders' } />
+                <BasicHeader OnBackPress={ () => { this.props.navigation.navigate('Account') } } title={ 'Orders' } />
                 <View style={{height:screen_height*0.85,}}>
                     <FlatList
                     data={this.state.link}

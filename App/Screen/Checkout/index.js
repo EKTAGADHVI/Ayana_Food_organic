@@ -37,7 +37,10 @@ class CheckOut extends Component
             product:'',
             totalPrice:this.props.route.params.totalPrice,
             CheckOutData:this.props.route.params.checkoutData,
-            visible:false
+            visible:false,
+            // isFname:false,
+            // isLname:false,
+            // is
         }
     }
 
@@ -102,7 +105,7 @@ class CheckOut extends Component
                     this.props.navigation.navigate('OrderPreview',{
                         totalPrice:this.state.totalPrice,
                         data:this.state.CheckOutData,
-                        billigData:billingData
+                        billingData:billingData
                     })
                   
                   },1500)
@@ -111,6 +114,71 @@ class CheckOut extends Component
     }
     render ()
     {
+        let isFname=false;
+        let isLname=false;
+        let isStreetAddress=false;
+        let isCity=false;
+        let isState=false;
+        let isPincode=false;
+        let isBillingNo=false;
+        let isBillingEmail=false;
+
+        if(this.state.fName === ""){
+            isFname=false
+            // ToastMessage('error','Enter  First Name','Please Check')
+        }
+        else{
+            isFname=true
+         }
+       if(this.state.lName== ""){
+           isLname=false;
+            // ToastMessage('error','Enter  Last Name','Please Check')
+        }
+        else{
+            isLname=true
+        }
+        if(this.state.stretAddress==""){
+            isStreetAddress=false
+            // ToastMessage('error','Enter  Street Address','Please Check')
+        }else{
+            isStreetAddress=true
+        }
+       if(this.state.city == ""){
+           isCity=false
+            // ToastMessage('error','Enter City Name' ,'Please Check')
+        }
+        else{
+            isCity=true
+        }
+         if(this.state.state_Value == ''){
+             isState=false;
+            // ToastMessage('error','Enter State Name' ,'Please Check')
+        }
+        else{
+            isState=true;
+        }
+        if(this.state.pinCode==''){
+            isPincode=false
+            // ToastMessage('error','Enter Pincode' ,'Please Check')
+        }else{
+            isPincode=true
+        }
+        if(this.state.billingPhone== ''){
+            isBillingNo=false
+            // ToastMessage('error','Enter Billing Phone' ,'Please Check')
+        }
+        else{
+            isBillingNo=true;
+        }
+      if(this.state.billingEmail == ''){
+          isBillingEmail=false;
+            // this.setState({viewBtn:true})
+            // ToastMessage('error','Enter Billing Email' ,'Please Check')
+        }
+        else{
+            isBillingEmail=true;
+        }
+
         return (
             <View style={ styles.mainLayout }>
                
@@ -141,7 +209,17 @@ class CheckOut extends Component
                                     title={ "First Name" }
                                     value={ this.state.fName }
                                     onEndEditing={()=>{
-                                        this.setState({viewBtn:false})
+                                        // let isValid=false;
+                                        if(this.state.fName === ""){
+                                            // isValid=false;
+                                            this.setState({viewBtn:false})
+                                            // ToastMessage('error','Enter  First Name','Please Check')
+                                        }
+                                        else{
+
+                                            this.setState({viewBtn:true}) 
+                                        }
+                                       
                                     }}
                                     onChangeText={ ( text ) =>
                                     {
@@ -360,8 +438,26 @@ class CheckOut extends Component
                             />
 
                             <FilledButton title="Apply and Continue"
-                            // disabled={this.state.viewBtn === true ?true :false}
-                                style={ { width: screen_width - 30, borderRadious: 15, marginVertical: "6%", alignSelf: "center", } }
+                            disabled={
+                                (isFname ===true) &&
+                                (isLname ===true) &&
+                                (isStreetAddress ===true)&&
+                                (isCity===true) &&
+                                (isState ===true) &&
+                                (isBillingNo ===true)&&
+                                (isBillingEmail ===true) ?
+                                false :true
+
+                            }
+                                style={ { width: screen_width - 30, borderRadious: 15, marginVertical: "6%", alignSelf: "center",
+                                opacity:   (isFname ===true) &&
+                                (isLname ===true) &&
+                                (isStreetAddress ===true)&&
+                                (isCity===true) &&
+                                (isState ===true) &&
+                                (isBillingNo ===true)&&
+                                (isBillingEmail ===true) ? 1 :0.5
+                             } }
                                 textStyle={ { fontSize: 16, paddingVertical: 8 } }
                                 onPress={ () => {this.validation() } } />
  

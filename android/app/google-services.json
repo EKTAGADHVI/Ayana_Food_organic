@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "565933835520-gnfo389bv6hj69anqsvu0k0gbeuot3oj.apps.googleusercontent.com",
+          "client_id": "565933835520-bbjsi8dvuesnb7amu8da2cj7c16qgpmh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ayanafoodorganic",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "565933835520-hsvqmf6dvikljpk4orps9gkl5pmck131.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ayanafoodorganic",

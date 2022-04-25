@@ -96,7 +96,20 @@ const styles = StyleSheet.create( {
         height:screen_height/12,
         width:screen_width/4,
         // left:6
-    }
+    },
+    modalStyle:{
+        flex: 0.55, 
+        backgroundColor: White ,
+        top:"15%",
+     
+        borderRadius:20,
+        shadowColor:Black,
+        shadowOffset:{
+            height:2,width:0
+        },
+        elevation:3,
+        shadowOpacity: 0.5,
+   },
 } );
 
 export default styles;

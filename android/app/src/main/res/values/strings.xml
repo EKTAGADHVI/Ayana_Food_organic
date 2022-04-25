@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">AyanaFoodOrganic</string>
     <string name="facebook_app_id">280246270981141</string>
-
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">b8b48a9d1506c3f00d307219cf40f3f5</string>
 </resources>

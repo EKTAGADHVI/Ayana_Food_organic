@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
-import { Gray, Light_Green, White } from "../../Utils/colors";
+import { Black, Gray, Light_Green, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
+import { POPINS_SEMI_BOLD } from "../../Utils/fonts";
 
 const styles = StyleSheet.create({
     mainLayout:{
@@ -37,7 +38,39 @@ const styles = StyleSheet.create({
        marginVertical:5,
       
         borderColor:Gray
-    }
+    },
+    modalStyle:{
+         flex: 0.55, 
+         backgroundColor: White ,
+         top:"15%",
+      
+         borderRadius:20,
+         shadowColor:Black,
+         shadowOffset:{
+             height:2,width:0
+         },
+         elevation:3,
+         shadowOpacity: 0.5,
+    },
+    modalStyle2:{
+        flex:1, 
+        backgroundColor: White ,
+         margin:0,
+        borderRadius:20,
+        shadowColor:Black,
+        shadowOffset:{
+            height:2,width:0
+        },
+        elevation:3,
+        shadowOpacity: 0.5,
+   },
+    titleText:{
+        fontSize:20 ,
+        paddingVertical:8,
+        paddingHorizontal:5,
+        textAlign:'center',
+        fontFamily:POPINS_SEMI_BOLD
+    },
     
 })
 

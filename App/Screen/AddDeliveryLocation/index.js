@@ -103,7 +103,7 @@ class AddDeliveryLocation extends Component
                             localArea:AddreesCode[0].long_name
                          })
                         // console.log( addressComponent );
-                        console.log( "posatl code",AddreesCode[0].long_name+','+PostalCode[0].long_name );
+                        console.log( "posatl code",AddreesCode[0].long_name+' '+PostalCode[0].long_name );
                     } )
                     .catch( error => console.warn( error ) );
             },
@@ -137,7 +137,7 @@ class AddDeliveryLocation extends Component
                         type: PINCODE_SUCESS,
                         payload: JSON.parse( responce ).data
                     } );
-                        let display=this.state.localArea.toString() +' , '+this.state.deliveryCode.toString();
+                        let display=this.state.localArea.toString() +'  '+this.state.deliveryCode.toString();
                         AsyncStorage.setItem( 'PostalCode', JSON.stringify( {
                             code: this.state.deliveryCode,
                             disPlay:display,

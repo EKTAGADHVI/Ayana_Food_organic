@@ -42,6 +42,7 @@ const ProductView = ( props ) =>
                 style={ { alignSelf:'flex-start' } }
             />
              <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.storeName}</Text>
+             <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,paddingVertical:3}]}>{props.weight}</Text>
              <Text style={styles.regularText}>Rs. {props.price} /-</Text>
              <TouchableOpacity style={styles.btnView} onPress={props.onAdd}>
                  <Image

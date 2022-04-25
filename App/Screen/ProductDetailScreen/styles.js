@@ -5,8 +5,8 @@ import { POPINS_BOLD, POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts
 
 const styles = StyleSheet.create( {
     mainLayout: {
-        
-        // backgroundColor:White
+        borderWidth:2,
+        backgroundColor:White
     },
     ImageContainer: {
         paddingVertical: 8,
@@ -104,8 +104,8 @@ const styles = StyleSheet.create( {
         flexDirection: "row",
         justifyContent: 'space-between',
         alignItems: 'center',
-
-        padding: 8,
+       paddingHorizontal:5,
+       paddingVertical:10
         
 
 
@@ -113,7 +113,7 @@ const styles = StyleSheet.create( {
     container: {
         borderBottomColor: Gray,
         borderBottomWidth: 1,
-        justifyContent: 'center'
+    
 
     },
     smallText: {

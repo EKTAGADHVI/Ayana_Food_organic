@@ -60,6 +60,7 @@ class Profile extends Component
                     <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ 'Profile' } />
                   {
                       this.state.userData.length>0?
+                      <View>
                       <View style={ styles.profileContainer }>
                       <Image
                           style={ styles.imageStyle }
@@ -83,7 +84,9 @@ class Profile extends Component
                           </View>
                           <Text style={ [ styles.normalText, { color: Text_Gray ,fontSize:12} ] }>{this.state.userData[0].user_email}</Text>
                       </View>
-                      <this.renderProfileMenu
+                   
+                  </View>
+                  <this.renderProfileMenu
                         name={ "Orders" }
                         onPress={ () => { this.props.navigation.navigate('Orders')} }
                         leftIcon={ require( '../../../assets/order.png' ) } />

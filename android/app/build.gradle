@@ -153,7 +153,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-        signingConfigs {
+//            debug {
+//                   storeFile file(MYAPP_UPLOAD_STORE_FILE)
+//                    storePassword MYAPP_UPLOAD_STORE_PASSWORD
+//                    keyAlias MYAPP_UPLOAD_KEY_ALIAS
+//                    keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+//                }
             release {
                 if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
                     storeFile file(MYAPP_UPLOAD_STORE_FILE)
@@ -162,7 +167,7 @@ android {
                     keyPassword MYAPP_UPLOAD_KEY_PASSWORD
                 }
             }
-        }
+
     }
     buildTypes {
         debug {
@@ -203,7 +208,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
@@ -234,6 +239,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.implementation
     into 'libs'
 }
-
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply plugin: 'com.google.gms.google-services'
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

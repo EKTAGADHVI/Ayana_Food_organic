@@ -13,7 +13,7 @@ import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_REGULAR } from '../../Utils/fonts';
 import styles from './styles';
 let removeString = "<p></p>";
-
+const startImage = require('../../../assets/star.png')
 class ProductDetailScreen extends Component
 {
     flatList = createRef();
@@ -22,9 +22,9 @@ class ProductDetailScreen extends Component
     constructor ( props )
     {
         super( props );
-        this.props.productById({
-            'product_id':this.props.route.params?.data.ID
-        });
+        this.props.productById( {
+            'product_id': this.props.route.params?.data.ID
+        } );
         this.state = {
             currentIndex: 0,
             quentity: 1,
@@ -36,20 +36,20 @@ class ProductDetailScreen extends Component
             variation: [],
             description: this.props.route.params?.data?.post_content,
             // price: this.props.route.params?.data?.variation[ 0 ]?._price,
-              price: 50,
+            price: 50,
             images: this.props.route.params?.data?.img,
             raingCount: this.props.route.params?.data?.rating[ 0 ].meta_value,
             checked: 0,
             postalCode: '',
             isFav: false,
-            selectedVarinat:this.props.route.params?.data?.variation[ 0 ]?.attribute_pa_weight,
-            cartSellPrice:this.props.route.params?.data?.variation[ 0 ]?._sale_price,
-            cartRegularPrice:this.props.route.params?.data?.variation[ 0 ]?._regular_price,
-            instock:this.props.route.params?.data?.variation[ 0 ]?._stock_status,
-            regPrice:this.props.route.params?.data?.variation[ 0 ]?._regular_price,
-            sPrice:this.props.route.params?.data?.variation[ 0 ]?._sale_price
+            selectedVarinat: this.props.route.params?.data?.variation[ 0 ]?.attribute_pa_weight,
+            cartSellPrice: this.props.route.params?.data?.variation[ 0 ]?._sale_price,
+            cartRegularPrice: this.props.route.params?.data?.variation[ 0 ]?._regular_price,
+            instock: this.props.route.params?.data?.variation[ 0 ]?._stock_status,
+            regPrice: this.props.route.params?.data?.variation[ 0 ]?._regular_price,
+            sPrice: this.props.route.params?.data?.variation[ 0 ]?._sale_price
         }
-       
+
         this.viewabilityConfig = {
             viewAreaCoveragePercentThreshold: 50,
             waitForInteraction: true,
@@ -103,9 +103,9 @@ class ProductDetailScreen extends Component
 
     }
     addToCart = async ( item ) =>
-    { 
-        let added=false;
-        let previousData=null;
+    {
+        let added = false;
+        let previousData = null;
         let alreadyAdded = false;
         try
         {
@@ -114,7 +114,7 @@ class ProductDetailScreen extends Component
                 {
                     console.log( "DashBoard Cart", res )
                     let cart = JSON.parse( res );
-                    previousData=JSON.parse( res );
+                    previousData = JSON.parse( res );
                     if ( res !== null && cart.length > 0 )
                     {
                         // this.setState( { cartItem: cart.length } )
@@ -123,25 +123,28 @@ class ProductDetailScreen extends Component
 
                             console.log( "DHDHDH", data );
                             if ( data.ID === item.ID )
-                            {   
-                                if(data.selectedVariation===this.state.selectedVarinat){
-                                    added =true;
+                            {
+                                if ( data.selectedVariation === this.state.selectedVarinat )
+                                {
+                                    added = true;
                                 }
-                                else{
-                                    added=false
+                                else
+                                {
+                                    added = false
                                 }
                                 return true;
                             }
                             else;
-                            {   added=false;
+                            {
+                                added = false;
                                 return false;
                             }
                         } );
                     }
                     else
                     {
-                        added=false;
-                        alreadyAdded=false;
+                        added = false;
+                        alreadyAdded = false;
                     }
                 } )
                 .catch( ( error ) =>
@@ -150,29 +153,31 @@ class ProductDetailScreen extends Component
                     // this.setState( { cartData: [] } )
                 } )
 
-                console.log("Alreday Added",added)
+            console.log( "Alreday Added", added )
             if ( added === false )
             {
                 let cartData = [];
-              
+
                 // previousData=[];
-                let finalItem ={
+                let finalItem = {
                     ...item,
-                    selectedVariation:this.state.selectedVarinat,
-                    cartPrice:this.state.price * this.state.quentity,
-                    cartRegularPrice:this.state.cartRegularPrice,
-                    cartQuentity:this.state.quentity,
-                    regPrice:this.state.regPrice,
-                    sPrice:this.state.sPrice
+                    selectedVariation: this.state.selectedVarinat,
+                    cartPrice: this.state.price * this.state.quentity,
+                    cartRegularPrice: this.state.cartRegularPrice,
+                    cartQuentity: this.state.quentity,
+                    regPrice: this.state.regPrice,
+                    sPrice: this.state.sPrice
                 };
-               previousData.push(finalItem );
+                previousData.push( finalItem );
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
                     .then( ( res ) =>
-                    { EventRegister.emit('Add-to-cart')
-                       
-                       setTimeout(()=>{
-                        this.props.navigation.navigate('Cart');
-                       },1000)
+                    {
+                        EventRegister.emit( 'Add-to-cart' )
+
+                        setTimeout( () =>
+                        {
+                            this.props.navigation.navigate( 'Cart' );
+                        }, 1000 )
                         console.log( "Sucessfully Added" );
                     } )
                     .catch( ( error ) =>
@@ -192,10 +197,12 @@ class ProductDetailScreen extends Component
                 //     sPrice:this.state.sPrice
                 // };
                 // previousData.push(finalItem );
-               let UpdatedData= previousData.filter((data)=>{
-                    if(data.ID===item.ID)
+                let UpdatedData = previousData.filter( ( data ) =>
+                {
+                    if ( data.ID === item.ID )
                     {
-                        if(data.selectedVariation!==this.state.selectedVarinat){
+                        if ( data.selectedVariation !== this.state.selectedVarinat )
+                        {
                             // let finalItem ={
                             //     ...data,
                             //     selectedVariation:this.state.selectedVarinat,
@@ -208,26 +215,45 @@ class ProductDetailScreen extends Component
                             return data
                         }
                     }
-                });
-                console.log("DAATTATATTATA",UpdatedData)
-                this.setState({quentity:this.state.quentity+1})
-                UpdatedData.push({
-                   
-                                ...item,
-                                selectedVariation:this.state.selectedVarinat,
-                                cartPrice:this.state.price * this.state.quentity,
-                                cartRegularPrice:this.state.cartRegularPrice,
-                                cartQuentity:this.state.quentity ,
-                                regPrice:this.state.regPrice,
-                                sPrice:this.state.sPrice
-                            
-                })
-                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedData ) )
+                } );
+                let oldData = previousData.filter( ( data ) =>
+                {
+                    if ( data.ID !== item.ID )
+                    {
+                        if ( data.selectedVariation !== this.state.selectedVarinat )
+                        {
+                            // let finalItem ={
+                            //     ...data,
+                            //     selectedVariation:this.state.selectedVarinat,
+                            //     cartPrice:this.state.price * this.state.quentity + 1,
+                            //     cartRegularPrice:this.state.cartRegularPrice,
+                            //     cartQuentity:this.state.quentity,
+                            //     regPrice:this.state.regPrice,
+                            //     sPrice:this.state.sPrice
+                            // };
+                            return data
+                        }
+                    }
+                } );
+                console.log( "DAATTATATTATA", UpdatedData )
+                this.setState( { quentity: this.state.quentity + 1 } )
+                oldData.push( {
+
+                    ...item,
+                    selectedVariation: this.state.selectedVarinat,
+                    cartPrice: this.state.price * this.state.quentity,
+                    cartRegularPrice: this.state.cartRegularPrice,
+                    cartQuentity: this.state.quentity,
+                    regPrice: this.state.regPrice,
+                    sPrice: this.state.sPrice
+
+                } )
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( oldData ) )
                     .then( ( res ) =>
                     {
 
-                        EventRegister.emit('Add-to-cart')
-                        this.props.navigation.navigate('Cart');
+                        EventRegister.emit( 'Add-to-cart' )
+                        this.props.navigation.navigate( 'Cart' );
                         console.log( "Sucessfully Added" );
                     } )
                     .catch( ( error ) =>
@@ -256,7 +282,7 @@ class ProductDetailScreen extends Component
                     {
                         return data.ID !== id
                     } );
-                     AsyncStorage.setItem( 'addToFav', JSON.stringify( remove ) )
+                    AsyncStorage.setItem( 'addToFav', JSON.stringify( remove ) )
                         .then( ( res ) =>
                         {
                             this.setState( { isFav: false } )
@@ -390,10 +416,10 @@ class ProductDetailScreen extends Component
     render ()
     {
         return (
-            <View style={ styles.mainLayout }>
-              
-                <SafeAreaView style={ { backgroundColor: White,height:screen_height } }>
-                <ScrollView>
+            <View style={{backgroundColor:White}}>
+            <SafeAreaView>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <View style={ { backgroundColor: White } }>
                         <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } }
                             style={ { backgroundColor: Gray } }
                             title={ "Product Detail" }
@@ -401,9 +427,8 @@ class ProductDetailScreen extends Component
                         />
                         <View style={ styles.ImageContainer }>
 
-
                             <FlatList
-                                data={this.state.images}
+                                data={ this.state.images }
                                 // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
                                 horizontal={ true }
                                 pagingEnabled={ true }
@@ -428,7 +453,7 @@ class ProductDetailScreen extends Component
                                 alignSelf: 'center',
                                 position: 'relative',
                                 bottom: 0,
-                                marginVertical: 5
+                                paddingVertical: 5
                             } ] }>
                                 { Array.from( Array( this.state.data.images ? this.state.data.images.length : 0 ).keys() ).map( ( key, index ) => (
                                     <View
@@ -460,7 +485,7 @@ class ProductDetailScreen extends Component
                             </View>
 
                         </View>
-                        <View style={ [ styles.mainContainer, { backgroundColor: White } ] }>
+                        <View style={ [ { backgroundColor: White } ] }>
                             <View style={ styles.priceContainer }>
                                 <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, } }>
                                     <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
@@ -496,7 +521,7 @@ class ProductDetailScreen extends Component
                                     <Text style={ [ styles.quentityText, { color: Light_Green, textAlign: 'right' } ] }>Avaibility : <Text style={ [ styles.quentityText, {
                                         color:
                                             Black, fontFamily: POPINS_REGULAR,
-                                    } ] }> {this.state.instock}</Text></Text>
+                                    } ] }> { this.state.instock }</Text></Text>
                                 </View>
 
                             </View>
@@ -517,14 +542,15 @@ class ProductDetailScreen extends Component
                                                         <TouchableOpacity
                                                             onPress={ () =>
                                                             {
-                                                                this.setState( { price: item._price,
-                                                                selectedVarinat: item.attribute_pa_weight,
-                                                                cartSellPrice:item._sale_price,
-                                                                cartRegularPrice:item._regular_price,
-                                                                instock:item._stock_status,
-                                                                regPrice:item._regular_price,
-                                                                sPrice:item._sale_price
-                                                     } )    
+                                                                this.setState( {
+                                                                    price: item._price,
+                                                                    selectedVarinat: item.attribute_pa_weight,
+                                                                    cartSellPrice: item._sale_price,
+                                                                    cartRegularPrice: item._regular_price,
+                                                                    instock: item._stock_status,
+                                                                    regPrice: item._regular_price,
+                                                                    sPrice: item._sale_price
+                                                                } )
                                                             } }
                                                             style={ [ styles.attributesView, { backgroundColor: "#E5F3EA" } ] }>
                                                             <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/selected.png" ) } />
@@ -537,12 +563,12 @@ class ProductDetailScreen extends Component
                                                                 this.setState( {
                                                                     checked: index,
                                                                     price: item._price,
-                                                                    selectedVarinat:item.attribute_pa_weight ,
-                                                                    cartSellPrice:item._sale_price,
-                                                                cartRegularPrice:item._regular_price,
-                                                                instock:item._stock_status,
-                                                                regPrice:item._regular_price,
-                                                                sPrice:item._sale_price
+                                                                    selectedVarinat: item.attribute_pa_weight,
+                                                                    cartSellPrice: item._sale_price,
+                                                                    cartRegularPrice: item._regular_price,
+                                                                    instock: item._stock_status,
+                                                                    regPrice: item._regular_price,
+                                                                    sPrice: item._sale_price
                                                                 } )
                                                             } }
                                                             style={ [ styles.attributesView, { backgroundColor: White } ] }>
@@ -556,23 +582,29 @@ class ProductDetailScreen extends Component
                                     }
                                 </View>
                             </View>
-                          
                             <View style={ [ styles.container, {
-                                marginHorizontal: 10
-                                ,
+                                marginHorizontal: 10,
                             } ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Description</Text>
-                                    <TouchableOpacity onPress={ () =>
                                     {
-                                        this.setState( { isDiscription: !this.state.isDiscription } )
-                                    } }>{
-                                            this.state.isDiscription === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
-                                                : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
-                                        }
+                                        this.state.isDiscription === true ?
+                                            <TouchableOpacity onPress={ () =>
+                                            {
+                                                this.setState( { isDiscription: !this.state.isDiscription } )
+                                            } }>
+                                                <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
+                                            </TouchableOpacity>
+                                            :
+                                            <TouchableOpacity onPress={ () =>
+                                            {
+                                                this.setState( { isDiscription: !this.state.isDiscription } )
+                                            } }>
+                                                <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
+                                            </TouchableOpacity>
+                                    }
 
-                                    </TouchableOpacity>
 
 
                                 </View>
@@ -585,7 +617,6 @@ class ProductDetailScreen extends Component
                                         : null
                                 }
                             </View>
-
                             <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
                                 <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> { this.state.postalCode }</Text></Text>
                             </View>
@@ -607,34 +638,25 @@ class ProductDetailScreen extends Component
 
                                 </View>
 
-                                {/* {
-   this.state.isDiscription === true ?
-   <View>
-   <Text style={styles.smallText}>Crafted with handpicked potatoes, Parle’s wafers are delightfully crunchy and light. 
-Available in exciting flavours: Cream n Onion, Masala Masti, Tangy Tomato, Classic Salted, Piri Piri, Aloo Chaat, Subtle Onion.
-Parle presents their authentic and flavourful range of sweets and snacks that are made from high-quality ingredients that are delectable to the palate and will make you crave for more with every bite.</Text>
-</View>
-:null
-} */}
                             </View>
                             <View style={ [ styles.container, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 10, marginHorizontal: 16 } ] }>
                                 <View>
                                     <Text style={ [ styles.quentityText, { marginVertical: 3, } ] }>Review</Text>
                                     <Rating
                                         type='star'
-                                        ratingImage={ require( '../../../assets/star.png' ) }
+                                        ratingImage={ startImage }
                                         ratingColor='#3498db'
                                         ratingBackgroundColor='#c8c7c8'
-                                        ratingCount={ this.state.raingCount }
+                                        ratingCount={ 5 }
                                         imageSize={ 15 }
-                                        startingValue={ this.state.data.average_rating }
+                                        startingValue={ this.state.raingCount }
                                         onFinishRating={ this.ratingCompleted }
                                         style={ { backgroundColor: Gray } }
                                     />
                                 </View>
                                 <View >
                                     <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{ this.state.raingCount } </Text>
-                                    <Text style={ [ styles.smallText, { paddingVertical: 3, paddingHorizontal: 3 } ] }>Over all</Text>
+                                    <Text style={ [ styles.smallText, { paddingVertical: 3, } ] }>Over all</Text>
                                 </View>
                             </View>
                             <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
@@ -643,79 +665,84 @@ Parle presents their authentic and flavourful range of sweets and snacks that ar
                                     <Text style={ [ styles.quentityText ] }>Term & Condition</Text>
                                     <TouchableOpacity onPress={ () =>
                                     {
-                                       this.setState({isTerm:!this.state.isTerm})
+                                        this.setState( { isTerm: !this.state.isTerm } )
                                     } }>{
                                             this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
                                                 : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
                                         }
 
                                     </TouchableOpacity>
-                                     
+
 
                                 </View>
                                 {
-                                             this.state.isTerm === true ?
-                                           <View style={{padding:10}}>
-                                                 <Text>{this.removeTags(this.props.product.data[0].seller_terms.refund_policy)}</Text>
-                                           </View>:null
-                                        }
+                                    this.state.isTerm === true ?
+                                        <View style={ { padding: 10 } }>
+                                            <Text>{ this.removeTags( this.props.product.data[ 0 ].seller_terms.refund_policy ) }</Text>
+                                        </View> : null
+                                }
 
-                             
+
                             </View>
-                            <View style={ [ styles.container, { marginHorizontal: 15,} ] }>
+                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
                                     <TouchableOpacity onPress={ () =>
                                     {
-                                       this.props.navigation.navigate('HelpScreen');
-                                    } }>{
-                                            this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
-                                                : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
-                                        }
+                                        this.props.navigation.navigate( 'HelpScreen' );
+                                    } }>
+
+                                        <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
+
 
                                     </TouchableOpacity>
 
 
                                 </View>
 
-                           
+
                             </View>
-                            <View style={ [ styles.rowView, { justifyContent: 'space-evenly', marginVertical:20 } ] }>
+                            <View style={ [ styles.rowView, { justifyContent: 'space-evenly', } ] }>
                                 <FilledButton
                                     style={ { width: screen_width / 2 - 30 } }
                                     onPress={ () => { this.addToCart( this.state.data ) } }
                                     title={ "Add to Cart " } />
                                 <FilledButton
                                     style={ { width: screen_width / 2 - 30 } }
-                                    onPress={ () => { 
-                                        try{
-                                            Linking.openURL('whatsapp://send?text=Hello Ayana Food Organic , I am interest ORGANIC SITARASOI/SABHUT MOONG DAL and want to buy this product https://ayanafoodorganic.com/product/green-gram-seeds/ Please Send me Details.&phone=+917388600191')
-                                           }
-                                           catch(error){
-                                               alert("Failed to Open WhatsApp")
-                                           }
+                                    onPress={ () =>
+                                    {
+                                        try
+                                        {
+                                            Linking.openURL( 'whatsapp://send?text=Hello Ayana Food Organic , I am interest' + this.state.data.post_name + 'and want to buy this product https://ayanafoodorganic.com/product/' + this.state.data.post_name + '/ Please Send me Details.&phone=+917388600191' )
+                                        }
+                                        catch ( error )
+                                        {
+                                            alert( "Failed to Open WhatsApp" )
+                                        }
                                     } }
                                     title={ "WhatsApp " } />
                             </View>
                         </View>
-                        </ScrollView>
-                </SafeAreaView>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
 
-               
+
             </View>
+
         )
     }
 }
 function mapStateToProps ( state, ownProps )
 {
-    console.log( "state.getProductByIdReducer.data",state.getProductByIdReducer.data )
+    console.log( "state.getProductByIdReducer.data", state.getProductByIdReducer.data )
     return {
         // data : state.loginReducer.data
         // products: state.productListReducer.data,
         // getProductsListByCatId: state.getProductByCatIdReducer.data,
         // filteredProduct:state.productFilterReducer.data,
-        product:state.getProductByIdReducer.data
+        product: state.getProductByIdReducer.data
 
     };
 
@@ -726,8 +753,8 @@ const mapDispatchToProps = dispatch =>
     return {
         //getPeople,    
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
-        productById: ( request ) => dispatch( actions.getProductByIdAction(request)),
-       
+        productById: ( request ) => dispatch( actions.getProductByIdAction( request ) ),
+
         dispatch,
     };
 };
