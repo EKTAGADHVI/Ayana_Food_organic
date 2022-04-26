@@ -39,7 +39,7 @@ class Cart extends Component
             cartData: [],
             quentity: 1,
             checkOutPrice: 0.0,
-            visible: false,
+            visible: true,
             variation: '',
             checkOutData: [],
             loginModal: false

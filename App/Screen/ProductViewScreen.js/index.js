@@ -44,7 +44,7 @@ class ProductViewScreen extends Component
             selectedCat:[],
             selectedShop:[],
             selectedPrice:'',
-           
+           sellerData:[]
 
         }
         if ( this.state.categoryId !== '' )
@@ -141,6 +141,38 @@ class ProductViewScreen extends Component
 
         }
     }
+    filterSeller=()=>{
+        let seller = "";
+        let data=[];
+        if ( this.state.categoeries.length > 1 )
+        {
+            seller = this.state.categoeries.reduce( function ( prev, curr )
+            {
+              
+                return prev.seller_name == curr.seller_name ? prev.seller_name : curr.seller_name;
+            } );
+            if(this.state.sellerData.length== 0){
+                this.state.sellerData.push({
+                    "seller_name": seller
+                });
+                // this.setState({sellerData:data})
+            }
+            this.state.categoeries.find((data)=>{
+                if(data.seller_name !== seller){
+                    this.state.sellerData.push({
+                        "seller_name": data.seller_name
+                    });
+                  
+                }
+            })
+           
+        }
+        else
+        {
+           seller =''
+        }
+        // return sell;
+    }
     timeOut = () =>
     {
         setInterval( () =>
@@ -151,6 +183,7 @@ class ProductViewScreen extends Component
                 visible: false
             } )
             this.filterDisplay();
+            this.filterSeller()
             // console.log( "Cateeeeee", this.props.getProductsListByCatId )
 
         }, 1000 )
@@ -423,8 +456,9 @@ class ProductViewScreen extends Component
                                 <View style={ { marginVertical: 15 } }>
                                     <Text style={ styles.TitleText }>Seller</Text>
                                     {
-                                       this.state.filterData.length >0 ? this.state.filterData.map( ( item, index ) =>
+                                       this.state.sellerData.length >0 ? this.state.sellerData.map( ( item, index ) =>
                                         {
+                                            console.log("Seller Data",item)
                                             return (
                                                 <View key={ index }>
                                                     {this.state.checkedSeller === index ?

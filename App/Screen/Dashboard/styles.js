@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     offerBannerContainer:{
         flexDirection:'row',
         alignItems:'center',
-        width:screen_width /1.5-20,
+        width:screen_width -60,
         padding:15,
         borderRadius:20, 
         marginHorizontal:5
@@ -103,7 +103,9 @@ const styles = StyleSheet.create({
     modalStyles:{
         flex:1,
         backgroundColor:White,
-        margin:-15
+        margin:-15,
+        alignItems:"center",
+        justifyContent:"center"
     }
     
 

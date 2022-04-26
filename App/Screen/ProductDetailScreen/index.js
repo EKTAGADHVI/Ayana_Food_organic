@@ -168,7 +168,13 @@ class ProductDetailScreen extends Component
                     regPrice: this.state.regPrice,
                     sPrice: this.state.sPrice
                 };
-                previousData.push( finalItem );
+                if(previousData != null){
+                    previousData.push( finalItem );
+                }else{
+                    previousData=[];
+                    previousData.push( finalItem );
+                }
+               
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
                     .then( ( res ) =>
                     {
@@ -237,6 +243,7 @@ class ProductDetailScreen extends Component
                 } );
                 console.log( "DAATTATATTATA", UpdatedData )
                 this.setState( { quentity: this.state.quentity + 1 } )
+              if (oldData !== null){
                 oldData.push( {
 
                     ...item,
@@ -248,6 +255,10 @@ class ProductDetailScreen extends Component
                     sPrice: this.state.sPrice
 
                 } )
+              }
+              else{
+                  oldData =[]
+              }
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( oldData ) )
                     .then( ( res ) =>
                     {

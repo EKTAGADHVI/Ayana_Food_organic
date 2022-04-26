@@ -57,18 +57,225 @@ class Favourite extends Component
             this.setState( { favData: [] } )
         } )
     }
+   
     displayPrice = ( data ) =>
     {
+
         let price = "";
         if ( data.length > 1 )
         {
-            price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+            price = data.reduce( function ( prev, curr )
+            {
+                return prev._sale_price < curr._sale_price ? prev : curr;
+            } );
+            console.log( "MIN", price )
+            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-            price = data[ 0 ].meta_value
+            price = data[ 0 ]._sale_price
         }
-        return price;
+        return price._sale_price;
+    
+
+    }
+    displayWeight = ( data ) =>
+    {
+
+        let price = "";
+        if ( data.length > 1 )
+        {
+            price = data.reduce( function ( prev, curr )
+            {
+                return prev._sale_price < curr._sale_price ? prev : curr;
+            } );
+            console.log( "MIN", price )
+            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+        }
+        else
+        {
+            price = data[ 0 ].attribute_pa_weight
+        }
+        return price.attribute_pa_weight;
+    
+
+    }
+    addToCart = async ( item ) =>
+    {
+        let added = false;
+        let previousData = null;
+        let alreadyAdded = false;
+        try
+        {
+            await AsyncStorage.getItem( 'AddToCart' )
+                .then( ( res ) =>
+                {
+                    console.log( "DashBoard Cart", res )
+                    let cart = JSON.parse( res );
+                    previousData = JSON.parse( res );
+                    if ( res !== null && cart.length > 0 )
+                    {
+                        // this.setState( { cartItem: cart.length } )
+                        alreadyAdded = cart.filter( ( data ) =>
+                        {
+
+                            console.log( "DHDHDH", data );
+                            if ( data.ID === item.ID )
+                            {
+                                if ( data.selectedVariation === this.state.selectedVarinat )
+                                {
+                                    added = true;
+                                }
+                                else
+                                {
+                                    added = false
+                                }
+                                return true;
+                            }
+                            else;
+                            {
+                                added = false;
+                                return false;
+                            }
+                        } );
+                    }
+                    else
+                    {
+                        added = false;
+                        alreadyAdded = false;
+                    }
+                } )
+                .catch( ( error ) =>
+                {
+                    console.log( "Error", error )
+                    // this.setState( { cartData: [] } )
+                } )
+
+            console.log( "Alreday Added", added )
+            if ( added === false )
+            {
+                let cartData = [];
+
+                // previousData=[];
+                let finalItem = {
+                    ...item,
+                    selectedVariation: this.state.selectedVarinat,
+                    cartPrice: this.state.price * this.state.quentity,
+                    cartRegularPrice: this.state.cartRegularPrice,
+                    cartQuentity: this.state.quentity,
+                    regPrice: this.state.regPrice,
+                    sPrice: this.state.sPrice
+                };
+                if(previousData != null){
+                    previousData.push( finalItem );
+                }else{
+                    previousData=[];
+                    previousData.push( finalItem );
+                }
+               
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
+                    .then( ( res ) =>
+                    {
+                        EventRegister.emit( 'Add-to-cart' )
+
+                        setTimeout( () =>
+                        {
+                            this.props.navigation.navigate( 'Cart' );
+                        }, 1000 )
+                        console.log( "Sucessfully Added" );
+                    } )
+                    .catch( ( error ) =>
+                    {
+                        console.log( "error", error );
+                    } )
+            }
+            else
+            {
+                // let finalItem ={
+                //     ...item,
+                //     selectedVariation:this.state.selectedVarinat,
+                //     cartPrice:this.state.price * this.state.quentity + 1,
+                //     cartRegularPrice:this.state.cartRegularPrice,
+                //     cartQuentity:this.state.quentity,
+                //     regPrice:this.state.regPrice,
+                //     sPrice:this.state.sPrice
+                // };
+                // previousData.push(finalItem );
+                let UpdatedData = previousData.filter( ( data ) =>
+                {
+                    if ( data.ID === item.ID )
+                    {
+                        if ( data.selectedVariation !== this.state.selectedVarinat )
+                        {
+                            // let finalItem ={
+                            //     ...data,
+                            //     selectedVariation:this.state.selectedVarinat,
+                            //     cartPrice:this.state.price * this.state.quentity + 1,
+                            //     cartRegularPrice:this.state.cartRegularPrice,
+                            //     cartQuentity:this.state.quentity,
+                            //     regPrice:this.state.regPrice,
+                            //     sPrice:this.state.sPrice
+                            // };
+                            return data
+                        }
+                    }
+                } );
+                let oldData = previousData.filter( ( data ) =>
+                {
+                    if ( data.ID !== item.ID )
+                    {
+                        if ( data.selectedVariation !== this.state.selectedVarinat )
+                        {
+                            // let finalItem ={
+                            //     ...data,
+                            //     selectedVariation:this.state.selectedVarinat,
+                            //     cartPrice:this.state.price * this.state.quentity + 1,
+                            //     cartRegularPrice:this.state.cartRegularPrice,
+                            //     cartQuentity:this.state.quentity,
+                            //     regPrice:this.state.regPrice,
+                            //     sPrice:this.state.sPrice
+                            // };
+                            return data
+                        }
+                    }
+                } );
+                console.log( "DAATTATATTATA", UpdatedData )
+                this.setState( { quentity: this.state.quentity + 1 } )
+              if (oldData !== null){
+                oldData.push( {
+
+                    ...item,
+                    selectedVariation: this.state.selectedVarinat,
+                    cartPrice: this.state.price * this.state.quentity,
+                    cartRegularPrice: this.state.cartRegularPrice,
+                    cartQuentity: this.state.quentity,
+                    regPrice: this.state.regPrice,
+                    sPrice: this.state.sPrice
+
+                } )
+              }
+              else{
+                  oldData =[]
+              }
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( oldData ) )
+                    .then( ( res ) =>
+                    {
+
+                        EventRegister.emit( 'Add-to-cart' )
+                        this.props.navigation.navigate( 'Cart' );
+                        console.log( "Sucessfully Added" );
+                    } )
+                    .catch( ( error ) =>
+                    {
+                        console.log( "error", error );
+                    } )
+                // alert( "Item Already added" )
+            }
+        }
+        catch ( error )
+        {
+
+        }
     }
 
     removeItem = async ( id ) =>
@@ -123,15 +330,24 @@ class Favourite extends Component
                     <View style={ styles.middleContainer }>
                         <Text style={ styles.normalText }>{ item.post_title.slice( 0, 18 ) + ( item.post_title.length > 20 ? "..." : "" ) }</Text>
                         <Text style={ styles.smallText }>{item.seller_name}</Text>
-                        <Text style={ [styles.normalText,{fontSize:12}] }>Rs. {this.displayPrice( item.price )}</Text>
+                  
+                        <Text style={ [styles.normalText,{fontSize:12}] }>Rs. {this.displayPrice( item.variation )}   <Text style={ [styles.smallText,{color:Text_Gray,textAlign:"center"}] }>{this.displayWeight(item.variation)}</Text></Text>
                     </View>
                 </View>
                 <View style={ styles.endContainer }>
-                    <TouchableOpacity style={ {
+                    <TouchableOpacity
+                    onPress={()=>{
+                        this.props.navigation.navigate('ProductDetailScreen',{
+                            data: item
+                        })
+                      
+                    }}
+                    style={ {
                         alignSelf: 'center',
                         backgroundColor:Light_Green,padding:5,
                         borderRadius:8
-                    } }>
+                    } }
+                >
                         <Image
                             style={ [ styles.iconStyle2, ] }
 

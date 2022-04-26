@@ -251,6 +251,7 @@ class Dashboard extends Component
                 if ( state.isConnected == true )
                 {
                   this.setState({isInternet:true,})
+                  this.callApi()
                 }
                 else
                 {
@@ -455,7 +456,7 @@ class Dashboard extends Component
     }
     renderCategories = ( item, index ) =>
     {
-        console.log( item.parent, "cat Data" )
+        // console.log( item.parent, "cat Data" )
 
         if ( index < 4 )
         {
@@ -533,7 +534,7 @@ class Dashboard extends Component
                     resizeMode={ 'contain' }
                     style={ { height: 60, width: 60, alignSelf: "center" } } />
                 <View style={ { left: 5, width: "80%" } }>
-                    <Text style={ [ styles.regularText, { width: "80%" } ] }>{ this.removeTags( item.ad_text ) }</Text>
+                    <Text style={ [ styles.regularText, { width: "95%" } ] }>{ this.removeTags( item.ad_text ) }</Text>
                     <Pressable>
                         <View style={ { flexDirection: 'row', padding: 5 } }>
                             <Text style={ [ styles.labelText, { fontFamily: POPINS_SEMI_BOLD } ] }>Shop Now</Text>
@@ -628,6 +629,7 @@ class Dashboard extends Component
                         } }>
                             <SearchBox
                                 editable={ false }
+                                onTouchStart={()=>{ this.setState( { modalVisible: true } )}}
                                 onFocus={ () =>
                                 {
                                     this.setState( { modalVisible: true } )
@@ -635,9 +637,9 @@ class Dashboard extends Component
                                 value={ this.state.searchValue }
                                 onChangeText={ ( text ) =>
                                 {
-                                    this.setState( {
-                                        searchValue: text
-                                    } )
+                                    // this.setState( {
+                                    //     searchValue: text
+                                    // } )
                                 } }
                                 secureTextEntry={ false }
                                 placeholder={ "Search here" } />
@@ -1148,7 +1150,7 @@ class Dashboard extends Component
                         animationOut="slideOutDown"
                         //    transparent={ true }
 
-                        style={ { flex: 1, backgroundColor: White } }
+                        style={ { flex: 1, backgroundColor: White,justifyContent:'center',alignItems:'center' } }
                         onRequestClose={ () =>
                         {
                             this.setState( { modalVisible: false } )
@@ -1221,6 +1223,7 @@ class Dashboard extends Component
                                     numColumns={ 2 }
                                     scrollEnabled={ false }
                                     maxToRenderPerBatch={ 2 }
+                                    style={{alignSelf:'center'}}
                                     extraData={ this.props.keyWordProduct?.data }
                                     legacyImplementation={ false }
                                     showsHorizontalScrollIndicator={ false }
@@ -1241,6 +1244,7 @@ class Dashboard extends Component
                                             storeName={ item.seller_name }
                                             onPress={ () =>
                                             {
+                                                this.setState( { modalVisible: false } )
                                                 this.props.navigation.navigate( 'ProductDetailScreen', {
                                                     data: item
                                                 } )
@@ -1273,7 +1277,7 @@ class Dashboard extends Component
 
 function mapStateToProps ( state, ownProps )
 {
-    console.log( "state.homePageReducer.data ", state.categoeryListReducer.data )
+    console.log( "state.homePageReducer.data ", state.getOrganicWorldProductReducer.data )
     return {
         // data : state.loginReducer.data
         products: state.productListReducer.data,

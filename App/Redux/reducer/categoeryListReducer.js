@@ -9,7 +9,7 @@ export function categoeryListReducer (state = initialState,action){
             return {
                 ...state,
                 isLoading:true,
-                // data:initialState
+           
             }
         case CATEGOERIES_LIST_SUCESS:
             return {
