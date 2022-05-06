@@ -12,6 +12,7 @@ import {getProductListByCatId } from "./getProductListByCatId";
 import { getProfileAction } from "./getProfileAction";
 import { getRecentProductAction } from "./getRecentProductAction";
 import { getTopRatedProductAction } from "./getTopRatedProductAction";
+import { getTopSellingProductAction } from "./getTopSellingProduct";
 import { getVideosAction } from "./getVideosAction";
 import { homePageAction } from "./homePageAction";
 import { loginAction } from "./loginAction";
@@ -45,5 +46,6 @@ getKeywordProduct:getKeywordProduct,
 productFilterAction:productFilterAction,
 getBannersAction:getBannersAction,
 getVideosAction:getVideosAction,
-getProfileAction:getProfileAction
+getProfileAction:getProfileAction,
+getTopSellingProductActon:getTopSellingProductAction
 }

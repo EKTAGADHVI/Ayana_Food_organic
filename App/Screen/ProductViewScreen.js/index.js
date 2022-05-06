@@ -29,6 +29,7 @@ class ProductViewScreen extends Component
             checkedCat: null,
             checkedSeller: null,
             checkedPrice: null,
+            isInternet:false,
             PriceDAta:[{
                 "name":"Price ( Low to High )",
                 "tag":'lowtohigh'
@@ -189,54 +190,84 @@ class ProductViewScreen extends Component
         }, 1000 )
 
     }
+    checkInternet=()=>{
+        NetInfo.fetch().then( state =>
+            {
+                console.log( "Connection type", state.type );
+                console.log( "Is connected?", state.isConnected );
+                if ( state.isConnected == true )
+                {
+                  this.setState({isInternet:true,})
+                  this.callApi()
+                }
+                else
+                {
+                    this.setState({isInternet:false})
+                }
+            } );
+    }
     displayPrice = ( data ) =>
     {
 
         let price = "";
-        if ( data.length > 1 )
+        if(data !== undefined){
+            if ( data.length > 1 )
         {
             price = data.reduce( function ( prev, curr )
             {
                 return prev._sale_price < curr._sale_price ? prev : curr;
             } );
+           
             console.log( "MIN", price )
+            return price._sale_price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-            price = data[ 0 ]._sale_price
+         return data[ 0 ]._sale_price
         }
-        return price._sale_price;
-    
 
+        }
+       
+        // console.log("Price",price._sale_price)
+       
+        // return 50;
     }
     displayWeight = ( data ) =>
     {
-
+        console.log( "WEIGHJHGHG",data)
         let price = "";
-        if ( data.length > 1 )
+        if(data!== undefined){
+            if ( data.length > 1)
         {
             price = data.reduce( function ( prev, curr )
             {
                 return prev._sale_price < curr._sale_price ? prev : curr;
             } );
             console.log( "MIN", price )
+           return  price.attribute_pa_weight
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-            price = data[ 0 ].attribute_pa_weight
+           return data[ 0 ].attribute_pa_weight
         }
-        return price.attribute_pa_weight;
+        }
+       
     
 
     }
     discountInPercentage = ( data ) =>
     {
 
-        let discountPrice = data._regular_price - data._sale_price;
+        if(data !== undefined){
+            let discountPrice = data._regular_price - data._sale_price;
         let price = ( discountPrice / data._regular_price ) * 100;
         return price.toFixed( 1 ) + "%";
+        }
+        else{
+            return "";
+        }
     }
 
 
@@ -254,6 +285,8 @@ class ProductViewScreen extends Component
         } ):
         null
         this.setState( { filterData: data } );
+        
+
     }
 
     callFilterProduct=()=>{
@@ -355,7 +388,7 @@ class ProductViewScreen extends Component
                                     var count = 14;
                                     return <ProductView
                                         name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
-                                        image={ item.img[ 0 ].img_path }
+                                        image={ item?.img[ 0 ]?.img_path }
                                         // image={ item.img[0].img_path }
                                         rating={ item.rating[ 0 ].meta_value }
                                         weight={this.displayWeight(item.variation)}

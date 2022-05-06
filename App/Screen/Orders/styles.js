@@ -65,7 +65,8 @@ const styles= StyleSheet.create({
         borderColor:Gray,
         borderWidth:1,
         borderRadius:10,
-        marginVertical: 10
+        marginVertical: 10,
+        marginHorizontal:10
     },
     downloadButton:{
         borderTopColor:Gray,
@@ -73,6 +74,11 @@ const styles= StyleSheet.create({
         justifyContent:'center',
         paddingTop:5
       
+    },
+    imageStyle:{
+        height:screen_width/5,
+        width:screen_width/5,
+        alignSelf:'center'
     }
 });
 

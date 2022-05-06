@@ -14,6 +14,7 @@ import { getProductByIdReducer } from "./getProductByIdReducer";
 import { getProfileReducer } from "./getProfileReducer";
 import { getRecentProductReducer } from "./getRecentProductReducer";
 import { getTopRatedProductReducer } from "./getTopRatedProductReducer";
+import { getTopSellingReducer } from "./getTopSellingReducer";
 import { getVideosReducer } from "./getVideosReducer";
 import { homePageReducer } from "./homePageReducer";
 import { loginReducer } from "./loginReducer";
@@ -48,4 +49,5 @@ export default  combineReducers({
     getBannersReducer:getBannersReducer,
     getVideosReducer:getVideosReducer,
     getProfileReducer:getProfileReducer,
+    getTopSellingReducer:getTopSellingReducer
     });

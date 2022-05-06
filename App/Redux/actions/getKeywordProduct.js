@@ -7,7 +7,7 @@ export function getKeywordProduct (request){
             type: PRODUCT_BY_KEYWORD_LOADING
         });
 
-      Apis.getProductByCategoryId(request)
+      Apis.productSearch(request)
       .then((res)=>{
         return JSON.stringify(res);
     })

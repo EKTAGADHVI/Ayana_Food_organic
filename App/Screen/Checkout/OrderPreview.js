@@ -14,6 +14,8 @@ import Modal from "react-native-modal";
 import { CommonActions } from '@react-navigation/native';
 import moment from 'moment';
 import { EventRegister } from 'react-native-event-listeners';
+import Apis from '../../RestApi/Apis';
+import ProgressLoader from 'rn-progress-loader';
 // import PayuMoney,{HashGenerator} from 'react-native-payumoney';
 class OrderPreview extends Component
 {
@@ -21,12 +23,13 @@ class OrderPreview extends Component
     {
         super( props );
         this.state = {
+            order_id: 0,
             totalPrice: this.props.route.params.totalPrice,
             checkOutData: this.props.route.params.data,
             billing: this.props.route.params.billingData,
             paymentMethod: [ {
                 "id": "1",
-                "name": "PayUMoney"
+                "name": "Razor-pay (Net Banking/ Credit Cart/UPI)"
             },
             {
                 "id": "2",
@@ -36,7 +39,9 @@ class OrderPreview extends Component
             orderFail: false,
             orderSucess: false,
             // orderStatus:false,
-            isCashOnDelivery:false,
+            isCashOnDelivery: false,
+            userData: [],
+            visible: false
         }
 
     }
@@ -44,11 +49,11 @@ class OrderPreview extends Component
     {
         console.log( "Billing  Data", this.state.billing )
         var options = {
-            description: 'Credits towards consultation',
-            image: 'https://i.imgur.com/3g7nmJC.png',
+            description: '',
+            image: 'https://ayanafoodorganic.com/wp-content/uploads/2020/09/logo-1.png',
             currency: 'INR',
             key: 'rzp_test_f6l6m6k12uB9NY', // Your api key
-            amount: '100',
+            amount: this.state.totalPrice *100,
             name: 'Ayana Food & Organic',
             prefill: {
                 email: this.state.billing.billingEmail,
@@ -60,7 +65,8 @@ class OrderPreview extends Component
         RazorpayCheckout.open( options ).then( ( data ) =>
         {
             // handle success
-            this.OrderSucess()
+            this.saveOrder()
+            // this.OrderSucess()
             // alert( `Success: ${ data.razorpay_payment_id }` );
         } ).catch( ( error ) =>
         {
@@ -111,9 +117,173 @@ class OrderPreview extends Component
     }
     async componentDidMount ()
     {
+        await AsyncStorage.getItem( 'UserData' )
+            .then( ( res ) =>
+            {
+
+                let dd = JSON.parse( res ).data;
+                console.log( "UserRes", dd[ 0 ].ID )
+                if ( res !== null )
+                {
+                    this.setState( { userData: JSON.parse( res ).data } )
+                    // this.profileAPICall(dd[ 0 ].ID)
+                    // // this.props.profileCall( {
+                    // //     "user_id":"122"
+                    // // } ) 
+                }
+                else
+                {
+                    this.setState( { userData: [] } )
+                }
+            } ).catch( ( error ) => { } )
         // await AsyncStorage.getItem('add')
     }
 
+    saveOrder = () =>
+    {
+
+        // //         var val = Math.floor(1000 + Math.random() * 9000);
+        // // console.log(val);
+        //         let previousData= []
+        //         let orderId =Math.floor(1000 + Math.random() * 9000);
+        //         AsyncStorage.getItem('Orders')
+        //         .then((res)=>{
+        //             if(res !== null){
+        //                 previousData = JSON.parse(res);
+        //                 console.log("Previous Data",previousData)
+        //                 let data ={
+        //                     "OrderId":orderId,
+        //                     "order":this.state.checkOutData,
+        //                     "billing":this.state.billing,
+        //                     "status":"inProcess",
+        //                     "totalPrice":this.state.totalPrice,
+        //                     "date": moment( new Date() ).format( 'DD/MM/YYYY' )
+        //                 }
+        //                 this.setState({
+        //                     order_id:orderId
+        //                 })
+        //                 previousData.push(data)
+        //                 AsyncStorage.setItem('Orders',JSON.stringify(previousData))
+        //                 .then((res)=>{
+        //                     console.log("OrderSaved")
+        //                 }).
+        //                 catch((error)=>{
+        //                     console.log("Order Not saved", error)
+        //                 })
+        //             }
+        //             else{
+        //                 let data ={
+        //                     "OrderId":orderId,
+        //                     "order":this.state.checkOutData,
+        //                     "billing":this.state.billing,
+        //                     "status":"inProcess",
+        //                     "totalPrice":this.state.totalPrice,
+        //                     "date": moment( new Date() ).format( 'DD/MM/YYYY' )
+        //                 }
+        //                 previousData.push(data)
+        //                 AsyncStorage.setItem('Orders',JSON.stringify(previousData))
+        //                 .then((res)=>{
+        //                     console.log("OrderSaved")
+        //                 }).
+        //                 catch((error)=>{
+        //                     console.log("Order Not saved", error)
+        //                 })
+
+        //             }
+        //         })
+        //         .catch(()=>{
+
+        //         })
+        this.setState( { visible: true } )
+        let itemArray = [];
+        this.state.checkOutData.map( ( item, index ) =>
+        {
+            // console.log("Item")
+            let add;
+            if ( item.selectedVarinatID !== null )
+            {
+                add = {
+                    "product_id": item.ID,
+                    "quantity": item.cartQuentity,
+                    "variation_id": item.selectedVarinatID
+
+                }
+                itemArray.push( add )
+            }
+            else
+            {
+                add = {
+                    "product_id": item.ID,
+                    "quantity": item.cartQuentity,
+
+                }
+                itemArray.push( add )
+            }
+
+
+        } )
+        let request = {
+            "payment_method": this.state.checked == 0 ? "onlinePayment" : "cod",
+            "payment_method_title": this.state.checked == 0 ? "Razor Pay" : "Cash On Delivery",
+            "status": "processing",
+            "set_paid": true,
+            "customer_id": this.state.userData[ 0 ]?.ID,
+            "billing": [
+                {
+                    "first_name": this.state.billing.fName,
+                    "last_name": this.state.billing.lName,
+                    "address_1": this.state.billing.stretAddress,
+                    "address_2": "",
+                    "city": this.state.billing.city,
+                    "state": this.state.billing.state_Value,
+                    "postcode": this.state.billing.pinCode,
+                    "country": "IN",
+                    "email": this.state.billing.billingEmail,
+                    "phone": this.state.billing.billingPhone,
+                }
+            ],
+            "shipping": [
+                {
+                    "first_name": this.state.billing.fName,
+                    "last_name": this.state.billing.lName,
+                    "address_1": this.state.billing.stretAddress,
+                    "address_2": "",
+                    "city": this.state.billing.city,
+                    "state": this.state.billing.state_Value,
+                    "postcode": this.state.billing.pinCode,
+                    "country": "IN"
+                }
+            ],
+            "line_items": itemArray,
+            "shipping_lines": [
+                {
+                    "method_id": "flat_rate",
+                    "method_title": "Flat Rate",
+                    "total": ""
+                }
+            ]
+        }
+
+        Apis.createOrderCall( request )
+            .then( ( res ) =>
+            {
+                return JSON.stringify( res )
+            } )
+            .then( ( response ) =>
+            {
+                this.setState( { visible: false ,
+                order_id:JSON.parse(response).data.id} )
+                console.log( "Response", response )
+                this.OrderSucess();
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Eoororororororororo", error )
+                this.setState( { visible: false } )
+                this.OrderFailure();
+            } )
+
+    }
     OrderSucess = async () =>
     {
         let UpdatedArray = []
@@ -121,6 +291,7 @@ class OrderPreview extends Component
         await AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedArray ) )
             .then( ( res ) =>
             {
+                // this.saveOrder();
                 EventRegister.emit( 'Add-to-cart' )
                 console.log( 'Successfully Updated' );
             } )
@@ -139,6 +310,12 @@ class OrderPreview extends Component
         return (
             <View style={ styles.mainLayout }>
                 <SafeAreaView>
+                    <ProgressLoader
+                        visible={ this.state.visible }
+                        isModal={ true }
+                        isHUD={ true }
+                        hudColor={ White }
+                        color={ Light_Green } />
                     <ScrollView>
                         <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Order Preview" } />
                         <View >
@@ -189,7 +366,7 @@ class OrderPreview extends Component
                             {
                                 this.state.paymentMethod.map( ( item, index ) =>
                                 {
-                                    console.log("Index",index)
+                                    console.log( "Index", index )
                                     return (
                                         <View key={ index }>
                                             {this.state.checked === index ?
@@ -233,7 +410,7 @@ class OrderPreview extends Component
                                         // this.OrderFailure()
                                         // this.initiatePayment()
                                         this.state.checked == 0 ?
-                                        this.RazaroPayment() : this.OrderSucess()
+                                            this.RazaroPayment() : this.saveOrder()
                                     } }
                                     title={ "Place Order " } />
                             </View>
@@ -303,7 +480,7 @@ class OrderPreview extends Component
                                             style={ { height: screen_height / 3, width: screen_height / 3, resizeMode: "contain", alignSelf: 'center', right: 5 } }
                                             source={ require( '../../../assets/orderSucess.png' ) } />
                                         <Text style={ [ styles.titleText, { fontFamily: POPINS_REGULAR, fontSize: 20 } ] }>Your Order has been accepted</Text>
-                                        <Text style={ [ styles.normalText, { color: Light_Green, textAlign: 'center' } ] }>Order Number :00101</Text>
+                                        <Text style={ [ styles.normalText, { color: Light_Green, textAlign: 'center' } ] }>Order Number :{ this.state.order_id }</Text>
                                         <Text style={ [ styles.normalText, { color: Light_Green, textAlign: 'center' } ] }>Order Date : { moment( new Date() ).format( 'DD/MM/YYYY' ) }</Text>
                                     </View>
                                     <Text style={ [ styles.normalText, { color: Text_Gray, textAlign: 'center' } ] }>Your items has been placcd and is on

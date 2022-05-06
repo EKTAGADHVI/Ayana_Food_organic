@@ -1,6 +1,6 @@
 
 
-import { BANNERS_URL, BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, GET_PROFILE_URL, HELp_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, PRODUCT_FILTER_URL, Registration_URL, SEARCH_BLOG_URL, VIDEO_URL } from './ApiUrl';
+import { BANNERS_URL, BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, CREATE_ORDER_URL, GET_ORDER_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, GET_PROFILE_URL, HELp_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, PRODUCT_FILTER_URL, PRODUCT_SEARCH_URL, Registration_URL, SEARCH_BLOG_URL, UPDATE_PROFILE_URl, VIDEO_URL } from './ApiUrl';
 import instance from './index'
 export default class Apis
 {
@@ -76,6 +76,14 @@ export default class Apis
 
 
     }  
+    static productSearch ( request )
+    {
+        return instance.post( PRODUCT_SEARCH_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+
+    }  
     static logout ( request )
     {
         return instance.post( LOGOUT_URL, request, {
@@ -143,7 +151,7 @@ export default class Apis
     static getProfileCall ( request )
     {
         console.log("Request",request)
-        return instance.get( GET_PROFILE_URL, request, {
+        return instance.post( GET_PROFILE_URL, request, {
             headers: { "content-type": "application/json" }
         } );
 
@@ -153,6 +161,30 @@ export default class Apis
     {
         console.log("Request",request)
         return instance.get(SEARCH_BLOG_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }   
+    static updateProfileCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(UPDATE_PROFILE_URl, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }   
+    static getOrderCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(GET_ORDER_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }   
+    static createOrderCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(CREATE_ORDER_URL, request, {
             headers: { "content-type": "application/json" }
         } );
 

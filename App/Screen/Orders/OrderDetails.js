@@ -1,6 +1,7 @@
+import moment from 'moment';
 import React from 'react';
 import { Component } from 'react';
-import { Image, SafeAreaView, TouchableOpacity, View, Text, ScrollView } from 'react-native';
+import { Image, SafeAreaView, TouchableOpacity, View, Text, ScrollView, FlatList } from 'react-native';
 import { color } from 'react-native-reanimated';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
@@ -14,6 +15,12 @@ class OrderDetails extends Component
     constructor ( props )
     {
         super( props );
+        this.state={
+            data : this.props.route?.params?.data
+        };
+    }
+    componentDidMount(){
+        console.log("Order Data", this.state.data)
     }
     render ()
     {
@@ -33,9 +40,9 @@ class OrderDetails extends Component
 
                                 </View>
                                 <View >
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>1-02-2022</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>25002</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>Rs. 750.00 (1 item) </Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>{moment(this.state.data?.date_created_gmt).format("DD/MM/YYYY")}</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>{this.state.data.id}</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>Rs. {this.state.data.total} </Text>
                                 </View>
                             </View>
                             <TouchableOpacity style={ styles.downloadButton }>
@@ -49,35 +56,53 @@ class OrderDetails extends Component
                         </View>
                         <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Shipping Details</Text>
 
-                        <View style={ [ styles.cardView, { flexDirection: 'row', alignItems: 'flex-start', } ] } >
+                      <FlatList
+                      data={this.state.data?.line_items}
+                      horizontal={true}
+                     
+                      
+                      keyExtractor={(item)=>item.ID}
+                      renderItem={({item,index})=>{
+                          console.log("Oderssss",item)
+                          return(
+                            <View style={ [ styles.cardView, { flexDirection: 'row', alignItems: 'flex-start', } ] } >
                             <Image
-                                source={ require( '../../../assets/product.png' ) }
+                                source={ require('../../../assets/default.png')}
                                 style={ styles.imageStyle } />
                             <View>
-                                <Text style={ [ styles.regularText ] }>Product Name </Text>
+                                <Text style={ [ styles.regularText, ] }>{item.name.slice( 0, 25 ) + ( item.name.length > 25 ? "..." : "" )}</Text>
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Black } ] }> Delivered  |</Text></Text>
-                                    <Text style={ [ styles.smallText, ] }>February 2022</Text>
+                                    <Text style={ [ styles.smallText, ] }>{this.state.data.date}</Text>
                                 </View>
                                 <View style={ [ styles.rowView, { width: screen_width * 0.57, justifyContent: "space-between" } ] }>
-                                    <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Rs. 750.00 </Text>
-                                    <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Qty : 500 gm </Text>
+                                    <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Rs. {item.total} </Text>
+                                   {
+                                       item.selectedVariation !== null? <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Qty : {item.quantity} </Text>:null
+                                   }
                                 </View>
-                                <Text style={ [ styles.smallText, { color: Black, fontSize: 14 } ] }>Sold By : Ayana Food Organic  </Text>
+                                <Text style={ [ styles.smallText, { color: Black, fontSize: 14 } ] }>Sold By : {item.meta_data.map((data,index)=>{
+                                    if(data.display_key==="Seller"){
+                                        return data.display_value
+                                    }
+                                    else{
+                                        return ""
+                                    }
+                                })}  </Text>
                             </View>
 
                         </View>
+                          )
+                      }}/>
 
                         <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Shipping Address</Text>
-                        <Text style={ [ styles.regularText, { width: screen_width * 0.56, paddingVertical: 8, textAlign: 'justify' } ] }>Abigail Morris
-                        35a Dalry Rd,	Midlothian
-United Kingdom - 380015</Text>
+                        <Text style={ [ styles.regularText, { width: screen_width * 0.56, paddingVertical: 8, } ] }>{this.state.data.billing.address_1 }</Text>
                         <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Payment Details</Text>
 
                         <View style={[styles.cardView]}>
-                        <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 5 } ] }>Cash On Delivery</Text>
+                        <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 5 } ] }>{this.state.data?.payment_method_title}</Text>
                         <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 ,paddingHorizontal:"5%"} }>
-                                <View >
+                                <View>
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD } ] }>item</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>Order Total</Text>
                                   
@@ -85,7 +110,7 @@ United Kingdom - 380015</Text>
                                 </View>
                                 <View >
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" ,fontFamily:POPINS_SEMI_BOLD } ] }>1</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>Rs. 705.00</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>{this.state.data.total}</Text>
                                    
                                 </View>
                             </View>

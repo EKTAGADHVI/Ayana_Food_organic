@@ -30,13 +30,13 @@ class ProductDetailScreen extends Component
             quentity: 1,
             isDiscription: false,
             isTerm: false,
-            // id:this.props.route.params?.data?.ID,
+            id:this.props.route.params?.data?.ID,
             data: this.props.route.params?.data,
-            // variation: this.props.route.params?.data?.variation,
-            variation: [],
+            variation: this.props.route.params?.data?.variation,
+            // variation: [],
             description: this.props.route.params?.data?.post_content,
-            // price: this.props.route.params?.data?.variation[ 0 ]?._price,
-            price: 50,
+            price: this.props.route.params?.data?.variation[ 0 ]?._price,
+            // price: 50,
             images: this.props.route.params?.data?.img,
             raingCount: this.props.route.params?.data?.rating[ 0 ].meta_value,
             checked: 0,
@@ -47,7 +47,8 @@ class ProductDetailScreen extends Component
             cartRegularPrice: this.props.route.params?.data?.variation[ 0 ]?._regular_price,
             instock: this.props.route.params?.data?.variation[ 0 ]?._stock_status,
             regPrice: this.props.route.params?.data?.variation[ 0 ]?._regular_price,
-            sPrice: this.props.route.params?.data?.variation[ 0 ]?._sale_price
+            sPrice: this.props.route.params?.data?.variation[ 0 ]?._sale_price,
+            selectedVarinatID:"variation_id" in this.props.route.params?.data?.variation[ 0 ] ===true ?this.props.route.params?.data?.variation[ 0 ].variation_id:null
         }
 
         this.viewabilityConfig = {
@@ -166,7 +167,8 @@ class ProductDetailScreen extends Component
                     cartRegularPrice: this.state.cartRegularPrice,
                     cartQuentity: this.state.quentity,
                     regPrice: this.state.regPrice,
-                    sPrice: this.state.sPrice
+                    sPrice: this.state.sPrice,
+                    selectedVarinatID:this.state.selectedVarinatID
                 };
                 if(previousData != null){
                     previousData.push( finalItem );
@@ -252,7 +254,8 @@ class ProductDetailScreen extends Component
                     cartRegularPrice: this.state.cartRegularPrice,
                     cartQuentity: this.state.quentity,
                     regPrice: this.state.regPrice,
-                    sPrice: this.state.sPrice
+                    sPrice: this.state.sPrice,
+                    selectedVarinatID:this.state.selectedVarinatID
 
                 } )
               }
@@ -560,7 +563,8 @@ class ProductDetailScreen extends Component
                                                                     cartRegularPrice: item._regular_price,
                                                                     instock: item._stock_status,
                                                                     regPrice: item._regular_price,
-                                                                    sPrice: item._sale_price
+                                                                    sPrice: item._sale_price,
+                                                                    selectedVarinatID:"variation_id" in item ===true ?item.variation_id:null
                                                                 } )
                                                             } }
                                                             style={ [ styles.attributesView, { backgroundColor: "#E5F3EA" } ] }>
@@ -579,7 +583,8 @@ class ProductDetailScreen extends Component
                                                                     cartRegularPrice: item._regular_price,
                                                                     instock: item._stock_status,
                                                                     regPrice: item._regular_price,
-                                                                    sPrice: item._sale_price
+                                                                    sPrice: item._sale_price,
+                                                                    selectedVarinatID:"variation_id" in item ===true ?item.variation_id:null
                                                                 } )
                                                             } }
                                                             style={ [ styles.attributesView, { backgroundColor: White } ] }>

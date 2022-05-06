@@ -4,12 +4,15 @@ import { Component } from 'react';
 import { SafeAreaView, View, TouchableOpacity, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Toast from 'react-native-toast-message';
+import { connect } from 'react-redux';
 import ProgressLoader from 'rn-progress-loader';
 
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
 import Input from '../../Components/Input';
 import { ToastMessage } from '../../Components/ToastMessage';
+import { GET_PROFILE_ERROR, GET_PROFILE_SUCESS } from '../../Redux/actionTypes';
+import Apis from '../../RestApi/Apis';
 import { Black, Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_width } from '../../Utils/constant';
 import styles from './styles';
@@ -37,14 +40,89 @@ class CheckOut extends Component
             product:'',
             totalPrice:this.props.route.params.totalPrice,
             CheckOutData:this.props.route.params.checkoutData,
-            visible:false,
+            visible:true,
             // isFname:false,
             // isLname:false,
             // is
         }
     }
+    profileAPICall =() =>{
+         AsyncStorage.getItem( 'UserData' )
+        .then( ( res ) =>
+        {
+
+            let dd = JSON.parse( res ).data;
+            console.log( "UserRes", dd[ 0 ].ID )
+            if ( res !== null )
+            {
+                Apis.getProfileCall({
+                    "user_id":dd[ 0 ].ID.toString()
+                })
+                .then((res  )=>{
+                    return JSON.stringify(res);
+                })
+                .then((responce)=>{
+        
+                    console.log("Response Fetch call", responce)
+                    if(JSON.parse(responce).data.status == true){
+                        this.setState({visible:false})
+                        console.log("======GET_PROFILE_LOADING_sucess===== >  ", JSON.parse(responce).data);
+                        let data=JSON.parse(responce).data.data;
+                        AsyncStorage.setItem('UserDetails',JSON.stringify(data))
+                        .then(()=>{
+                            this.setState({visible:false})
+                            this.props.dispatch({
+                                type:GET_PROFILE_SUCESS,
+                                payload:JSON.parse(responce).data
+                            });
+                            this.setState({
+                                fName:data[0].firstname,
+                                lName:data[0].lastname,
+                                email:data[0].user_email,
+                                phone: data[0].phone,
+                                billingEmail:data[0].user_email,
+                                billingPhone: data[0].phone,
+                                state_Value:data[0].new_location.state,
+                                city:data[0].new_location.city
+                            })
+                            // this.setState({userData:data})
+                        })
+                        .catch((error)=>{
+                            this.setState({visible:false})
+                            console.log(error)
+                        })
+                    }
+                    else{
+                        this.setState({visible:false})
+                        console.log("======GET_PROFILE_LOADING ====== >  ", JSON.parse(responce).data);
+                        this.props.dispatch({
+                            type:GET_PROFILE_ERROR,
+                            payload:JSON.parse(responce).data
+                        });
+                    }
+                }).catch((error)=>{
+                    this.setState({visible:false})
+                    this.props.dispatch({
+                        type:GET_PROFILE_ERROR,
+                        payload:error
+                    });
+                    console.log("Fetch ERROR", error)
+                })
+            }
+            else
+            {
+                this.setState({visible:false})
+                this.setState( { userData: [] } )
+            }
+        } ).catch( ( error ) => { 
+            this.setState({visible:false})
+        } )
+
+     
+    }
 
    async componentDidMount(){
+       this.profileAPICall()
       await  AsyncStorage.getItem('PostalCode')
         .then((res)=>{
             console.log("ressfiusgdfg",res)
@@ -188,13 +266,17 @@ class CheckOut extends Component
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? "padding" :"height"} keyboardVerticalOffset={20}>
                     <ScrollView showsVerticalScrollIndicator={false} automaticallyAdjustContentInsets={true} >
 
-                        <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Checkout" } />
+                     
                     <ProgressLoader
                     visible={ this.state.visible }
                     isModal={ true }
                     isHUD={ true }
                     hudColor={ White }
                     color={ Light_Green } />
+                     
+                      {this.state.visible == false ?
+                      <>
+                        <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Checkout" } />
                         <View style={ [ styles.rowView, { borderBottomColor: Gray, borderBottomWidth: 0.5 } ] }>
                             <Text style={ [ styles.normalText, { color: Light_Green } ] }> Billing Details</Text>
                             <TouchableOpacity style={ styles.minusButton }>
@@ -460,8 +542,9 @@ class CheckOut extends Component
                              } }
                                 textStyle={ { fontSize: 16, paddingVertical: 8 } }
                                 onPress={ () => {this.validation() } } />
- 
-                        </View>
+ </View>
+                      </>
+                      :null}
                       
                     </ScrollView>
                     </KeyboardAvoidingView>
@@ -470,5 +553,27 @@ class CheckOut extends Component
         );
     }
 }
+function mapStateToProps ( state, ownProps )
+{
+    // console.log( "state.categoeryListReducer.data ", state.categoeryListReducer.data)
+    return {
+        // data : state.loginReducer.data
+        products: state.productListReducer.data,
+        cataegoery: state.categoeryListReducer.data
 
-export default CheckOut;
+
+    };
+
+}
+
+const mapDispatchToProps = dispatch =>
+{
+    return {
+        //getPeople,
+        // login: (request) => dispatch(actions.login.apiActionCreator(request)),
+        productList: ( request ) => dispatch( actions.productListAction() ),
+        getCategoeryList: ( request ) => dispatch( actions.getCategoeryListAction() ),
+        dispatch,
+    };
+};
+export default connect( mapStateToProps, mapDispatchToProps )( CheckOut );

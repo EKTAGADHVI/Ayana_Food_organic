@@ -189,12 +189,12 @@ const Header = ( props ) =>
                                     menu={ "Chat With Us" }
                                     OnMenuPress={ () => { 
                                        try{
-                                        Linking.openURL('whatsapp://send?text=Hello Ayana Food Organic , I am interest ORGANIC SITARASOI/SABHUT MOONG DAL and want to buy this product https://ayanafoodorganic.com/product/green-gram-seeds/ Please Send me Details.&phone=+917388600191')
+                                        Linking.openURL('whatsapp://send?text= &phone=+917388600191')
                                        }
                                        catch(error){
                                            alert("Failed to Open WhatsApp")
                                        }
-                                     } } />
+                                      } } />
                                 <MenuItems source={ require( '../../assets/help.png' ) }
                                     menu={ "Help" }
                                     OnMenuPress={ () => { 

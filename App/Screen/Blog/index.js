@@ -76,7 +76,7 @@ class Blog extends Component
                     
                     setTimeout(()=>{
                         this.setState({visible:false})
-                    },1000)
+                    },2000)
                    
                 }
                 else{
