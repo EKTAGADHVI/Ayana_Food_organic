@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, ImageBackground, Text ,Image} from 'react-native';
 import { screen_height, screen_width } from '../Utils/constant';
 import { Rating, AirbnbRating } from 'react-native-ratings';
-import { Light_Green, Line_Gray, ORENGE, Text_Gray, White } from '../Utils/colors';
+import { Black, Light_Green, Line_Gray, ORENGE, Text_Gray, White } from '../Utils/colors';
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../Utils/fonts';
 
 const startImage = require('../../assets/star.png')
@@ -25,9 +25,12 @@ const ProductView = ( props ) =>
             
             }}
             source={{uri:props.image}}>
-                <View style={styles.circleView}>
+         {
+                props.discount!=="NaN%" ?   <View style={styles.circleView}>
                     <Text style={styles.discountText} >{props.discount}</Text>
                 </View>
+                :null
+         }
             </ImageBackground>
             <Text style={styles.regularText}>{props.name}</Text>
             <Rating
@@ -42,7 +45,7 @@ const ProductView = ( props ) =>
                 style={ { alignSelf:'flex-start' } }
             />
              <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.storeName}</Text>
-             <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,paddingVertical:3}]}>{props.weight}</Text>
+             <Text style={[styles.discountText,{color:Black,fontFamily:POPINS_REGULAR,paddingVertical:3}]}>{props.weight}</Text>
              <Text style={styles.regularText}>Rs. {props.price} /-</Text>
              <TouchableOpacity style={styles.btnView} onPress={props.onAdd}>
                  <Image

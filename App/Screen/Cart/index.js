@@ -249,7 +249,7 @@ class Cart extends Component
             } } style={ styles.ItemView }>
                 <View style={ { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', } }>
                     {
-                        item.img.length > 0 ?
+                        item?.img?.length > 0 ?
                             <Image
                                 style={ styles.ImageStyle }
                                 source={ { uri: item.img[ 0 ].img_path } } /> :
@@ -258,7 +258,7 @@ class Cart extends Component
                                 source={ require( '../../../assets/default.png' ) } />
                     }
                     <View style={ styles.middleContainer }>
-                        <Text style={ styles.normalText }>{ item.post_title.slice( 0, 20 ) + ( item.post_title.length > 20 ? "..." : "" ) }</Text>
+                        <Text style={ styles.normalText }>{ item?.post_title?.slice( 0, 20 ) + ( item?.post_title?.length > 20 ? "..." : "" ) }</Text>
                         <Text style={ styles.smallText }>{ item.selectedVariation }</Text>
                         <View style={ styles.q_container }>
                             <TouchableOpacity

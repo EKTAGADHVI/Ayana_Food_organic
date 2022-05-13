@@ -13,6 +13,7 @@ import Modal from "react-native-modal";
 import styles from './styles';
 import { PRODUCT_FILTER_ERROR, PRODUCT_FILTER_SUCESS } from '../../Redux/actionTypes';
 import Apis from '../../RestApi/Apis';
+import { ScrollView } from 'react-native-gesture-handler';
 
 class ProductViewScreen extends Component
 {
@@ -48,6 +49,7 @@ class ProductViewScreen extends Component
            sellerData:[]
 
         }
+        console.log("Product IDDD",this.state.request)
         if ( this.state.categoryId !== '' )
         {
             // let request ={
@@ -66,7 +68,13 @@ class ProductViewScreen extends Component
         setTimeout( () =>
         {
 
-            this.timeOut()
+            this.setState( { categoeries: this.props.getProductsListByCatId.data ?this.props.getProductsListByCatId.data:[] } );
+
+            this.setState( {
+                visible: false
+            } )
+            this.filterDisplay();
+            this.filterSeller()
         }, 2500 )
 
     }
@@ -145,33 +153,28 @@ class ProductViewScreen extends Component
     filterSeller=()=>{
         let seller = "";
         let data=[];
-        if ( this.state.categoeries.length > 1 )
+        let final= [];
+        if ( this.state.categoeries?.length > 0 )
         {
-            seller = this.state.categoeries.reduce( function ( prev, curr )
-            {
-              
-                return prev.seller_name == curr.seller_name ? prev.seller_name : curr.seller_name;
-            } );
-            if(this.state.sellerData.length== 0){
-                this.state.sellerData.push({
-                    "seller_name": seller
+          this.state?.categoeries?.map((item, index)=>{
+                data.push({
+                    "seller_name": item?.seller_name
                 });
+            } );
+         
                 // this.setState({sellerData:data})
-            }
-            this.state.categoeries.find((data)=>{
-                if(data.seller_name !== seller){
-                    this.state.sellerData.push({
-                        "seller_name": data.seller_name
-                    });
-                  
-                }
-            })
+            
+            final = data.filter((v,i,a)=>a.findIndex(v2=>(v2.seller_name===v.seller_name))===i)
+            console.log("Filter Data",final)
+          
+            this.setState({sellerData:final})
            
         }
         else
         {
            seller =''
         }
+        this.setState({sellerData:final});
         // return sell;
     }
     timeOut = () =>
@@ -210,21 +213,31 @@ class ProductViewScreen extends Component
     {
 
         let price = "";
+        let l_data = data.filter((item)=>{
+        
+                return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
+            
+        });
         if(data !== undefined){
-            if ( data.length > 1 )
+            if ( data?.length > 1 )
         {
-            price = data.reduce( function ( prev, curr )
+          
+            // console.log("L DATA",l_data)
+            price = l_data?.reduce( function ( prev, curr )
             {
-                return prev._sale_price < curr._sale_price ? prev : curr;
+            
+                    return prev?._sale_price < curr?._sale_price ? prev : curr;
+                
+               
             } );
            
             console.log( "MIN", price )
-            return price._sale_price;
+            return price?._sale_price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-         return data[ 0 ]._sale_price
+         return Object.keys(data[ 0 ]).indexOf("_sale_price")!= -1? Object.keys(data[ 0 ]).indexOf("_regular_price")? data[ 0 ]?._regular_price : data[ 0 ]?._price:data[ 0 ]?._regular_price
         }
 
         }
@@ -233,6 +246,7 @@ class ProductViewScreen extends Component
        
         // return 50;
     }
+
     displayWeight = ( data ) =>
     {
         console.log( "WEIGHJHGHG",data)
@@ -266,7 +280,7 @@ class ProductViewScreen extends Component
         return price.toFixed( 1 ) + "%";
         }
         else{
-            return "";
+            return null;
         }
     }
 
@@ -274,17 +288,21 @@ class ProductViewScreen extends Component
     filterDisplay = () =>
     {
         let data = [];
-        this.state.categoeries.length >0? this.state.categoeries.map( ( item, index ) =>
+        let final=[];
+        this.state?.categoeries?.length >0? this.state.categoeries?.map( ( item, index ) =>
         {
             let filterData = {
-                "category_id": item.category[ 0 ].category_id,
-                "category_name": item.category[ 0 ].category_name,
-                "seller_name": item.seller_name
+                "category_id": item?.category[ 0 ]?.category_id,
+                "category_name": item?.category[ 0 ]?.category_name,
+               
             }
             data.push( filterData );
         } ):
         null
-        this.setState( { filterData: data } );
+
+        final = data.filter((v,i,a)=>a.findIndex(v2=>['category_name','category_id'].every(k=>v2[k] ===v[k]))===i)
+        console.log("Filter Data",final)
+        this.setState( { filterData: final } );
         
 
     }
@@ -297,6 +315,7 @@ class ProductViewScreen extends Component
             "seller_name":this.state.selectedShop,
             "price":this.state.selectedPrice,
         }
+
         // this.props.filterCall(request);
         Apis.productFilterCall(request)
       .then((res)=>{
@@ -441,6 +460,7 @@ class ProductViewScreen extends Component
                             </View>
 
                             <View style={ styles.modalSection }>
+                                <ScrollView>
                                 <View style={ { marginVertical: 15 } }>
                                     <Text style={ styles.TitleText }>Categories</Text>
                                     {
@@ -577,11 +597,13 @@ class ProductViewScreen extends Component
                                         :null
                                     }
                                 </View>
+
                                 <TouchableOpacity style={styles.btnStyle} onPress={()=>{
                                     this.callFilterProduct();
                                 }}>
                                 <Text style={[styles.normalText,{fontFamily:POPINS_REGULAR, color:White}]}>Apply</Text>
                             </TouchableOpacity>
+                            </ScrollView>
                             </View>
                           
                         </View>

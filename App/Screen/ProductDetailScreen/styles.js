@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Gray, Light_Green, Text_Gray, White } from "../../Utils/colors";
+import { Black, Gray, Light_Green, Text_Gray, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
 import { POPINS_BOLD, POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts";
 
@@ -135,7 +135,29 @@ const styles = StyleSheet.create( {
         borderWidth:0.5,
         marginHorizontal:5,
         borderColor:Gray
-    }
+    },
+    modalStyle:{
+        flex: 0.55, 
+        backgroundColor: White ,
+        top:"15%",     
+        borderRadius:20,
+        shadowColor:Black,
+        shadowOffset:{
+            height:2,width:0
+        },
+        elevation:3,
+        shadowOpacity: 0.5,
+   },
+   input: {
+    fontSize: 14,
+    fontFamily: POPINS_REGULAR,
+    backgroundColor: White,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginVertical: 10,
+    backgroundColor:Gray
+}
 
 } );
 

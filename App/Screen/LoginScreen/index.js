@@ -53,34 +53,91 @@ import {
     }
 
 
+    socialAuthentication=(request)=>{
+      this.setState( { visible: true } )
+
+        Apis.socialLoginCall(request)
+        .then((res)=>{
+          return JSON.stringify(res)
+        })
+        .then((responce)=>{
+          if(JSON.parse(responce).data.status == true){
+            let data = JSON.parse(responce).data;
+            console.log("====== Login Responce ====== >  ", responce);
+            AsyncStorage.setItem('UserData',JSON.stringify(data))
+            .then(()=>{
+              this.setState( { visible: false } )
+
+              this.props.dispatch({
+                    type:LOGIN_SUCESS,
+                    payload:JSON.parse(responce).data
+                });
+                ToastMessage('success','Login Sucessfull',)
+
+              this.next_navigation();
+            })
+            .catch((error)=>{
+              this.setState( { visible: false } )
+
+                console.log("====== Login ERR Responce ====== >  ", error);
+                this.props.dispatch({
+                    type:LOGIN_EROOR,
+                    payload:error
+                });
+            })
+      
+        }
+        else{
+          this.setState( { visible: false } )
+
+            console.log("====== Login ERR Responce ====== >  ", responce);
+            ToastMessage('error',JSON.parse(responce).data.message,'Please Check');
+            this.props.dispatch({
+                type:LOGIN_EROOR,
+                payload:JSON.parse(responce).data
+            });
+        }
+        })
+        .catch((error)=>{
+          this.setState( { visible: false } )
+
+          console.log("====Login===Error=== ", error)
+         this.props.dispatch({
+              type:LOGIN_EROOR,
+              payload:error
+          });
+        })
+    }
+
     onPressFB=async()=>{
         LoginManager.logInWithPermissions(["public_profile"]).then(
             (result)=> {
-                AsyncStorage.getItem('PostalCode')
-                .then((res)=>{
-                    if(res !== null && res !== ''){
-                        this.props.navigation.dispatch(
-                            CommonActions.reset({
-                              index: 1,
-                              routes: [
-                                { name: 'Home' },
-                              ],
-                            })
-                          );
-                    }
-                    else{
-                        this.props.navigation.dispatch(
-                            CommonActions.reset({
-                              index: 1,
-                              routes: [
-                                { name: 'AddDeliveryLocation' },
-                              ],
-                            })
-                          );  
-                    }
-                })
-                .catch((err)=>{})
+                // AsyncStorage.getItem('PostalCode')
+                // .then((res)=>{
+                //     if(res !== null && res !== ''){
+                //         this.props.navigation.dispatch(
+                //             CommonActions.reset({
+                //               index: 1,
+                //               routes: [
+                //                 { name: 'Home' },
+                //               ],
+                //             })
+                //           );
+                //     }
+                //     else{
+                //         this.props.navigation.dispatch(
+                //             CommonActions.reset({
+                //               index: 1,
+                //               routes: [
+                //                 { name: 'AddDeliveryLocation' },
+                //               ],
+                //             })
+                //           );  
+                //     }
+                // })
+                // .catch((err)=>{})
               if (result.isCancelled) {
+            
                 console.log("Login cancelled");
               } else {
              
@@ -89,18 +146,30 @@ import {
                     result.grantedPermissions.toString()
                 );
           
-                const currentProfile = Profile.getCurrentProfile().then(
-                    function(currentProfile) {
+               Profile.getCurrentProfile().then(
+                   (currentProfile)=> {
+
+                      console.log("Current Profile",currentProfile)
+
                       if (currentProfile) {
-                        console.log("The current logged user is: " +
+                        console.log(" : " +
                           currentProfile.name
                           + ". His profile id is: " +
                           currentProfile.userID
                         );
+                        let request= {
+                          ...currentProfile,
+                          "social_type":"facebook"
+                        }
+                        this.socialAuthentication(request);
                        
                       }
                     }
-                  );
+                  ).catch((error)=>{
+                    this.setState( { visible: false } )
+                    console.log("Error",error);
+                  })
+                 
               }
             },
             function(error) {
@@ -232,7 +301,12 @@ import {
           const userInfo = await GoogleSignin.signIn();
           this.setState({ userDetail:userInfo });
           console.log("userDetails", userInfo)
-          this.next_navigation()
+          let request={
+            ...userInfo,
+            "social_type":"google"
+          }
+          this.socialAuthentication(request)
+          // this.next_navigation()
         } catch (error) {
             console.log(error)
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -347,8 +421,8 @@ import {
                                     <Text style={ [ styles.regularText, { color: Black, textAlign: 'center' } ] }> Don't have account ? </Text>
                                     <Pressable onPress={ () =>
 
-                                    {   Linking.openURL('https://ayanafoodorganic.com/my-account/?login=true&back=home&page=1')
-                                        // this.props.navigation.navigate( 'RegistrationScreen' )
+                                    {  
+                                        this.props.navigation.navigate( 'RegistrationScreen' )
                                     } }>
                                         <Text style={ [ styles.regularText, { color: Light_Green, textAlign: 'center' } ] }> Sign Up</Text>
                                     </Pressable>

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, createRef } from 'react';
-import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking } from 'react-native';
+import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking, TextInput } from 'react-native';
 import { EventRegister } from 'react-native-event-listeners';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Rating } from 'react-native-ratings';
@@ -8,12 +8,15 @@ import { connect } from 'react-redux';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
 import { actions } from '../../Redux/actions';
-import { Black, Gray, Light_Green, White } from '../../Utils/colors';
+import Apis from '../../RestApi/Apis';
+import Modal from "react-native-modal";
+import { Black, Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_height, screen_width } from '../../Utils/constant';
-import { POPINS_REGULAR } from '../../Utils/fonts';
+import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
+import ProgressLoader from 'rn-progress-loader';
 let removeString = "<p></p>";
-const startImage = require('../../../assets/star.png')
+const startImage = require( '../../../assets/star.png' )
 class ProductDetailScreen extends Component
 {
     flatList = createRef();
@@ -30,7 +33,7 @@ class ProductDetailScreen extends Component
             quentity: 1,
             isDiscription: false,
             isTerm: false,
-            id:this.props.route.params?.data?.ID,
+            id: this.props.route.params?.data?.ID,
             data: this.props.route.params?.data,
             variation: this.props.route.params?.data?.variation,
             // variation: [],
@@ -48,7 +51,13 @@ class ProductDetailScreen extends Component
             instock: this.props.route.params?.data?.variation[ 0 ]?._stock_status,
             regPrice: this.props.route.params?.data?.variation[ 0 ]?._regular_price,
             sPrice: this.props.route.params?.data?.variation[ 0 ]?._sale_price,
-            selectedVarinatID:"variation_id" in this.props.route.params?.data?.variation[ 0 ] ===true ?this.props.route.params?.data?.variation[ 0 ].variation_id:null
+            selectedVarinatID: "variation_id" in this.props.route.params?.data?.variation[ 0 ] === true ? this.props.route.params?.data?.variation[ 0 ].variation_id : null,
+            review: [],
+            reviewModal: false,
+            selectedRating: 0,
+            comment: "",
+            userData: [],
+            visible: false
         }
 
         this.viewabilityConfig = {
@@ -58,8 +67,44 @@ class ProductDetailScreen extends Component
         this.handleViewableItemsChanged = this.handleViewableItemsChanged.bind( this );
         console.log( 'this.props.route.params.data', this.props.route.params.data )
     }
-    componentDidMount ()
+    getReview = () =>
     {
+        let request = {
+            "product_id": this.state.id
+        };
+        Apis.getProductReviewCall( request )
+            .then( ( res ) =>
+            {
+                return JSON.stringify( res )
+            } )
+            .then( ( response ) =>
+            {
+                if ( JSON.parse( response ).data.status == true )
+                {
+                    let data = JSON.parse( response ).data;
+                    this.setState( {
+                        visible: false,
+                        review: data?.data
+                    } )
+
+
+                }
+                else
+                {
+                    this.setState( { visible: false } )
+
+
+                }
+            } )
+            .catch( ( error ) =>
+            {
+                this.setState( { visible: false } )
+                console.log( "Erorr", error )
+            } )
+    }
+    async componentDidMount ()
+    {
+        this.getReview()
         AsyncStorage.getItem( 'PostalCode' )
             .then( ( res ) =>
             {
@@ -81,6 +126,25 @@ class ProductDetailScreen extends Component
                 description: this.state.description.replace( "<p>", "" )
             } )
         }
+        await AsyncStorage.getItem( 'UserData' )
+            .then( ( res ) =>
+            {
+
+                let dd = JSON.parse( res ).data;
+                console.log( "UserRes", dd[ 0 ] )
+                if ( res !== null )
+                {
+                    this.setState( { userData: JSON.parse( res ).data } )
+                    this.profileAPICall( dd[ 0 ].ID )
+                    // // this.props.profileCall( {
+                    // //     "user_id":"122"
+                    // // } ) 
+                }
+                else
+                {
+                    this.setState( { userData: [] } )
+                }
+            } ).catch( ( error ) => { } )
         setTimeout( () =>
         {
 
@@ -168,15 +232,17 @@ class ProductDetailScreen extends Component
                     cartQuentity: this.state.quentity,
                     regPrice: this.state.regPrice,
                     sPrice: this.state.sPrice,
-                    selectedVarinatID:this.state.selectedVarinatID
+                    selectedVarinatID: this.state.selectedVarinatID
                 };
-                if(previousData != null){
+                if ( previousData != null )
+                {
                     previousData.push( finalItem );
-                }else{
-                    previousData=[];
+                } else
+                {
+                    previousData = [];
                     previousData.push( finalItem );
                 }
-               
+
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
                     .then( ( res ) =>
                     {
@@ -245,23 +311,25 @@ class ProductDetailScreen extends Component
                 } );
                 console.log( "DAATTATATTATA", UpdatedData )
                 this.setState( { quentity: this.state.quentity + 1 } )
-              if (oldData !== null){
-                oldData.push( {
+                if ( oldData !== null )
+                {
+                    oldData.push( {
 
-                    ...item,
-                    selectedVariation: this.state.selectedVarinat,
-                    cartPrice: this.state.price * this.state.quentity,
-                    cartRegularPrice: this.state.cartRegularPrice,
-                    cartQuentity: this.state.quentity,
-                    regPrice: this.state.regPrice,
-                    sPrice: this.state.sPrice,
-                    selectedVarinatID:this.state.selectedVarinatID
+                        ...item,
+                        selectedVariation: this.state.selectedVarinat,
+                        cartPrice: this.state.price * this.state.quentity,
+                        cartRegularPrice: this.state.cartRegularPrice,
+                        cartQuentity: this.state.quentity,
+                        regPrice: this.state.regPrice,
+                        sPrice: this.state.sPrice,
+                        selectedVarinatID: this.state.selectedVarinatID
 
-                } )
-              }
-              else{
-                  oldData =[]
-              }
+                    } )
+                }
+                else
+                {
+                    oldData = []
+                }
                 await AsyncStorage.setItem( 'AddToCart', JSON.stringify( oldData ) )
                     .then( ( res ) =>
                     {
@@ -419,6 +487,8 @@ class ProductDetailScreen extends Component
         );
 
     }
+
+
     // onTextLayout = (e) => {
     //     let {x, y, width, height} = e.nativeEvent.layout;
     //     height = Math.floor(height) + 40;
@@ -427,322 +497,556 @@ class ProductDetailScreen extends Component
     //         setExpander(true);
     //     }
     // };
+
+    onSendReview = () =>
+    {
+
+        if ( this.state.userData.length > 0 )
+        {
+
+            this.setState( { visible: true } )
+            let request = {
+                "product_id": this.state.id,
+                "review": this.state.comment,
+                "reviewer": this.state.userData[ 0 ]?.display_name,
+                "reviewer_email": this.state.userData[ 0 ]?.user_email,
+                "rating": this.state.selectedRating
+            }
+            console.log( "Requesty", request );
+            Apis.createProductReviewCall( request )
+                .then( ( res ) =>
+                {
+                    return JSON.stringify( res )
+                } )
+                .then( ( response ) =>
+                {
+                    console.log( "Review Response", response )
+                    if ( JSON.parse( response ).data.status == true )
+                    {
+                        this.setState( { visible: false } )
+                        this.setState( { reviewModal: false } )
+
+                    }
+                    else
+                    {
+                        this.setState( { visible: false } )
+                        this.setState( { reviewModal: false } )
+                    }
+                } )
+                .catch( ( err ) =>
+                {
+                    this.setState( { visible: false } )
+                    this.setState( { reviewModal: false } )
+                    console.log( "Error", err );
+                } )
+        }
+        else
+        {
+            this.setState( { visible: false } )
+            this.setState( { loginModal: false } )
+        }
+
+
+    }
     render ()
     {
         return (
-            <View style={{backgroundColor:White}}>
-            <SafeAreaView>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style={ { backgroundColor: White } }>
-                        <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } }
-                            style={ { backgroundColor: Gray } }
-                            title={ "Product Detail" }
-                            rightMenuIcon={ require( '../../../assets/search.png' ) }
-                        />
-                        <View style={ styles.ImageContainer }>
-
-                            <FlatList
-                                data={ this.state.images }
-                                // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
-                                horizontal={ true }
-                                pagingEnabled={ true }
-                                legacyImplementation={ false }
-                                onScroll={ () =>
-                                {
-                                    // this.VideoPlayer.stop()
-                                } }
-                                showsHorizontalScrollIndicator={ false }
-                                showsVerticalScrollIndicator={ false }
-                                onViewableItemsChanged={ this.handleViewableItemsChanged }
-                                viewabilityConfig={ this.viewabilityConfig }
-                                keyExtractor={ ( item, index ) => index.toString() }
-                                renderItem={ ( { item, index } ) => this.renderImages( item, index ) }
-                                // renderItem={({ item }) => this._renderItem.bind(this)}
-                                ref={ this.flatList }
-                            //  ref={(list) => this.myFlatList = list}
-                            //   ref={(node) => (flatRef = node)}
+            <View style={ { backgroundColor: White } }>
+                <SafeAreaView>
+                    <ScrollView showsVerticalScrollIndicator={ false }>
+                        <ProgressLoader
+                            visible={ this.state.visible }
+                            isModal={ true }
+                            isHUD={ true }
+                            hudColor={ White }
+                            color={ Light_Green } />
+                        <View style={ { backgroundColor: White } }>
+                            <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } }
+                                style={ { backgroundColor: Gray } }
+                                title={ "Product Detail" }
+                                rightMenuIcon={ require( '../../../assets/search.png' ) }
                             />
-                            <View style={ [ styles.paginationWrapper, {
-                                justifyContent: 'center',
-                                alignSelf: 'center',
-                                position: 'relative',
-                                bottom: 0,
-                                paddingVertical: 5
-                            } ] }>
-                                { Array.from( Array( this.state.data.images ? this.state.data.images.length : 0 ).keys() ).map( ( key, index ) => (
-                                    <View
-                                        style={ [ styles.paginationDots, { opacity: this.state.currentIndex === index ? 1 : 0.3, width: this.state.currentIndex === index ? 20 : 10 } ] }
-                                        key={ index } />
-                                ) ) }
-                            </View>
-                            <View style={ styles.bottomContainer }>
-                                <Text style={ styles.titleText }>{ this.state.data.post_title }</Text>
-                                { this.state.isFav === false ?
-                                    <TouchableOpacity onPress={ () =>
+                            <View style={ styles.ImageContainer }>
+
+                                <FlatList
+                                    data={ this.state.images }
+                                    // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
+                                    horizontal={ true }
+                                    pagingEnabled={ true }
+                                    legacyImplementation={ false }
+                                    onScroll={ () =>
                                     {
-                                        this.addToFav( this.state.data )
-                                    } }>
-                                        <Image
-                                            style={ styles.iconStyle }
-                                            source={ require( '../../../assets/fav.png' ) } />
-                                    </TouchableOpacity> :
-                                    <TouchableOpacity
-                                        onPress={ () =>
+                                        // this.VideoPlayer.stop()
+                                    } }
+                                    showsHorizontalScrollIndicator={ false }
+                                    showsVerticalScrollIndicator={ false }
+                                    onViewableItemsChanged={ this.handleViewableItemsChanged }
+                                    viewabilityConfig={ this.viewabilityConfig }
+                                    keyExtractor={ ( item, index ) => index.toString() }
+                                    renderItem={ ( { item, index } ) => this.renderImages( item, index ) }
+                                    // renderItem={({ item }) => this._renderItem.bind(this)}
+                                    ref={ this.flatList }
+                                //  ref={(list) => this.myFlatList = list}
+                                //   ref={(node) => (flatRef = node)}
+                                />
+                                <View style={ [ styles.paginationWrapper, {
+                                    justifyContent: 'center',
+                                    alignSelf: 'center',
+                                    position: 'relative',
+                                    bottom: 0,
+                                    paddingVertical: 5
+                                } ] }>
+                                    { Array.from( Array( this.state.data.images ? this.state.data.images.length : 0 ).keys() ).map( ( key, index ) => (
+                                        <View
+                                            style={ [ styles.paginationDots, { opacity: this.state.currentIndex === index ? 1 : 0.3, width: this.state.currentIndex === index ? 20 : 10 } ] }
+                                            key={ index } />
+                                    ) ) }
+                                </View>
+                                <View style={ styles.bottomContainer }>
+                                    <Text style={ styles.titleText }>{ this.state.data.post_title }</Text>
+                                    { this.state.isFav === false ?
+                                        <TouchableOpacity onPress={ () =>
                                         {
-                                            this.removeItem( this.state.data.ID )
+                                            this.addToFav( this.state.data )
                                         } }>
-                                        <Image
-                                            style={ styles.iconStyle }
-                                            source={ require( '../../../assets/fill_fav.png' ) } />
-                                    </TouchableOpacity>
-                                }
-                            </View>
-
-                        </View>
-                        <View style={ [ { backgroundColor: White } ] }>
-                            <View style={ styles.priceContainer }>
-                                <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, } }>
-                                    <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
-                                    {
-                                        this.setState( {
-                                            quentity: this.state.quentity - 1
-                                        } )
-                                    } }>
-                                        <Image
-                                            style={ styles.iconStyle2 }
-                                            source={ require( '../../../assets/minus.png' ) } />
-                                    </TouchableOpacity>
-                                    <View style={ styles.q_Container }>
-                                        <Text style={ styles.quentityText }>{ this.state.quentity }</Text>
-                                    </View>
-                                    <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
-                                    {
-                                        this.setState( {
-                                            quentity: this.state.quentity + 1,
-
-                                        } )
-
-                                    } }>
-                                        <Image
-                                            style={ [ styles.iconStyle2, { tintColor: Light_Green } ] }
-
-                                            source={ require( '../../../assets/plus.png' ) } />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={ { padding: 8 } }>
-                                    <Text style={ [ styles.quentityText, { textAlign: 'right', fontSize: 16, paddingHorizontal: 5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
-                                    <Text style={ [ styles.quentityText, { color: Light_Green, textAlign: 'right' } ] }>Avaibility : <Text style={ [ styles.quentityText, {
-                                        color:
-                                            Black, fontFamily: POPINS_REGULAR,
-                                    } ] }> { this.state.instock }</Text></Text>
-                                </View>
-
-                            </View>
-                            <View style={ [ styles.container, { marginHorizontal: 15, padding: 8 } ] } >
-                                <Text style={ [ styles.quentityText ] }>Weight</Text>
-                                <View style={ { flexDirection: 'row', marginVertical: 5 } }>
-                                </View>
-                                <View style={ { flexDirection: 'row' } }>
-
-                                    {
-                                        // console.log("this.state.variation",this.state.variation)
-                                        this.state.variation.map( ( item, index ) =>
-                                        {
-                                            let active = true;
-                                            return (
-                                                <View key={ index }>
-                                                    {this.state.checked === index ?
-                                                        <TouchableOpacity
-                                                            onPress={ () =>
-                                                            {
-                                                                this.setState( {
-                                                                    price: item._price,
-                                                                    selectedVarinat: item.attribute_pa_weight,
-                                                                    cartSellPrice: item._sale_price,
-                                                                    cartRegularPrice: item._regular_price,
-                                                                    instock: item._stock_status,
-                                                                    regPrice: item._regular_price,
-                                                                    sPrice: item._sale_price,
-                                                                    selectedVarinatID:"variation_id" in item ===true ?item.variation_id:null
-                                                                } )
-                                                            } }
-                                                            style={ [ styles.attributesView, { backgroundColor: "#E5F3EA" } ] }>
-                                                            <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/selected.png" ) } />
-                                                            <Text style={ [ styles.smallText, { color: Black, fontSize: 9, paddingHorizontal: 3, paddingVertical: 3, textAlign: 'center' } ] }>{ item.attribute_pa_weight }</Text>
-                                                        </TouchableOpacity>
-                                                        :
-                                                        <TouchableOpacity
-                                                            onPress={ () =>
-                                                            {
-                                                                this.setState( {
-                                                                    checked: index,
-                                                                    price: item._price,
-                                                                    selectedVarinat: item.attribute_pa_weight,
-                                                                    cartSellPrice: item._sale_price,
-                                                                    cartRegularPrice: item._regular_price,
-                                                                    instock: item._stock_status,
-                                                                    regPrice: item._regular_price,
-                                                                    sPrice: item._sale_price,
-                                                                    selectedVarinatID:"variation_id" in item ===true ?item.variation_id:null
-                                                                } )
-                                                            } }
-                                                            style={ [ styles.attributesView, { backgroundColor: White } ] }>
-                                                            <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/unselected.png" ) } />
-                                                            <Text style={ [ styles.smallText, { color: Black, fontSize: 9, paddingHorizontal: 3, paddingVertical: 3, textAlign: 'center' } ] }>{ item.attribute_pa_weight }</Text>
-                                                        </TouchableOpacity> }
-                                                </View>
-                                            )
-                                        } )
-
+                                            <Image
+                                                style={ styles.iconStyle }
+                                                source={ require( '../../../assets/fav.png' ) } />
+                                        </TouchableOpacity> :
+                                        <TouchableOpacity
+                                            onPress={ () =>
+                                            {
+                                                this.removeItem( this.state.data.ID )
+                                            } }>
+                                            <Image
+                                                style={ styles.iconStyle }
+                                                source={ require( '../../../assets/fill_fav.png' ) } />
+                                        </TouchableOpacity>
                                     }
                                 </View>
-                            </View>
-                            <View style={ [ styles.container, {
-                                marginHorizontal: 10,
-                            } ] }>
 
-                                <View style={ styles.rowView }>
-                                    <Text style={ [ styles.quentityText ] }>Description</Text>
+                            </View>
+                            <View style={ [ { backgroundColor: White } ] }>
+                                <View style={ styles.priceContainer }>
+                                    <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, } }>
+                                        <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
+                                        {
+                                            if ( this.state.quentity > 1 )
+                                            {
+                                                this.setState( {
+                                                    quentity: this.state.quentity - 1
+                                                } )
+                                            }
+                                        } }>
+                                            <Image
+                                                style={ styles.iconStyle2 }
+                                                source={ require( '../../../assets/minus.png' ) } />
+                                        </TouchableOpacity>
+                                        <View style={ styles.q_Container }>
+                                            <Text style={ styles.quentityText }>{ this.state.quentity }</Text>
+                                        </View>
+                                        <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
+                                        {
+                                            this.setState( {
+                                                quentity: this.state.quentity + 1,
+
+                                            } )
+
+                                        } }>
+                                            <Image
+                                                style={ [ styles.iconStyle2, { tintColor: Light_Green } ] }
+
+                                                source={ require( '../../../assets/plus.png' ) } />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <View style={ { padding: 8 } }>
+                                        <Text style={ [ styles.quentityText, { textAlign: 'right', fontSize: 16, paddingHorizontal: 5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
+                                        <Text style={ [ styles.quentityText, { color: Light_Green, textAlign: 'right' } ] }>Avaibility : <Text style={ [ styles.quentityText, {
+                                            color:
+                                                Black, fontFamily: POPINS_REGULAR,
+                                        } ] }> { this.state.instock }</Text></Text>
+                                    </View>
+
+                                </View>
+                                <View style={ [ styles.container, { marginHorizontal: 15, padding: 8 } ] } >
+                                    <Text style={ [ styles.quentityText ] }>Weight</Text>
+                                    <View style={ { flexDirection: 'row', marginVertical: 5 } }>
+                                    </View>
+                                    <View style={ { flexDirection: 'row' } }>
+
+                                        {
+                                            // console.log("this.state.variation",this.state.variation)
+                                            this.state.variation.filter( ( data ) =>
+                                            {
+                                                return data.attribute_pa_weight !== null ? data.attribute_pa_weight : null
+                                            } ).map( ( item, index ) =>
+                                            {
+                                                let active = true;
+                                                return (
+                                                    <View key={ index }>
+                                                        {this.state.checked === index ?
+                                                            <TouchableOpacity
+                                                                onPress={ () =>
+                                                                {
+                                                                    this.setState( {
+                                                                        price: item._price,
+                                                                        selectedVarinat: item.attribute_pa_weight,
+                                                                        cartSellPrice: item._sale_price,
+                                                                        cartRegularPrice: item._regular_price,
+                                                                        instock: item._stock_status,
+                                                                        regPrice: item._regular_price,
+                                                                        sPrice: item._sale_price,
+                                                                        selectedVarinatID: "variation_id" in item === true ? item.variation_id : null
+                                                                    } )
+                                                                } }
+                                                                style={ [ styles.attributesView, { backgroundColor: "#E5F3EA" } ] }>
+                                                                <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/selected.png" ) } />
+                                                                <Text style={ [ styles.smallText, { color: Black, fontSize: 9, paddingHorizontal: 3, paddingVertical: 3, textAlign: 'center' } ] }>{ item.attribute_pa_weight }</Text>
+                                                            </TouchableOpacity>
+                                                            :
+                                                            <TouchableOpacity
+                                                                onPress={ () =>
+                                                                {
+                                                                    this.setState( {
+                                                                        checked: index,
+                                                                        price: item._price,
+                                                                        selectedVarinat: item.attribute_pa_weight,
+                                                                        cartSellPrice: item._sale_price,
+                                                                        cartRegularPrice: item._regular_price,
+                                                                        instock: item._stock_status,
+                                                                        regPrice: item._regular_price,
+                                                                        sPrice: item._sale_price,
+                                                                        selectedVarinatID: "variation_id" in item === true ? item.variation_id : null
+                                                                    } )
+                                                                } }
+                                                                style={ [ styles.attributesView, { backgroundColor: White } ] }>
+                                                                <Image style={ { height: 10, width: 10, resizeMode: 'contain', alignSelf: 'center' } } source={ require( "../../../assets/unselected.png" ) } />
+                                                                <Text style={ [ styles.smallText, { color: Black, fontSize: 9, paddingHorizontal: 3, paddingVertical: 3, textAlign: 'center' } ] }>{ item.attribute_pa_weight }</Text>
+                                                            </TouchableOpacity> }
+                                                    </View>
+                                                )
+                                            } )
+
+                                        }
+                                    </View>
+                                </View>
+                                <View style={ [ styles.container, {
+                                    marginHorizontal: 10,
+                                } ] }>
+
+                                    <View style={ styles.rowView }>
+                                        <Text style={ [ styles.quentityText ] }>Description</Text>
+                                        {
+                                            this.state.isDiscription === true ?
+                                                <TouchableOpacity onPress={ () =>
+                                                {
+                                                    this.setState( { isDiscription: !this.state.isDiscription } )
+                                                } }>
+                                                    <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
+                                                </TouchableOpacity>
+                                                :
+                                                <TouchableOpacity onPress={ () =>
+                                                {
+                                                    this.setState( { isDiscription: !this.state.isDiscription } )
+                                                } }>
+                                                    <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
+                                                </TouchableOpacity>
+                                        }
+
+
+
+                                    </View>
+
                                     {
                                         this.state.isDiscription === true ?
+                                            <View style={ { marginVertical: 10 } }>
+                                                <Text style={ styles.smallText }>{ this.removeTags( this.state.description ) }</Text>
+                                            </View>
+                                            : null
+                                    }
+                                </View>
+                                <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
+                                    <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> { this.state.postalCode }</Text></Text>
+                                </View>
+
+                                <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
+
+                                    <View style={ styles.rowView }>
+                                        <Text style={ [ styles.quentityText ] }>More Offers</Text>
+                                        <TouchableOpacity onPress={ () =>
+                                        {
+
+                                        } }>{
+                                                this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
+                                                    : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
+                                            }
+
+                                        </TouchableOpacity>
+
+
+                                    </View>
+
+                                </View>
+                                <View style={ [ styles.container, { paddingHorizontal: 8, paddingVertical: 10, marginHorizontal: 16 } ] }>
+                                    <View style={ [ styles.container, {
+                                        flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10,
+                                    } ] }>
+                                        <View>
+                                            <Text style={ [ styles.quentityText, { marginVertical: 3, } ] }>Review</Text>
+                                            <Rating
+                                                type='star'
+                                                ratingImage={ startImage }
+                                                ratingColor='#3498db'
+                                                ratingBackgroundColor='#c8c7c8'
+                                                ratingCount={ 5 }
+                                                imageSize={ 15 }
+                                                readonly={ true }
+                                                startingValue={ this.state.raingCount }
+
+                                                style={ { backgroundColor: Gray } }
+                                            />
+                                        </View>
+                                        <View style={ { flexDirection: 'row', alignItems: 'center' } }>
                                             <TouchableOpacity onPress={ () =>
                                             {
-                                                this.setState( { isDiscription: !this.state.isDiscription } )
+                                                this.setState( { reviewModal: true } )
                                             } }>
-                                                <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
+                                                <Image
+                                                    style={ [ styles.iconStyle2, { left: 10 } ] }
+                                                    source={ require( '../../../assets/pencil.png' ) }
+                                                />
                                             </TouchableOpacity>
-                                            :
-                                            <TouchableOpacity onPress={ () =>
-                                            {
-                                                this.setState( { isDiscription: !this.state.isDiscription } )
-                                            } }>
-                                                <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
-                                            </TouchableOpacity>
+                                            <View >
+                                                <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{ this.state.raingCount } </Text>
+                                                <Text style={ [ styles.smallText, { paddingVertical: 3, } ] }>Over all</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <FlatList
+                                        data={ this.state.review }
+                                        showsVerticalScrollIndicator={ false }
+                                        scrollEnabled={ false }
+                                        renderItem={ ( { item, index } ) =>
+                                        {
+                                            return (
+                                                <View style={ { alignItems: 'flex-start', marginVertical: 5, paddingVertical: 5, paddingHorizontal: 8, flexDirection: 'row', } }>
+                                                    <Image
+                                                        source={ require( '../../../assets/profile.png' ) }
+                                                        style={ { height: 25, width: 25, resizeMode: "contain", } } />
+                                                    <View style={ { left: 5 } }>
+
+                                                        <Text style={ [ styles.quentityText, { textAlign: 'center', left: 5, fontFamily: POPINS_REGULAR } ] }>{ item.comment_author }</Text>
+
+                                                        <Rating
+                                                            type='star'
+                                                            ratingImage={ startImage }
+                                                            ratingColor='#3498db'
+                                                            ratingBackgroundColor='#fff'
+                                                            ratingCount={ 5 }
+                                                            imageSize={ 13 }
+                                                            readonly={ true }
+                                                            // isDisabled={ true }
+                                                            startingValue={ item.rating }
+                                                            // onFinishRating={ this.ratingCompleted }
+                                                            style={ { backgroundColor: White, } }
+                                                        />
+
+
+                                                        <Text style={ [ styles.smallText, { paddingHorizontal: 5, paddingVertical: 5 } ] }>{ item.comment_content }</Text>
+                                                    </View>
+
+                                                </View>
+                                            );
+                                        } } />
+                                </View>
+                                <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
+
+                                    <View style={ styles.rowView }>
+                                        <Text style={ [ styles.quentityText ] }>Term & Condition</Text>
+                                        <TouchableOpacity onPress={ () =>
+                                        {
+                                            this.setState( { isTerm: !this.state.isTerm } )
+                                        } }>{
+                                                this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
+                                                    : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
+                                            }
+
+                                        </TouchableOpacity>
+
+
+                                    </View>
+                                    {
+                                        this.state.isTerm === true ?
+                                            <View style={ { padding: 10 } }>
+                                                <Text>{ this.removeTags( this.props.product.data[ 0 ].seller_terms.refund_policy ) }</Text>
+                                            </View> : null
                                     }
 
 
-
                                 </View>
+                                <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
-                                {
-                                    this.state.isDiscription === true ?
-                                        <View style={ { marginVertical: 10 } }>
-                                            <Text style={ styles.smallText }>{ this.removeTags( this.state.description ) }</Text>
-                                        </View>
-                                        : null
-                                }
-                            </View>
-                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
-                                <Text style={ [ styles.quentityText, { paddingHorizontal: 8, paddingVertical: 10 } ] }>Pin Code : <Text style={ styles.smallText }> { this.state.postalCode }</Text></Text>
-                            </View>
-
-                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
-
-                                <View style={ styles.rowView }>
-                                    <Text style={ [ styles.quentityText ] }>More Offers</Text>
-                                    <TouchableOpacity onPress={ () =>
-                                    {
-
-                                    } }>{
-                                            this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
-                                                : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
-                                        }
-
-                                    </TouchableOpacity>
-
-
-                                </View>
-
-                            </View>
-                            <View style={ [ styles.container, { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 10, marginHorizontal: 16 } ] }>
-                                <View>
-                                    <Text style={ [ styles.quentityText, { marginVertical: 3, } ] }>Review</Text>
-                                    <Rating
-                                        type='star'
-                                        ratingImage={ startImage }
-                                        ratingColor='#3498db'
-                                        ratingBackgroundColor='#c8c7c8'
-                                        ratingCount={ 5 }
-                                        imageSize={ 15 }
-                                        startingValue={ this.state.raingCount }
-                                        onFinishRating={ this.ratingCompleted }
-                                        style={ { backgroundColor: Gray } }
-                                    />
-                                </View>
-                                <View >
-                                    <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{ this.state.raingCount } </Text>
-                                    <Text style={ [ styles.smallText, { paddingVertical: 3, } ] }>Over all</Text>
-                                </View>
-                            </View>
-                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
-
-                                <View style={ styles.rowView }>
-                                    <Text style={ [ styles.quentityText ] }>Term & Condition</Text>
-                                    <TouchableOpacity onPress={ () =>
-                                    {
-                                        this.setState( { isTerm: !this.state.isTerm } )
-                                    } }>{
-                                            this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
-                                                : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
-                                        }
-
-                                    </TouchableOpacity>
-
-
-                                </View>
-                                {
-                                    this.state.isTerm === true ?
-                                        <View style={ { padding: 10 } }>
-                                            <Text>{ this.removeTags( this.props.product.data[ 0 ].seller_terms.refund_policy ) }</Text>
-                                        </View> : null
-                                }
-
-
-                            </View>
-                            <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
-
-                                <View style={ styles.rowView }>
-                                    <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
-                                    <TouchableOpacity onPress={ () =>
-                                    {
-                                        this.props.navigation.navigate( 'HelpScreen' );
-                                    } }>
-
-                                        <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
-
-
-                                    </TouchableOpacity>
-
-
-                                </View>
-
-
-                            </View>
-                            <View style={ [ styles.rowView, { justifyContent: 'space-evenly', } ] }>
-                                <FilledButton
-                                    style={ { width: screen_width / 2 - 30 } }
-                                    onPress={ () => { this.addToCart( this.state.data ) } }
-                                    title={ "Add to Cart " } />
-                                <FilledButton
-                                    style={ { width: screen_width / 2 - 30 } }
-                                    onPress={ () =>
-                                    {
-                                        try
+                                    <View style={ styles.rowView }>
+                                        <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
+                                        <TouchableOpacity onPress={ () =>
                                         {
-                                            Linking.openURL( 'whatsapp://send?text=Hello Ayana Food Organic , I am interest' + this.state.data.post_name + 'and want to buy this product https://ayanafoodorganic.com/product/' + this.state.data.post_name + '/ Please Send me Details.&phone=+917388600191' )
-                                        }
-                                        catch ( error )
+                                            this.props.navigation.navigate( 'HelpScreen' );
+                                        } }>
+
+                                            <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
+
+
+                                        </TouchableOpacity>
+
+
+                                    </View>
+
+
+                                </View>
+                                <View style={ [ styles.rowView, { justifyContent: 'space-evenly', } ] }>
+                                    <FilledButton
+                                        style={ { width: screen_width / 2 - 30 } }
+                                        onPress={ () => { this.addToCart( this.state.data ) } }
+                                        title={ "Add to Cart " } />
+                                    <FilledButton
+                                        style={ { width: screen_width / 2 - 30 } }
+                                        onPress={ () =>
                                         {
-                                            alert( "Failed to Open WhatsApp" )
-                                        }
-                                    } }
-                                    title={ "WhatsApp " } />
+                                            try
+                                            {
+                                                Linking.openURL( 'whatsapp://send?text=Hello Ayana Food Organic , I am interest' + this.state.data.post_name + 'and want to buy this product https://ayanafoodorganic.com/product/' + this.state.data.post_name + '/ Please Send me Details.&phone=+917388600191' )
+                                            }
+                                            catch ( error )
+                                            {
+                                                alert( "Failed to Open WhatsApp" )
+                                            }
+                                        } }
+                                        title={ "WhatsApp " } />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
+                        <Modal
+                            isVisible={ this.state.reviewModal }
+                            animationIn="slideInUp"
+                            animationOut="slideOutDown"
+                            //    transparent={ true }
+
+                            style={ styles.modalStyle }
+                            onRequestClose={ () =>
+                            {
+                                this.setState( { reviewModal: false } )
+
+
+                                // mooveRL();
+                            } }
+                        >
+                            <View style={ { flex: 1, padding: 15 } }>
+                                <ProgressLoader
+                                    visible={ this.state.visible }
+                                    isModal={ true }
+                                    isHUD={ true }
+                                    hudColor={ White }
+                                    color={ Light_Green } />
+                                <TouchableOpacity onPress={ () =>
+                                {
+                                    this.setState( { reviewModal: false } )
+                                } }>
+                                    <Image
+                                        style={ { height: 18, width: 18, resizeMode: 'contain', alignSelf: "flex-end" } }
+                                        source={ require( '../../../assets/closed.png' ) } />
+                                </TouchableOpacity>
+
+                                <View style={ { flex: 0.9, justifyContent: 'center', alignItems: "flex-start", paddingTop: 15 } }>
+                                    <Text style={ [ styles.titleText, { paddingVertical: 8 } ] }>Feedback</Text>
+                                    <View style={ { flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', } }>
+                                        <Rating
+                                            type='star'
+                                            ratingImage={ startImage }
+                                            ratingColor='#3498db'
+                                            ratingBackgroundColor='#fff'
+                                            ratingCount={ 5 }
+                                            imageSize={ 25 }
+                                            // isDisabled={ true }
+                                            startingValue={ this.state.selectedRating }
+                                            onFinishRating={ ( rate ) =>
+                                            {
+                                                this.setState( { selectedRating: rate } )
+                                            } }
+                                            style={ { backgroundColor: White, flex: 0.5 } }
+                                        />
+                                        <View style={ { justifyContent: "flex-end", flex: 0.5, alignItems: 'center' } }>
+                                            <Text style={ [ styles.quentityText, { textAlign: 'right' } ] }>{ this.state.selectedRating } </Text>
+                                            <Text style={ [ styles.smallText, { paddingVertical: 3, textAlign: 'right' } ] }>Over all</Text>
+                                        </View>
+                                    </View>
+
+                                    <TextInput
+                                        value={ this.state.comment }
+                                        style={ [ styles.input, { height: screen_height / 6, width: "99%" } ] }
+                                        multiline={ true }
+                                        placeholder="Comment or Message"
+                                        onChangeText={ ( text ) =>
+                                        {
+                                            this.setState( { comment: text } )
+                                        } }
+                                        placeholderTextColor={ Text_Gray } />
+
+                                    <FilledButton title="Submit"
+                                        style={ { width: screen_width / 2.5, borderRadious: 20, marginVertical: "6%" } }
+                                        textStyle={ { fontSize: 14, paddingVertical: 8 } }
+                                        onPress={ () =>
+                                        {
+                                            this.onSendReview()
+                                        } } />
+                                </View>
+
+                            </View>
+
+                        </Modal>
+                        <Modal
+                            isVisible={ this.state.loginModal }
+                            animationIn="slideInUp"
+                            animationOut="slideOutDown"
+                            //    transparent={ true }
+
+                            style={ styles.modalStyle }
+                            onRequestClose={ () =>
+                            {
+                                this.setState( { loginModal: false } )
+
+
+                                // mooveRL();
+                            } }
+                        >
+                            <View style={ { flex: 1, padding: 15 } }>
+                                <TouchableOpacity onPress={ () =>
+                                {
+                                    this.setState( { loginModal: false } )
+                                } }>
+                                    <Image
+                                        style={ { height: 18, width: 18, resizeMode: 'contain' } }
+                                        source={ require( '../../../assets/closed.png' ) } />
+                                </TouchableOpacity>
+
+                                <View style={ { flex: 0.9, justifyContent: 'center', alignItems: "center", paddingTop: 15 } }>
+                                    <Image
+                                        style={ { height: screen_height / 3.5, width: screen_height / 3.5, resizeMode: 'contain', alignSelf: 'center' } }
+                                        source={ require( '../../../assets/emptyCart.png' ) } />
+
+                                    <Text style={ [ styles.titleText, { fontSize: 16, fontFamily: POPINS_REGULAR } ] }>Oops ! Please Login to Continue</Text>
+                                    <FilledButton
+                                        onPress={ this.onLogin }
+                                        style={ { width: screen_width / 1.5 } }
+                                        title={ 'Click here to Login' } />
+
+                                </View>
+
+                            </View>
+
+                        </Modal>
+                    </ScrollView>
+                </SafeAreaView>
 
 
             </View>

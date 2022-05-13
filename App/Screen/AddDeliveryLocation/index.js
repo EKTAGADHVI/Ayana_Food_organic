@@ -233,6 +233,7 @@ class AddDeliveryLocation extends Component
                                     title={ "Add Your Delivery Location" }
                                     value={ this.state.deliveryCode }
                                     maxLength={6}
+                                    keyboardType={"decimal-pad"}
                                     onChangeText={ ( text ) =>
                                     {
                                         this.setState( {

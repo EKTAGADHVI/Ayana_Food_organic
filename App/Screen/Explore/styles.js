@@ -7,8 +7,7 @@ const styles = StyleSheet.create( {
     mainLayout: {
         height: screen_height,
         backgroundColor: White, 
-        paddingHorizontal:10, 
-        paddingVertical:15
+       
     },
     categoeryView: {
         height: screen_width / 2.5,
@@ -47,6 +46,13 @@ const styles = StyleSheet.create( {
         borderBottomColor:Gray,
         borderBottomWidth:1,
         marginHorizontal:'3%'
+    },
+    modalStyles:{
+        flex:1,
+        backgroundColor:White,
+        margin:-15,
+        alignItems:"center",
+        justifyContent:"center"
     }
 } );
 export default styles;

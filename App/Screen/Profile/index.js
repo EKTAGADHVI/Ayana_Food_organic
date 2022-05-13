@@ -71,7 +71,7 @@ class Profile extends Component
                 if ( res !== null )
                 {
                     this.setState( { userData: JSON.parse( res ).data } )
-                    // this.profileAPICall(dd[ 0 ].ID)
+                    this.profileAPICall(dd[ 0 ].ID)
                     // // this.props.profileCall( {
                     // //     "user_id":"122"
                     // // } ) 
@@ -82,9 +82,9 @@ class Profile extends Component
                 }
             } ).catch( ( error ) => { } )
     }
-    profileAPICall =() =>{
+    profileAPICall =(id) =>{
         Apis.getProfileCall({
-            "user_id":"122"
+            "user_id":id
         })
         .then((res  )=>{
             return JSON.stringify(res);

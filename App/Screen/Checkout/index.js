@@ -190,6 +190,19 @@ class CheckOut extends Component
               
             }
     }
+    validate = (text) => {
+        console.log(text);
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+        if (reg.test(text) === false) {
+          console.log("Email is Not Correct");
+        //   this.setState({ email: text })
+          return false;
+        }
+        else {
+        //   this.setState({ email: text })
+          console.log("Email is Correct");
+        }
+      }
     render ()
     {
         let isFname=false;
@@ -200,6 +213,9 @@ class CheckOut extends Component
         let isPincode=false;
         let isBillingNo=false;
         let isBillingEmail=false;
+        let isValidEmail=false;
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+         
 
         if(this.state.fName === ""){
             isFname=false
@@ -248,14 +264,22 @@ class CheckOut extends Component
         else{
             isBillingNo=true;
         }
-      if(this.state.billingEmail == ''){
+      if(this.state.billingEmail == '' ){
           isBillingEmail=false;
             // this.setState({viewBtn:true})
             // ToastMessage('error','Enter Billing Email' ,'Please Check')
         }
+         
         else{
             isBillingEmail=true;
         }
+     if(this.validate(this.state.billingEmail)===false){
+         isValidEmail=false
+     }
+     else{
+         isValidEmail=true
+     }
+       
 
         return (
             <View style={ styles.mainLayout }>
@@ -461,6 +485,7 @@ class CheckOut extends Component
                             <Input
                                   textStyle={{color:Black}}
                                 title={ "PinCode *" }
+                                maxLength={6}
                                 onEndEditing={()=>{
                                     this.setState({viewBtn:false})
                                 }}
@@ -483,6 +508,7 @@ class CheckOut extends Component
                                   onEndEditing={()=>{
                                     this.setState({viewBtn:false})
                                 }}
+                                maxLength={10}
                                 title={ "Billing Phone Number *" }
                                 value={ this.state.billingPhone }
                                 keyboardType={'number-pad'}
@@ -527,7 +553,8 @@ class CheckOut extends Component
                                 (isCity===true) &&
                                 (isState ===true) &&
                                 (isBillingNo ===true)&&
-                                (isBillingEmail ===true) ?
+                                (isBillingEmail ===true) &&
+                                (isValidEmail === true) ?
                                 false :true
 
                             }
@@ -538,7 +565,8 @@ class CheckOut extends Component
                                 (isCity===true) &&
                                 (isState ===true) &&
                                 (isBillingNo ===true)&&
-                                (isBillingEmail ===true) ? 1 :0.5
+                                (isBillingEmail ===true)  &&
+                                (isValidEmail === true) ? 1 :0.5
                              } }
                                 textStyle={ { fontSize: 16, paddingVertical: 8 } }
                                 onPress={ () => {this.validation() } } />

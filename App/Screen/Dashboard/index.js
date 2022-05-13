@@ -137,14 +137,15 @@ class Dashboard extends Component
 
     discountInPercentage = ( data ) =>
     {
-
-        if(data !== undefined){
+     
+        if(data !== undefined ){
+         
             let discountPrice = data._regular_price - data._sale_price;
         let price = ( discountPrice / data._regular_price ) * 100;
         return price.toFixed( 1 ) + "%";
         }
         else{
-            return "";
+            return 0;
         }
     }
 
@@ -173,7 +174,7 @@ class Dashboard extends Component
                     "product_type": "bestselling"
                 })
                 this.props.getOrganicWorldProduct( {
-                    "product_type": "organic-world"
+                    "product_type": "organicworld"
                 } );
                 this.props.topSellingProduct( {
                     "product_type": "topselling"
@@ -587,21 +588,31 @@ class Dashboard extends Component
     {
 
         let price = "";
+        let l_data = data.filter((item)=>{
+        
+                return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
+            
+        });
         if(data !== undefined){
-            if ( data.length > 1 )
+            if ( data?.length > 1 )
         {
-            price = data.reduce( function ( prev, curr )
+          
+            // console.log("L DATA",l_data)
+            price = l_data?.reduce( function ( prev, curr )
             {
-                return prev._sale_price < curr._sale_price ? prev : curr;
+            
+                    return prev?._sale_price < curr?._sale_price ? prev : curr;
+                
+               
             } );
            
             console.log( "MIN", price )
-            return price._sale_price;
+            return price?._sale_price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-         return data[ 0 ]._sale_price
+         return Object.keys(data[ 0 ]).indexOf("_sale_price")!= -1? Object.keys(data[ 0 ]).indexOf("_regular_price")? data[ 0 ]?._regular_price : data[ 0 ]?._price:data[ 0 ]?._regular_price
         }
 
         }
@@ -614,6 +625,7 @@ class Dashboard extends Component
     {
         console.log( "WEIGHJHGHG",data)
         let price = "";
+    
         if(data!== undefined){
             if ( data.length > 1)
         {
@@ -937,7 +949,7 @@ class Dashboard extends Component
                                     this.props.navigation.navigate( 'ProductViewScreen', {
                                         title: "Organic World",
                                         request: {
-                                            "product_type": "organic-world"
+                                            "product_type": "organicworld"
                                         }
                                     } )
                                 } }>

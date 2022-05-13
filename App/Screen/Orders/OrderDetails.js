@@ -40,9 +40,9 @@ class OrderDetails extends Component
 
                                 </View>
                                 <View >
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>{moment(this.state.data?.date_created_gmt).format("DD/MM/YYYY")}</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>{this.state.data.id}</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>Rs. {this.state.data.total} </Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>{moment(this.state.data?.post_date).format("DD/MM/YYYY")}</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>{this.state.data?.ID}</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>Rs. {this.state?.data?.billing_deatil?._order_total} </Text>
                                 </View>
                             </View>
                             <TouchableOpacity style={ styles.downloadButton }>
@@ -54,41 +54,39 @@ class OrderDetails extends Component
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Shipping Details</Text>
+                        <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Product Details</Text>
 
                       <FlatList
-                      data={this.state.data?.line_items}
-                      horizontal={true}
+                      data={this.state.data?.order_deatil}
+                    //   horizontal={true}
                      
-                      
+                      scrollEnabled={false}
                       keyExtractor={(item)=>item.ID}
                       renderItem={({item,index})=>{
                           console.log("Oderssss",item)
                           return(
                             <View style={ [ styles.cardView, { flexDirection: 'row', alignItems: 'flex-start', } ] } >
-                            <Image
-                                source={ require('../../../assets/default.png')}
-                                style={ styles.imageStyle } />
+                         {
+                             item?.img?.length >0 ?   <Image
+                             source={ {uri:item?.img[0]?.img_path}}
+                             style={ styles.imageStyle } />:
+                             <Image
+                             source={ require('../../../assets/default.png')}
+                             style={ styles.imageStyle } />
+                         }
                             <View>
-                                <Text style={ [ styles.regularText, ] }>{item.name.slice( 0, 25 ) + ( item.name.length > 25 ? "..." : "" )}</Text>
+                                <Text style={ [ styles.regularText, ] }>{item.item_name.slice( 0, 25 ) + ( item?.item_name.length > 25 ? "..." : "" )}</Text>
                                 <View style={ styles.rowView }>
-                                    <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Black } ] }> Delivered  |</Text></Text>
-                                    <Text style={ [ styles.smallText, ] }>{this.state.data.date}</Text>
+                                    <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Black } ] }> {this.state?.data?.billing_deatil?._order_status} |</Text></Text>
+                                    <Text style={ [ styles.smallText, ] }>{moment(this.state?.data?.post_date).format("DD/MM/YYYY")}</Text>
                                 </View>
                                 <View style={ [ styles.rowView, { width: screen_width * 0.57, justifyContent: "space-between" } ] }>
-                                    <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Rs. {item.total} </Text>
+                                    <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Rs. {item._line_total} </Text>
                                    {
-                                       item.selectedVariation !== null? <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Qty : {item.quantity} </Text>:null
+                                       item._qty !== null? <Text style={ [ styles.smallText, { fontSize: 14, textAlign: 'left' } ] }>Qty : {item.pa_weight} </Text>:null
                                    }
                                 </View>
-                                <Text style={ [ styles.smallText, { color: Black, fontSize: 14 } ] }>Sold By : {item.meta_data.map((data,index)=>{
-                                    if(data.display_key==="Seller"){
-                                        return data.display_value
-                                    }
-                                    else{
-                                        return ""
-                                    }
-                                })}  </Text>
+                                <Text style={ [ styles.smallText, { color: Black, fontSize: 14,width:"65%" } ] }>Sold By : {item._vendor_name}  </Text>
                             </View>
 
                         </View>
@@ -96,11 +94,11 @@ class OrderDetails extends Component
                       }}/>
 
                         <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Shipping Address</Text>
-                        <Text style={ [ styles.regularText, { width: screen_width * 0.56, paddingVertical: 8, } ] }>{this.state.data.billing.address_1 }</Text>
+                        <Text style={ [ styles.regularText, { width: screen_width * 0.56, paddingVertical: 8, } ] }>{this.state?.data?.billing_deatil._billing_address_1 }</Text>
                         <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 8 } ] }>Payment Details</Text>
 
                         <View style={[styles.cardView]}>
-                        <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 5 } ] }>{this.state.data?.payment_method_title}</Text>
+                        <Text style={ [ styles.regularText, { fontFamily: POPINS_SEMI_BOLD, paddingVertical: 5 } ] }>{this.state.data?.billing_deatil?._payment_method_title}</Text>
                         <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 ,paddingHorizontal:"5%"} }>
                                 <View>
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD } ] }>item</Text>
@@ -109,8 +107,8 @@ class OrderDetails extends Component
 
                                 </View>
                                 <View >
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" ,fontFamily:POPINS_SEMI_BOLD } ] }>1</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>{this.state.data.total}</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" ,fontFamily:POPINS_SEMI_BOLD } ] }>{this.state?.data?.billing_deatil?.total_items}</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>{this.state?.data?.billing_deatil?._order_total}</Text>
                                    
                                 </View>
                             </View>
