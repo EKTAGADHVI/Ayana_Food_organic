@@ -41,7 +41,8 @@ class ProductViewScreen extends Component
             },{
                 "name":"Popularity"
             },{
-                "name":"Discount"
+                "name":"Discount",
+                "tag":'discount'
             }],
             selectedCat:[],
             selectedShop:[],
@@ -280,7 +281,7 @@ class ProductViewScreen extends Component
         return price.toFixed( 1 ) + "%";
         }
         else{
-            return null;
+            return "";
         }
     }
 
@@ -313,7 +314,7 @@ class ProductViewScreen extends Component
         let request ={
             "category_id":this.state.selectedCat,
             "seller_name":this.state.selectedShop,
-            "price":this.state.selectedPrice,
+            "price":this.state.selectedPrice
         }
 
         // this.props.filterCall(request);
@@ -325,9 +326,11 @@ class ProductViewScreen extends Component
         
         if(JSON.parse(responce).data.status == true){
             console.log("======PRODUCT_FILTER_LOADING====== >  ", JSON.parse(responce).data);
+
+            
             this.setState({
                 visible:false,
-            categoeries: JSON.parse(responce).data.data});
+            categoeries: JSON.parse(responce)?.data?.data});
 
             this.props.dispatch({
                 type:PRODUCT_FILTER_SUCESS,
@@ -338,7 +341,7 @@ class ProductViewScreen extends Component
             console.log("======PRODUCT_FILTER_LOADING====== >  ", JSON.parse(responce).data);
             this.setState({
                 visible:false,
-                categoeries: this.props.getProductsListByCatId.data});
+                categoeries: []});
             // console.log("======PRODUCT_FILTER_LOADING====== >  ", JSON.parse(responce).data);
             this.props.dispatch({
                 type:PRODUCT_FILTER_ERROR,
@@ -411,7 +414,7 @@ class ProductViewScreen extends Component
                                         // image={ item.img[0].img_path }
                                         rating={ item.rating[ 0 ].meta_value }
                                         weight={this.displayWeight(item.variation)}
-                                        discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                        discount={ this.discountInPercentage( item?.variation[ 0 ] ) }
                                         price={ this.displayPrice( item.variation ) }
                                         storeName={ item.seller_name }
                                         onPress={ () =>

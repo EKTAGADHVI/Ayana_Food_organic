@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { Image, View } from 'react-native';
 import { connect } from 'react-redux';
 import { actions } from '../../Redux/actions';
+import { LOGIN_SUCESS } from '../../Redux/actionTypes';
 
 class SplashScreen extends Component {
     constructor(props){
@@ -37,10 +38,15 @@ class SplashScreen extends Component {
     // }
    async componentDidMount(){
         setTimeout(async ()=>{
+       
             await AsyncStorage.getItem('UserData')
             .then((response)=>{
                 console.log("response",response)
                 if(response !== null && response!== "" ){
+                  this.props.dispatch({
+                    type:LOGIN_SUCESS,
+                    payload:JSON.parse(response)
+                });
 
                  AsyncStorage.getItem('PostalCode')
                   .then((postalcode)=>{
@@ -84,6 +90,9 @@ class SplashScreen extends Component {
                 console.log("error")
             })
           
+          
+      
+            
         },2000)
     }
     render(){
@@ -102,7 +111,7 @@ function mapStateToProps ( state, ownProps )
 {
     console.log( "state.homePageReducer.data ",state.categoeryListReducer.data )
     return {
-        // data : state.loginReducer.data
+         data : state.loginReducer.data,
         products: state.productListReducer.data,
         cataegoery: state.categoeryListReducer.data,
         getProducts: state.getProductByCatIdReducer.data,

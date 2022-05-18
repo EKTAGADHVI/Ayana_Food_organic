@@ -1,6 +1,6 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator , CardStyleInterpolators,   } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, CardStyleInterpolators, } from '@react-navigation/native-stack';
 import LoginScreen from '../Screen/LoginScreen';
 import Dashboard from '../Screen/Dashboard';
 import { Black, Gray, Light_Green, Text_Gray, White } from '../Utils/colors';
@@ -27,6 +27,7 @@ import OrderDetails from '../Screen/Orders/OrderDetails';
 import CheckOut from '../Screen/Checkout';
 import OrderPreview from '../Screen/Checkout/OrderPreview';
 import SplashScreen from '../Screen/SplashScreen';
+import FAQScreen from '../Screen/FAQScreen';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const bottomTab = createBottomTabNavigator();
@@ -71,7 +72,7 @@ const RootNavigation = ( { navigation } ) =>
                 options={ {
                     headerShown: false
                 } } />
-              <mainStack.Screen
+            <mainStack.Screen
                 name="LoginScreen"
                 component={ LoginScreen }
                 options={ {
@@ -89,7 +90,7 @@ const RootNavigation = ( { navigation } ) =>
                 options={ {
                     headerShown: false
                 } } />
-                  <mainStack.Screen
+            <mainStack.Screen
                 name="AddDeliveryLocation"
                 component={ AddDeliveryLocation }
                 options={ {
@@ -176,6 +177,13 @@ const RootNavigation = ( { navigation } ) =>
             <mainStack.Screen
                 name="OrderPreview"
                 component={ OrderPreview }
+                options={ {
+                    headerShown: false
+                } } />
+
+            <mainStack.Screen
+                name="FAQScreen"
+                component={ FAQScreen }
                 options={ {
                     headerShown: false
                 } } />

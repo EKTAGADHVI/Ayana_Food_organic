@@ -50,10 +50,33 @@ class Blog extends Component
         .then((res)=> {return JSON.stringify(res)})
         .then((response)=>{
             console.log("Search Data",response);
-            let data = JSON.parse(response).data.data
+            // let data = JSON.parse(response).data.data
+            if(JSON.parse(responce).data.status == true){
+                   
+                console.log("====== GET_BLOG_LIST_LOADING ====== >  ", JSON.parse(responce).data);
+                this.setState({data:JSON.parse(responce).data.data})
+                this.props.dispatch({
+                    type:GET_BLOG_LIST_SUCESS,
+                    payload:JSON.parse(responce).data
+                });
+                
+                setTimeout(()=>{
+                    this.setState({visible:false})
+                },2000)
+               
+            }
+            else{
+                console.log("====== GET_BLOG_LIST_SUCESS ====== >  ", JSON.parse(responce).data);
+                this.props.dispatch({
+                    type:GET_BLOG_LIST_ERROR,
+                    payload:JSON.parse(responce).data
+                });
+                this.setState({visible:false})
+            }
         }).
         catch((error)=>{
             console.log("ERROR",error)
+            this.setState({visible:false})
         })
     }
    componentDidMount(){
@@ -179,9 +202,17 @@ class Blog extends Component
                             this.setState( {
                                 searchValue: text
                             } )
-                            this.searchBlog()
+                           
                         } }
                         secureTextEntry={ false }
+                        onEndEditing={ () =>
+                            {
+                                this.searchBlog()
+                                this.setState( { visible: true } )
+                                // setTimeout(()=>{
+                                //     this.setState({visible:false})
+                                // },2000)
+                            } }
                         placeholder={ "Search here" } />
                         
                     <View>

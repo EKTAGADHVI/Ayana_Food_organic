@@ -16,6 +16,7 @@ import moment from 'moment';
 import { EventRegister } from 'react-native-event-listeners';
 import Apis from '../../RestApi/Apis';
 import ProgressLoader from 'rn-progress-loader';
+import axios from 'axios';
 // import PayuMoney,{HashGenerator} from 'react-native-payumoney';
 class OrderPreview extends Component
 {
@@ -41,7 +42,9 @@ class OrderPreview extends Component
             // orderStatus:false,
             isCashOnDelivery: false,
             userData: [],
-            visible: false
+            visible: false,
+            totalText:0,
+            subTotal:this.props.route.params.totalPrice
         }
 
     }
@@ -53,7 +56,7 @@ class OrderPreview extends Component
             image: 'https://ayanafoodorganic.com/wp-content/uploads/2020/09/logo-1.png',
             currency: 'INR',
             key: 'rzp_test_f6l6m6k12uB9NY', // Your api key
-            amount: this.state.totalPrice *100,
+            amount: this.state.totalPrice * 100,
             name: 'Ayana Food & Organic',
             prefill: {
                 email: this.state.billing.billingEmail,
@@ -117,6 +120,7 @@ class OrderPreview extends Component
     }
     async componentDidMount ()
     {
+        this.getTotalTextCharges()
         await AsyncStorage.getItem( 'UserData' )
             .then( ( res ) =>
             {
@@ -136,64 +140,46 @@ class OrderPreview extends Component
                     this.setState( { userData: [] } )
                 }
             } ).catch( ( error ) => { } )
+
+
         // await AsyncStorage.getItem('add')
+    }
+
+    getTotalTextCharges = () =>
+    {
+        let totalCharge = 0;
+        this.state.checkOutData?.map( ( item, index ) =>
+        {
+            if ( item?.tax_deatil?.length > 0 )
+            {
+                item?.tax_deatil?.map( ( data ) =>
+                {
+                    //Our number.
+                    var number = item.regPrice;
+
+                    //The percent that we want to get.
+                    //i.e. We want to get 50% of 120.
+                    var percentToGet = data.tax_rate;
+
+                    //Calculate the percent.
+                    var percent = ( percentToGet / 100 ) * number;
+
+                    totalCharge = totalCharge + percent
+                } )
+            }
+
+        } )
+
+        this.setState({totalText:totalCharge,
+            totalPrice:this.state.totalPrice + totalCharge
+        })
+
     }
 
     saveOrder = () =>
     {
 
-        // //         var val = Math.floor(1000 + Math.random() * 9000);
-        // // console.log(val);
-        //         let previousData= []
-        //         let orderId =Math.floor(1000 + Math.random() * 9000);
-        //         AsyncStorage.getItem('Orders')
-        //         .then((res)=>{
-        //             if(res !== null){
-        //                 previousData = JSON.parse(res);
-        //                 console.log("Previous Data",previousData)
-        //                 let data ={
-        //                     "OrderId":orderId,
-        //                     "order":this.state.checkOutData,
-        //                     "billing":this.state.billing,
-        //                     "status":"inProcess",
-        //                     "totalPrice":this.state.totalPrice,
-        //                     "date": moment( new Date() ).format( 'DD/MM/YYYY' )
-        //                 }
-        //                 this.setState({
-        //                     order_id:orderId
-        //                 })
-        //                 previousData.push(data)
-        //                 AsyncStorage.setItem('Orders',JSON.stringify(previousData))
-        //                 .then((res)=>{
-        //                     console.log("OrderSaved")
-        //                 }).
-        //                 catch((error)=>{
-        //                     console.log("Order Not saved", error)
-        //                 })
-        //             }
-        //             else{
-        //                 let data ={
-        //                     "OrderId":orderId,
-        //                     "order":this.state.checkOutData,
-        //                     "billing":this.state.billing,
-        //                     "status":"inProcess",
-        //                     "totalPrice":this.state.totalPrice,
-        //                     "date": moment( new Date() ).format( 'DD/MM/YYYY' )
-        //                 }
-        //                 previousData.push(data)
-        //                 AsyncStorage.setItem('Orders',JSON.stringify(previousData))
-        //                 .then((res)=>{
-        //                     console.log("OrderSaved")
-        //                 }).
-        //                 catch((error)=>{
-        //                     console.log("Order Not saved", error)
-        //                 })
 
-        //             }
-        //         })
-        //         .catch(()=>{
-
-        //         })
         this.setState( { visible: true } )
         let itemArray = [];
         this.state.checkOutData.map( ( item, index ) =>
@@ -271,8 +257,10 @@ class OrderPreview extends Component
             } )
             .then( ( response ) =>
             {
-                this.setState( { visible: false ,
-                order_id:JSON.parse(response).data.id} )
+                this.setState( {
+                    visible: false,
+                    order_id: JSON.parse( response ).data?.data?.id
+                } )
                 console.log( "Response", response )
                 this.OrderSucess();
             } )
@@ -286,6 +274,24 @@ class OrderPreview extends Component
     }
     OrderSucess = async () =>
     {
+        let data = {
+            "email": "ayanafoodorganicmobile@gmail.com",
+            "password": "Ayana@1234"
+        };
+        axios.post( 'https://apiv2.shiprocket.in/v1/external/auth/login', data, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        } )
+            .then( ( res ) =>
+            {
+                console.log( "Ship Authentication", res )
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Error", error )
+            } )
+
         let UpdatedArray = []
         this.setState( { orderSucess: true } )
         await AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedArray ) )
@@ -349,13 +355,22 @@ class OrderPreview extends Component
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Apply Coupon Code</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 12, color: Light_Green } ] }>Add Coupon</Text>
                                 </View>
+
+
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Sub Total</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalPrice }</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.subTotal }</Text>
                                 </View>
+
+                                <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
+                                    <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Total Tax</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalText }</Text>
+                                </View>
+
+
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Total</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalPrice }</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalPrice  }</Text>
                                 </View>
 
                             </View>
@@ -479,7 +494,7 @@ class OrderPreview extends Component
                                         <Image
                                             style={ { height: screen_height / 3, width: screen_height / 3, resizeMode: "contain", alignSelf: 'center', right: 5 } }
                                             source={ require( '../../../assets/orderSucess.png' ) } />
-                                        <Text style={ [ styles.titleText, { fontFamily: POPINS_REGULAR, fontSize: 20 } ] }>Your Order has been accepted</Text>
+                                        <Text style={ [ styles.titleText, { fontFamily: POPINS_REGULAR, fontSize: 20 } ] }>Your Order has been placed</Text>
                                         <Text style={ [ styles.normalText, { color: Light_Green, textAlign: 'center' } ] }>Order Number :{ this.state.order_id }</Text>
                                         <Text style={ [ styles.normalText, { color: Light_Green, textAlign: 'center' } ] }>Order Date : { moment( new Date() ).format( 'DD/MM/YYYY' ) }</Text>
                                     </View>

@@ -75,7 +75,7 @@ class OrderDetails extends Component
                              style={ styles.imageStyle } />
                          }
                             <View>
-                                <Text style={ [ styles.regularText, ] }>{item.item_name.slice( 0, 25 ) + ( item?.item_name.length > 25 ? "..." : "" )}</Text>
+                                <Text style={ [ styles.regularText,{width:screen_width*0.7} ] }>{item.item_name.slice( 0, 25 ) + ( item?.item_name.length > 25 ? "..." : "" )}</Text>
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Black } ] }> {this.state?.data?.billing_deatil?._order_status} |</Text></Text>
                                     <Text style={ [ styles.smallText, ] }>{moment(this.state?.data?.post_date).format("DD/MM/YYYY")}</Text>

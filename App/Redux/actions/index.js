@@ -3,6 +3,7 @@ import { getBestOfferAction } from "./getBestOfferAction";
 import { getBestSellingProductAction } from "./getBestSellingProductAction";
 import { getBlogsAction } from "./getBlogsAction";
 import { getCategoeryListAction } from "./getCategoeryListaction";
+import { getFAQAtion } from "./getFAQAction";
 import { getFeaturedProductAction } from "./getFeaturedProductAction";
 import { getKeywordProduct } from "./getKeywordProduct";
 import { getOnSaleProductAction } from "./getOnSaleProductAction";
@@ -47,5 +48,6 @@ productFilterAction:productFilterAction,
 getBannersAction:getBannersAction,
 getVideosAction:getVideosAction,
 getProfileAction:getProfileAction,
-getTopSellingProductActon:getTopSellingProductAction
+getTopSellingProductActon:getTopSellingProductAction,
+getFAQAction:getFAQAtion
 }

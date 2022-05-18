@@ -83,7 +83,8 @@ class CheckOut extends Component
                                 billingEmail:data[0].user_email,
                                 billingPhone: data[0].phone,
                                 state_Value:data[0].new_location.state,
-                                city:data[0].new_location.city
+                                city:data[0].new_location.city,
+                                stretAddress:data[0].street_address
                             })
                             // this.setState({userData:data})
                         })

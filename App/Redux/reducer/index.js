@@ -5,6 +5,7 @@ import { getBannersReducer } from "./getBannersReducer";
 import { getBestOfferReducer } from "./getBestOfferReducer";
 import { getBestSellingProductReducer } from "./getBestSellingProductReducer";
 import { getBlogsReducer } from "./getBlogsReducer";
+import { getFAQReducer } from "./getFAQReducer";
 import { getFeaturedProductReducer } from "./getFeaturedProductReducer";
 import { getKeywordProductReducer } from "./getKeywordProductReducer";
 import { getOnSaleProductReducer } from "./getOnSaleProductReducer";
@@ -49,5 +50,6 @@ export default  combineReducers({
     getBannersReducer:getBannersReducer,
     getVideosReducer:getVideosReducer,
     getProfileReducer:getProfileReducer,
-    getTopSellingReducer:getTopSellingReducer
+    getTopSellingReducer:getTopSellingReducer,
+    getFAQReducer:getFAQReducer
     });

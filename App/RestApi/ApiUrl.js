@@ -23,3 +23,4 @@ export const PRODUCT_FILTER_URL=BASE_URL+'/product-filter.php?apicall=product';
  export const CREATE_ORDER_URL=BASE_URL+"/create_order.php"
  export const GET_PRODUCT_REVIEW_URL=BASE_URL+'/get_review.php'
  export const CREATE_PRODUCT_REVIEW_URL=BASE_URL+"/create_review.php"
+ export const GET_FAQ_URL=BASE_URL+"/get_faq.php?apicall=faq"

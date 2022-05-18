@@ -94,7 +94,7 @@ class Profile extends Component
             console.log("Response Fetch call", responce)
             if(JSON.parse(responce).data.status == true){
                 console.log("======GET_PROFILE_LOADING_sucess===== >  ", JSON.parse(responce).data);
-                let data=JSON.parse(responce).data.data;
+                let data=JSON.parse(responce)?.data;
                 AsyncStorage.setItem('UserData',JSON.stringify(data))
                 .then(()=>{
                     this.props.dispatch({
@@ -102,7 +102,7 @@ class Profile extends Component
                         payload:JSON.parse(responce).data
                     });
                    
-                    this.setState({userData:data})
+                    this.setState({userData:data?.data})
                 })
                 .catch((error)=>{
                     console.log(error)

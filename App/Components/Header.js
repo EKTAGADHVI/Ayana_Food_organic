@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView, Linking } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView, Linking, Platform } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { Black, Light_Green, Line_Gray, Text_Gray, White } from '../Utils/colors';
 import { screen_height, screen_width } from '../Utils/constant';
@@ -230,7 +230,7 @@ const Header = ( props ) =>
                                     .catch((error)=>{
                                         console.log("Data Not Removed")
                                     })}}>
-                                    <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray } ] }>
+                                    <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray,bottom:Platform.OS==='android'?"25%":0 } ] }>
                                         <Image
                                             style={ styles.iconStyle }
                                             source={ require( '../../assets/logout.png' ) } />

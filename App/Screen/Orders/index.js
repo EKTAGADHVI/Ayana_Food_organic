@@ -42,86 +42,116 @@ class Orders extends Component
     }
 
 
-    reOrder = ( order ) =>
+    reOrder = async ( order ) =>
     {
         this.setState( { visible: true } )
-        if ( order?.length > 0 )
-        {
-            let orderData = [];
-            // let addFlag=false;
-            order?.map(  ( item, index ) =>
-            {console.log("map Called")
-                Apis.getProductByCategoryId( {
-                    "product_id": item._product_id
-                } )
-                    .then( ( res ) =>
+        let previousData = [];
+        let alreadyAdded = false;
+        let added = false;
+        await AsyncStorage.getItem( 'AddToCart' )
+            .then( ( res ) =>
+            {
+                console.log( "DashBoard Cart", res )
+                let cart = JSON.parse( res );
+                previousData = JSON.parse( res );
+                if ( order?.length > 0 )
+                {
+                    let orderData = [];
+    
+    
+                    // let addFlag=false;
+                    order?.map( ( item, index ) =>
                     {
-                        return JSON.stringify( res )
-                    } )
-                    .then( ( response ) =>
-                    {
-                      
-                        if ( JSON.parse( response ).data.status == true )
-                        {  console.log("Response",response)
-                            let data = JSON.parse( response )?.data?.data
-                            let newItem = {
-                                ...data[0],
-                                selectedVariation: item?.pa_weight,
-                                cartPrice: item?._line_total,
-                                cartRegularPrice: item?._line_total,
-                                cartQuentity: item?._qty,
-                                regPrice: item?._line_total / item?._qty,
-                                sPrice: item?._line_total / item?._qty,
-                                selectedVarinatID: item?._vendor_id
-                            }
-                            orderData.push( newItem )
-                            this.setState( { visible: true } )
+                        console.log( "map Called" )
+                        Apis.getProductByCategoryId( {
+                            "product_id": item._product_id
+                        } )
+                            .then( ( res ) =>
+                            {
+                                return JSON.stringify( res )
+                            } )
+                            .then( ( response ) =>
+                            {
+    
+                                if ( JSON.parse( response ).data.status == true )
+                                {
+                                    console.log( "Response", response )
+                                    let data = JSON.parse( response )?.data?.data
+                                    let newItem = {
+                                        ...data[ 0 ],
+                                        selectedVariation: item?.pa_weight,
+                                        cartPrice: item?._line_total,
+                                        cartRegularPrice: item?._line_total,
+                                        cartQuentity: item?._qty,
+                                        regPrice: item?._line_total / item?._qty,
+                                        sPrice: item?._line_total / item?._qty,
+                                        selectedVarinatID: item?._vendor_id
+                                    }
+                                    previousData.push( newItem )
+                                    this.setState( { visible: true } )
+    
+                                    this.addToCart( previousData )
+                                }
+                                else
+                                {
+                                    this.setState( { visible: false } )
+                                    alert( "Product can not re order" );
+                                }
+    
+                            } )
+                            .catch( ( error ) =>
+                            {
+                                this.setState( { visible: false } )
+                                alert( "Product can not re order" );
+                                console.log( "error", error )
+                            } )
+    
+    
+    
+    
+    
+                    } );
+    
+    
+                }
+               
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Error", error )
+                // this.setState( { cartData: [] } )
+            } )
 
-                            this.addToCart(orderData)
-                        }
-                        else
-                        {
-                            this.setState( { visible: false } )
-                            alert( "Product can not re order" );
-                        }
-                      
-                    } )
-                    .catch( ( error ) =>
-                    {
-                        this.setState( { visible: false } )
-                        alert( "Product can not re order" );
-                        console.log( "error", error )
-                    } )
-             
-                 
-                  
-              
-
-            } );
-
-          
-        }
-    }
-    addToCart=(orderData)=>{
-        AsyncStorage.setItem( 'AddToCart', JSON.stringify( orderData ) )
-        .then( ( res ) =>
+        if ( added === false )
         {
            
+           
+               
+        }
 
-            setTimeout( () =>
+
+    }
+    addToCart = ( orderData ) =>
+    {
+        AsyncStorage.setItem( 'AddToCart', JSON.stringify( orderData ) )
+            .then( ( res ) =>
+            {
+
+
+                setTimeout( () =>
+                {
+                    this.setState( { visible: false } )
+                    EventRegister.emit( 'Add-to-cart' )
+                    this.props.navigation.navigate( 'Cart' );
+                }, 1000 )
+                console.log( "Sucessfully Added" );
+            } )
+            .catch( ( error ) =>
             {
                 this.setState( { visible: false } )
-                EventRegister.emit( 'Add-to-cart' )
-                this.props.navigation.navigate( 'Cart' );
-            }, 1000 )
-            console.log( "Sucessfully Added" );
-        } )
-        .catch( ( error ) =>
-        {
-            this.setState( { visible: false } )
-            alert( "Product can not re order" );
-            console.log( "error", error );
-        } )
+                alert( "Product can not re order" );
+                console.log( "error", error );
+            } )
     }
     getOrders = () =>
     {

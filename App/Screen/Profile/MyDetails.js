@@ -63,7 +63,8 @@ class MyDetails extends Component
                                 phone: data[ 0 ].phone,
                                 city: data[ 0 ].new_location.city,
                                 stateName: data[ 0 ].new_location.state,
-                                userName: data[ 0 ].display_name
+                                userName: data[ 0 ].display_name,
+                                strit:data[ 0 ].street_address
                             } )
                             this.setState( { visible: false } )
                             // this.setState({userData:data})

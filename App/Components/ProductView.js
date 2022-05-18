@@ -39,7 +39,8 @@ const ProductView = ( props ) =>
                 ratingColor='#3498db'
                 ratingBackgroundColor='#c8c7c8'
                 ratingCount={ 5 }
-                imageSize={ 10 }   
+                imageSize={ 10 }  
+                readonly={true} 
                 startingValue={props.rating}             
                 onFinishRating={ this.ratingCompleted }
                 style={ { alignSelf:'flex-start' } }

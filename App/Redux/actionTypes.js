@@ -179,3 +179,10 @@ export const GET_ORDER="GET_ORDER"
 export const GET_ORDER_SUCESS="GET_ORDER_SUCESS"
 export const GET_ORDER_ERROR="GET_ORDER_ERROR"
 export const GET_ORDER_LOADING="GET_ORDER_LOADING"
+
+// get FAQ
+
+export const GET_FAQ="GET_FAQ"
+export const GET_FAQ_SUCESS="GET_FAQ_SUCESS"
+export const GET_FAQ_ERROR="GET_FAQ_ERROR"
+export const GET_FAQ_LOADING="GET_FAQ_LOADING"

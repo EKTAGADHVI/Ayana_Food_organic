@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, createRef } from 'react';
-import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking, TextInput } from 'react-native';
+import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking, TextInput, KeyboardAvoidingView } from 'react-native';
 import { EventRegister } from 'react-native-event-listeners';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Rating } from 'react-native-ratings';
@@ -501,7 +501,7 @@ class ProductDetailScreen extends Component
     onSendReview = () =>
     {
 
-        if ( this.state.userData.length > 0 )
+        if ( this.state.userData.length > 0 && this.state.userData!==null )
         {
 
             this.setState( { visible: true } )
@@ -550,8 +550,23 @@ class ProductDetailScreen extends Component
     }
     render ()
     {
+        let reviewButton=false;
+        let remain=this.state.comment.length;
+        
+        if(remain>0 && remain<=300){
+           
+        }
+        if(this.state.comment !== null && this.state.comment!== ""){
+            reviewButton=true;
+        }
+        if(this.state.selectedRating>0){
+            reviewButton=true
+        }
+        else{
+            reviewButton=false
+        }
         return (
-            <View style={ { backgroundColor: White } }>
+            <View style={ { backgroundColor: White ,} }>
                 <SafeAreaView>
                     <ScrollView showsVerticalScrollIndicator={ false }>
                         <ProgressLoader
@@ -811,11 +826,15 @@ class ProductDetailScreen extends Component
                                             <TouchableOpacity onPress={ () =>
                                             {
                                                 this.setState( { reviewModal: true } )
-                                            } }>
+                                            } }
+                                            style={{justifyContent:'center',alignItems:'center', borderRightWidth:0.8,borderRightColor:Text_Gray,}}>
+                                              
                                                 <Image
-                                                    style={ [ styles.iconStyle2, { left: 10 } ] }
-                                                    source={ require( '../../../assets/pencil.png' ) }
+                                                    style={ [ styles.iconStyle2, { tintColor:Light_Green, height: 25,right:"70%",
+                                                        width: 25,alignSelf:"center"} ] }
+                                                    source={ require( '../../../assets/reviewEdit.png' ) }
                                                 />
+                                                  {/* <Text  style={ [styles.smallText,{color:Light_Green,fontSize:10}] }>Add Review</Text> */}
                                             </TouchableOpacity>
                                             <View >
                                                 <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{ this.state.raingCount } </Text>
@@ -891,7 +910,7 @@ class ProductDetailScreen extends Component
                                         <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
                                         <TouchableOpacity onPress={ () =>
                                         {
-                                            this.props.navigation.navigate( 'HelpScreen' );
+                                            this.props.navigation.navigate( 'FAQScreen' );
                                         } }>
 
                                             <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
@@ -927,6 +946,7 @@ class ProductDetailScreen extends Component
                             </View>
                         </View>
                         <Modal
+                            // avoidKeyboard={true}
                             isVisible={ this.state.reviewModal }
                             animationIn="slideInUp"
                             animationOut="slideOutDown"
@@ -941,7 +961,9 @@ class ProductDetailScreen extends Component
                                 // mooveRL();
                             } }
                         >
+                        
                             <View style={ { flex: 1, padding: 15 } }>
+
                                 <ProgressLoader
                                     visible={ this.state.visible }
                                     isModal={ true }
@@ -985,6 +1007,7 @@ class ProductDetailScreen extends Component
                                         value={ this.state.comment }
                                         style={ [ styles.input, { height: screen_height / 6, width: "99%" } ] }
                                         multiline={ true }
+                                        maxLength={300}
                                         placeholder="Comment or Message"
                                         onChangeText={ ( text ) =>
                                         {
@@ -992,8 +1015,11 @@ class ProductDetailScreen extends Component
                                         } }
                                         placeholderTextColor={ Text_Gray } />
 
+<Text style={ [ styles.smallText, { paddingVertical: 3, textAlign: 'right' ,width:screen_width*0.8} ] }>{remain}/300</Text>
+
                                     <FilledButton title="Submit"
-                                        style={ { width: screen_width / 2.5, borderRadious: 20, marginVertical: "6%" } }
+                                        disabled={reviewButton == true ?false:true}
+                                        style={ { width: screen_width / 2.5, borderRadious: 20, marginVertical: "6%",opacity:reviewButton == true ?1:0.5 } }
                                         textStyle={ { fontSize: 14, paddingVertical: 8 } }
                                         onPress={ () =>
                                         {

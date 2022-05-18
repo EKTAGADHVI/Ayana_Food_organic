@@ -169,7 +169,7 @@ class Cart extends Component
                     cartRegularPrice: item.regPrice * onIncrement,
                     cartQuentity: parseInt( onIncrement )
                 }
-                EventRegister.emit( 'Add-to-cart' )
+               
                 //   this.setState({checkOutPrice:item.sPrice * onIncrement})
                 return data;
 
@@ -186,6 +186,7 @@ class Cart extends Component
         AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedArray ) )
             .then( ( res ) =>
             {
+                 EventRegister.emit( 'Add-to-cart' )
                 console.log( 'Successfully Updated' );
             } )
             .catch( ( error ) =>
@@ -205,15 +206,15 @@ class Cart extends Component
             if ( item.ID === id && index == index2 )
             {
                 let onIncrement = value + 1;
-                EventRegister.emit( 'Add-to-cart' )
+               
                 console.log( "value", item.variation?._price )
                 let data = {
                     ...item,
                     cartPrice: item.sPrice * onIncrement,
                     cartRegularPrice: item.regPrice * onIncrement,
-                    cartQuentity: parseInt( onIncrement )
+                    cartQuentity:  onIncrement 
                 }
-
+                // EventRegister.emit( 'Add-to-cart' )
                 //   this.setState({checkOutPrice:item.sPrice * onIncrement})
                 return data;
 
@@ -230,6 +231,7 @@ class Cart extends Component
         AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedArray ) )
             .then( ( res ) =>
             {
+                EventRegister.emit( 'Add-to-cart' )
                 console.log( 'Successfully Updated' );
             } )
             .catch( ( error ) =>
