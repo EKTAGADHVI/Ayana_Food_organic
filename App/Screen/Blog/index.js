@@ -37,7 +37,7 @@ class Blog extends Component
 
             // ],
             data:[],
-            visible:false
+            visible:true
         }
         // this.props.blogRequest();
     }
@@ -81,7 +81,7 @@ class Blog extends Component
     }
    componentDidMount(){
     this.setState({visible:true})
-        try{
+  
             
             Apis.getBlogCall()
             .then((res)=> {
@@ -118,10 +118,7 @@ class Blog extends Component
                 });
                 this.setState({visible:false})
             })
-        }
-        catch(error){
-            this.setState({visible:false})
-        }
+      
     }
 
     removeTags = ( str ) =>
@@ -135,7 +132,8 @@ class Blog extends Component
         // Regular expression to identify HTML tags in 
         // the input string. Replacing the identified 
         // HTML tag with a null string.
-        return str.replace( /(<([^>]+)>)/ig, '' );
+       let newstr= str.replace( /(<([^>]+)>)/ig, '' );
+       return  newstr.replace(/^\s+|\s+$/gm,'');
     }
 
     renderItem = ( item, index ) =>
@@ -161,7 +159,7 @@ class Blog extends Component
                     </View>
 
                 </View>
-                <Text style={[[styles.normalText,{color:Black,fontFamily:POPINS_REGULAR}]]}>{this.removeTags(item.post_content.slice( 0, 250 ) + ( item.post_content.slice.length > 250 ? "..." : "" )) }</Text>
+                <Text style={[[styles.normalText,{color:Black,fontFamily:POPINS_REGULAR}]]}>{this.removeTags(item.post_content.slice( 0, 250 ) + ( item.post_content.slice.length > 250 ? "..." : "...." )) }</Text>
                 <View style={[styles.rowView,{justifyContent:'space-between'}]}>
                     <FilledButton title="Read more"
                         style={ { borderRadious: 20,paddingVertical:0 } }
@@ -170,13 +168,13 @@ class Blog extends Component
                             data:item,
                         }) } } />
 
-                        <TouchableOpacity style={styles.btnStyle}>
+                        {/* <TouchableOpacity style={styles.btnStyle}>
                             <View style={styles.rowView}>
                                 <Image source={require('../../../assets/message.png')}
                                 style={styles.iconStyle}/>
                                 <Text style={[styles.smallText]}>Leave a comment</Text>
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                 </View>
             </View>
         )

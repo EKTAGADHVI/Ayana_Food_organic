@@ -52,7 +52,12 @@ class FAQScreen extends Component
                             isHUD={ true }
                             hudColor={ White }
                             color={ Light_Green } />
-                        <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } }
+                       
+                       
+                      {
+                          this.props?.loading==false?
+                          <View>
+                               <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } }
                             title={ "FAQ" }
                         />
                        
@@ -114,13 +119,15 @@ class FAQScreen extends Component
                                   )
                               }}
                             />
-                       
-                       <FilledButton title="Need more help ?"
-                       style={{width:screen_width/2,borderRadious:20,marginVertical:"6%",alignSelf:"flex-end"}}
-                       textStyle={{fontSize:14, paddingVertical:8}}
-                       onPress={()=>{
-                           this.props.navigation.navigate('HelpScreen')
-                       }}/>
+                             <FilledButton title="Need more help ?"
+                          style={{width:screen_width/2,borderRadious:20,marginVertical:"6%",alignSelf:"center"}}
+                          textStyle={{fontSize:14, paddingVertical:8}}
+                          onPress={()=>{
+                              this.props.navigation.navigate('HelpScreen')
+                          }}/>
+                          </View>
+                         :null
+                      }
                        </SafeAreaView>     
 
             </View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView, Linking, Platform } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Text, Animated, Easing, SafeAreaView, Linking, Platform,Alert } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { Black, Light_Green, Line_Gray, Text_Gray, White } from '../Utils/colors';
 import { screen_height, screen_width } from '../Utils/constant';
@@ -56,6 +56,51 @@ const Header = ( props ) =>
     const [ visible, setVisible ] = useState( false );
     const [logoutVisible,setLogoutVisible]=useState(false);
     const [postalCode,setPostalCode]=useState('')
+    const logout = () => {
+        Alert.alert(
+            "Ayana Food & Organic",
+            'Are you sure you want to Logout?',
+            [   
+                {
+                    text: 'Yes', onPress: async () => {
+                    
+                            setVisible(false)
+                            props.logout();
+                            await AsyncStorage.removeItem('UserData')
+                            .then((res)=>{
+                                AsyncStorage.removeItem("PostalCode")
+                                .then(()=>{})
+                                .catch((err)=>{})
+                                AsyncStorage.removeItem("AddToCart")
+                                .then(()=>{})
+                                .catch((err)=>{})
+                               
+                                console.log("Data Removed")
+                              setTimeout(()=>{
+                                props.navigation.dispatch(
+                                    CommonActions.reset({
+                                      index: 1,
+                                      routes: [
+                                        { name: 'LoginScreen' },
+                                      ],
+                                    })
+                                  );
+                              },1000)
+                            })
+                            .catch((error)=>{
+                                console.log("Data Not Removed")
+                            })}
+                    
+                },
+                {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+            ],
+            {cancelable: false},
+        );
+    }
     useEffect(()=>{
         AsyncStorage.getItem('UserData')
                                 .then((res)=>{
@@ -206,30 +251,9 @@ const Header = ( props ) =>
                             </View>
                             {
                                 logoutVisible === true ?
-                                <TouchableOpacity onPress={async()=>{
-                                    setVisible(false)
-                                    props.logout();
-                                    await AsyncStorage.removeItem('UserData')
-                                    .then((res)=>{
-                                        AsyncStorage.removeItem("PostalCode")
-                                        .then(()=>{})
-                                        .catch((err)=>{})
-                                       
-                                        console.log("Data Removed")
-                                      setTimeout(()=>{
-                                        props.navigation.dispatch(
-                                            CommonActions.reset({
-                                              index: 1,
-                                              routes: [
-                                                { name: 'LoginScreen' },
-                                              ],
-                                            })
-                                          );
-                                      },1000)
-                                    })
-                                    .catch((error)=>{
-                                        console.log("Data Not Removed")
-                                    })}}>
+                                <TouchableOpacity onPress={()=>{
+                                    logout()
+                                }}>
                                     <View style={ [ styles.menuContainer, { borderTopWidth: 0.5, borderBottomWidth: 0, borderTopColor: Line_Gray,bottom:Platform.OS==='android'?"25%":0 } ] }>
                                         <Image
                                             style={ styles.iconStyle }

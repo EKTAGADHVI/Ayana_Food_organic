@@ -7,13 +7,13 @@ import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import { Black, Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 const styles = StyleSheet.create( {
     mainLayout: {
-        height: screen_height,
+        height: screen_height-20,
         paddingTop: 15,
         paddingHorizontal: 20,
         paddingVertical: 15
     },
     titleText: {
-        fontSize: 25,
+        fontSize: 18,
         fontFamily: POPINS_SEMI_BOLD,
         paddingVertical: 5
     },
@@ -55,15 +55,16 @@ const styles = StyleSheet.create( {
           alignSelf:'center'
       },
       btnStyle:{
-          height:36,
-          width:36,
+         paddingHorizontal:"8%",
+         paddingVertical:5,
           borderRadius:18,
           backgroundColor:Light_Green,
           justifyContent:'center',
-          alignSelf:'flex-end'
+          alignSelf:'flex-end',
+          marginVertical:5
       },
       bottomStyle:{
-          top:screen_height/1.8
+          top:screen_height/1.6
       }
 } )
 

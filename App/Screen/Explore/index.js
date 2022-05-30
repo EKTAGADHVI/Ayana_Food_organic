@@ -155,7 +155,7 @@ class Explore extends Component
                
             } );
            
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
             return price?._sale_price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
@@ -172,7 +172,7 @@ class Explore extends Component
     }
     displayWeight = ( data ) =>
     {
-        console.log( "WEIGHJHGHG",data)
+        // console.log( "WEIGHJHGHG",data)
         let price = "";
     
         if(data!== undefined){
@@ -182,7 +182,7 @@ class Explore extends Component
             {
                 return prev._sale_price < curr._sale_price ? prev : curr;
             } );
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
            return  price.attribute_pa_weight
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }

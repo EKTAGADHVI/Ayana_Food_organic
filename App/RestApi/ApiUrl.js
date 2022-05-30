@@ -1,5 +1,4 @@
 export const BASE_URL='https://ayanafoodorganic.com/api';
-
 export const Login_URL = BASE_URL + "/login.php?apicall=signin";
 export const Registration_URL = BASE_URL + "/login.php?apicall=signup";
 export const CategoeryList_URL = BASE_URL + "/category.php?apicall=category";
@@ -24,3 +23,18 @@ export const PRODUCT_FILTER_URL=BASE_URL+'/product-filter.php?apicall=product';
  export const GET_PRODUCT_REVIEW_URL=BASE_URL+'/get_review.php'
  export const CREATE_PRODUCT_REVIEW_URL=BASE_URL+"/create_review.php"
  export const GET_FAQ_URL=BASE_URL+"/get_faq.php?apicall=faq"
+
+ export const VERIFY_COUPON_CODE_URL=BASE_URL+'/check_coupon.php?apicall=coupon'
+ export const LOGIN_OTP_URL=BASE_URL+'/login_otp.php?apicall=signin_otp'
+ export const LOGIn_OTP_VERIFY_URL=BASE_URL+"/login_otp.php?apicall=signin_otp_verify"
+ export const REGISTER_OTP_URL=BASE_URL+'/login_otp.php?apicall=signup_otp'
+ export const REGISTER_OTP_VERIFY_URL=BASE_URL+'/login_otp.php?apicall=signup_otp_verify'
+
+ export const FORGOT_PASS_SENT_OTP_URL=BASE_URL+"/forget_pwd.php?apicall=login_forget_otp"
+ export const VERIFY_FORGOT_PASS_OTP_URl=BASE_URL+"/forget_pwd.php?apicall=otp_verify"
+ export const SUBMIT_FORGOT_PASS_URL=BASE_URL +"/forget_pwd.php?apicall=pwd_change"
+ export const RESENT_FORGOT_OTP_URL=BASE_URL+"/forget_pwd.php?apicall=resend_forget_otp"
+ export const SHIPPING_CHARGE_URL=BASE_URL+"/get_shipping_deatils.php?apicall=shipping"
+ export const ADD_BLOG_COMMENT_URL=BASE_URL+'/add-blog-comment.php?apicall=comment'
+ export const INVOISE_URL=BASE_URL+'/get_order_pdf.php'
+ export const GET_BLOG_COMMENT=BASE_URL+'/blog-comment.php?apicall=comment'

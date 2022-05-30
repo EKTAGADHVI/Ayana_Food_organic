@@ -160,7 +160,7 @@ class Cart extends Component
 
             if ( item.ID === id && index == index2 )
             {
-                let onIncrement = value - 1;
+                let onIncrement = parseInt(value) - 1;
 
                 console.log( "value", item.variation?._price )
                 let data = {
@@ -205,7 +205,7 @@ class Cart extends Component
 
             if ( item.ID === id && index == index2 )
             {
-                let onIncrement = value + 1;
+                let onIncrement = parseInt(value) + 1;
                
                 console.log( "value", item.variation?._price )
                 let data = {
@@ -276,7 +276,9 @@ class Cart extends Component
                             <View style={ styles.q_Container }>
                                 <Text style={ styles.quentityText }>{ item.cartQuentity }</Text>
                             </View>
-                            <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
+                            <TouchableOpacity 
+                             disabled={ item.cartQuentity <= 24 ? false : true }
+                            style={ styles.btnStyle } onPress={ () =>
                             {
                                 this.onIncrement( item.ID, item.cartQuentity, index, item );
 

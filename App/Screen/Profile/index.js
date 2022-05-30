@@ -161,7 +161,7 @@ class Profile extends Component
 
                                </View>
                                <this.renderProfileMenu
-                                   name={ "Orders" }
+                                   name={ "My Orders" }
                                    onPress={ () => { this.props.navigation.navigate( 'Orders' ) } }
                                    leftIcon={ require( '../../../assets/order.png' ) } />
                                <this.renderProfileMenu
@@ -178,6 +178,7 @@ class Profile extends Component
                                    onPress={ () => { } }
                                    name={ "Notification" }
                                    leftIcon={ require( '../../../assets/notification.png' ) } />
+                                  
                            </View> :
                            <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
                                <Image

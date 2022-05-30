@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { Component } from 'react';
-import { SafeAreaView, Text, View, TouchableOpacity, Image, ScrollView, ImageBackground } from 'react-native';
+import { SafeAreaView, Text, View, TouchableOpacity, Image, ScrollView, ImageBackground, TextInput, Platform } from 'react-native';
 import { interpolate } from 'react-native-reanimated';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
@@ -18,11 +18,14 @@ import Apis from '../../RestApi/Apis';
 import ProgressLoader from 'rn-progress-loader';
 import axios from 'axios';
 // import PayuMoney,{HashGenerator} from 'react-native-payumoney';
+
 class OrderPreview extends Component
 {
+   
     constructor ( props )
     {
         super( props );
+        sellerDetail=[];
         this.state = {
             order_id: 0,
             totalPrice: this.props.route.params.totalPrice,
@@ -43,8 +46,14 @@ class OrderPreview extends Component
             isCashOnDelivery: false,
             userData: [],
             visible: false,
-            totalText:0,
-            subTotal:this.props.route.params.totalPrice
+            totalText: 0,
+            subTotal: this.props.route.params.totalPrice,
+            coupon_code: '',
+            couponBtn: false,
+            discount_amount:0,
+            orderDate:"",
+            shippingCharge:100,
+            sellerCharge:[]
         }
 
     }
@@ -118,8 +127,67 @@ class OrderPreview extends Component
         } )
 
     }
+    verifyCouponCode = () =>
+    {
+
+        let cat_id = [];
+        let product_id = [];
+        this.setState({visible:true})
+        this.state?.checkOutData?.map( ( item, index ) =>
+        {
+
+            product_id.push( {
+                "product_id" : item?.ID,
+                "quantity" : item?.cartQuentity,
+                "price":item?.sPrice
+            } )
+            item?.category?.map( ( data ) =>
+            {
+                cat_id.push( data?.category_id )
+            } )
+        } );
+
+        let request = {
+            "coupon_code": this.state.coupon_code,
+            "sub_total": this.state.subTotal,
+            "user_id":this.state.userData[ 0 ]?.ID,
+            "category_id": cat_id,
+            "product_detail": product_id
+        }
+
+        Apis.verifyCouponCall(request)
+        .then((res)=>{
+            return JSON.stringify(res)
+        }).
+        then((response)=>{
+            console.log("Discount ========> ",response)
+            if(JSON.parse(response).data.status == true){
+               let data =JSON.parse(response)?.data?.data;
+               this.setState({
+                   visible:false,
+                   discount_amount:data?.coupon_amount,
+                   totalPrice:this.state.totalPrice - data?.coupon_amount
+               })
+               
+            }
+            else{
+                let data =JSON.parse(response)?.data?.data;
+                alert(JSON.parse(response)?.data?.message)
+                this.setState({visible:false})
+            }
+
+        })
+        .catch((error)=>{
+            console.log("Erroir",error)
+            alert("Please try again","Something went wrong !")
+            this.setState({visible:false})
+        })
+
+
+    }
     async componentDidMount ()
     {
+        this.getShipCharges()
         this.getTotalTextCharges()
         await AsyncStorage.getItem( 'UserData' )
             .then( ( res ) =>
@@ -141,7 +209,12 @@ class OrderPreview extends Component
                 }
             } ).catch( ( error ) => { } )
 
-
+            // if(this.state.totalPrice<500){
+            //         this.setState({totalPrice:this.state.totalPrice +100})
+            // }
+          
+           
+        
         // await AsyncStorage.getItem('add')
     }
 
@@ -170,10 +243,99 @@ class OrderPreview extends Component
 
         } )
 
-        this.setState({totalText:totalCharge,
-            totalPrice:this.state.totalPrice + totalCharge
-        })
+        this.setState( {
+            totalText: totalCharge,
+            totalPrice: this.state.totalPrice + totalCharge
+        } )
 
+    }
+
+    getShipCharges =async()=>{  
+        this.setState( { visible: true } )
+        let sellers=[];
+      
+        this.state.checkOutData.map((item,index)=>{
+            sellers.push({  
+                "vendor_id":item.vendor_id,
+                "seller_name":item.seller_name
+            })
+        });
+        let final = sellers.filter((v,i,a)=>a.findIndex(v2=>(v2.vendor_id===v.vendor_id))===i)
+
+       
+        console.log("   ",final)
+        final.map(async(seller_id,index)=>{
+            Apis.getShippingCall({"vendor_id":seller_id.vendor_id})
+            .then(async(res)=>{
+                  
+                    console.log("Response",res.data)
+                    // let response =JSON.parse(res)?.data?.data;
+                   await res?.data?.data?.map(async(item)=>{
+                            if(item.zone_name =="India"){
+                                let newArray=[]
+                                 await this.state?.checkOutData?.map(async(data,index)=>{
+                                    if( data.vendor_id === item.vendor_id ){
+                                        newArray.push(data)
+                                    }
+                                });
+                                await console.log("Seprated Array",newArray)
+                                let total = 0.0;
+                                await newArray.map(async ( value ) =>
+                                {
+                                    await console.log( "cartPriceData", parseFloat( value.cartPrice ) )
+                                    total = parseFloat( value.cartPrice ) + total;
+                                } )
+                                await console.log( "total", total )
+                                let Charges=0;
+                                let minAmount=0;
+                                await item?.flat_rate?.map(async(charge_amount)=>{
+                                        Charges=  await charge_amount.cost
+                                });
+
+                                await item?.free_shipping?.map(async(min)=>{
+                                    minAmount= await min.min_amount
+                                })
+
+                                await console.log( "Min AMount", minAmount );
+                                await console.log( "Charge", Charges );
+                                if( await total <  await minAmount){
+                                    await sellerDetail.push({
+                                        "vendor_id":await seller_id.vendor_id,
+                                        "seller_name":await seller_id.seller_name,
+                                        "charge":await Charges,
+                                        "min_amount":await minAmount
+                                    })
+                                    this.setState({totalPrice:parseFloat(this.state.totalPrice) + parseFloat(await Charges)})
+                                }
+                                // this.setState(prevState => ({
+                                //     sellerCharge: [...prevState, sellerDetail],
+                                  
+                                //   }))
+                              await  this.setState({ sellerCharge:await sellerDetail})
+                                await console.log("Final Selller ",sellerDetail)
+                                newArray=await[]
+
+
+                            }
+                           
+                        })
+            
+                        this.setState( { visible: false } )
+        
+            })
+            .catch((error)=>{
+                this.setState( { visible: false } )
+                console.log("error",error)
+            })
+                // let newArray =this.state.checkOutData.filter((data,index)=>{
+                //     return data.vendor_id == item.vendor_id
+                // });
+                // console.log("Seprated Array",newArray);
+                this.setState( { visible: false } )
+        })
+    //   await  this.setState({sellerCharge:sellerDetail})
+    //    await console.log("Final Selller ",this.state.sellerCharge)
+  
     }
 
     saveOrder = () =>
@@ -212,7 +374,7 @@ class OrderPreview extends Component
             "payment_method": this.state.checked == 0 ? "onlinePayment" : "cod",
             "payment_method_title": this.state.checked == 0 ? "Razor Pay" : "Cash On Delivery",
             "status": "processing",
-            "set_paid": true,
+            "set_paid": this.state.checked == 0 ? true :false,
             "customer_id": this.state.userData[ 0 ]?.ID,
             "billing": [
                 {
@@ -249,6 +411,7 @@ class OrderPreview extends Component
                 }
             ]
         }
+      
 
         Apis.createOrderCall( request )
             .then( ( res ) =>
@@ -259,9 +422,11 @@ class OrderPreview extends Component
             {
                 this.setState( {
                     visible: false,
-                    order_id: JSON.parse( response ).data?.data?.id
+                    order_id: JSON.parse( response ).data?.data?.id,
+                    orderDate:JSON.parse(response).data?.data?.date_created
                 } )
                 console.log( "Response", response )
+                // this.ShipOrder()
                 this.OrderSucess();
             } )
             .catch( ( error ) =>
@@ -272,25 +437,11 @@ class OrderPreview extends Component
             } )
 
     }
+
+   
     OrderSucess = async () =>
     {
-        let data = {
-            "email": "ayanafoodorganicmobile@gmail.com",
-            "password": "Ayana@1234"
-        };
-        axios.post( 'https://apiv2.shiprocket.in/v1/external/auth/login', data, {
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        } )
-            .then( ( res ) =>
-            {
-                console.log( "Ship Authentication", res )
-            } )
-            .catch( ( error ) =>
-            {
-                console.log( "Error", error )
-            } )
+      
 
         let UpdatedArray = []
         this.setState( { orderSucess: true } )
@@ -313,6 +464,14 @@ class OrderPreview extends Component
     }
     render ()
     {
+        let visibleBtn=false;
+        if(this.state.coupon_code!== null && this.state.coupon_code!== '' && this.state.coupon_code.length>0 ){
+            visibleBtn=true
+        }
+        else{
+            visibleBtn=false
+        }
+        console.log("Final Selller ",sellerDetail)
         return (
             <View style={ styles.mainLayout }>
                 <SafeAreaView>
@@ -322,8 +481,8 @@ class OrderPreview extends Component
                         isHUD={ true }
                         hudColor={ White }
                         color={ Light_Green } />
-                    <ScrollView>
-                        <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Order Preview" } />
+                    <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+                        <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Order Preview" } style={{paddingHorizontal:5}} />
                         <View >
 
                             <View style={ { borderBottomWidth: 0.5, borderBottomColor: Gray, paddingVertical: 10 } }>
@@ -337,7 +496,7 @@ class OrderPreview extends Component
                                 {
                                     this.state.checkOutData.map( ( data ) =>
                                     {
-                                        console.log( "Item", data )
+                                        // console.log( "Item", data )
                                         return (
                                             <View style={ [ styles.rowView ] }>
                                                 <Text style={ [ styles.normalText, { fontSize: 12, width: "70%" } ] }>{ data.post_title }</Text>
@@ -351,9 +510,37 @@ class OrderPreview extends Component
                             </View>
 
                             <View>
-                                <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
-                                    <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Apply Coupon Code</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 12, color: Light_Green } ] }>Add Coupon</Text>
+                                <View style={ [ { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
+                                    <View style={ [ styles.rowView ] }>
+                                        <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Apply Coupon Code</Text>
+                                        <TouchableOpacity onPress={()=>{
+                                            this.setState({couponBtn:!this.state.couponBtn});
+                                        }}>
+                                            <Text style={ [ styles.normalText, { fontSize: 12, color: Light_Green } ] }>Add Coupon</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    {
+                                        this.state.couponBtn === true ?
+                                            <View style={ [ styles.rowView, { alignItems: 'center' } ] }>
+                                                <TextInput
+                                                  placeholder={ "Enter Coupon Code" }
+                                                    style={ styles.input }
+                                                    value={this.state.coupon_code}
+                                                    onChangeText={(text)=>{
+                                                        this.setState({coupon_code:text});
+                                                    }}
+                                                />
+                                                <TouchableOpacity 
+                                                disabled={visibleBtn === true ? false :true}
+                                                style={ [styles.btnView,{opacity:visibleBtn === true ? 1 :0.5}] } 
+                                                onPress={()=>{
+                                                    this.verifyCouponCode()
+                                                    }}>
+                                                    <Text style={ [ styles.normalText, { fontSize: 12, color: White } ] }>Apply</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            : null
+                                    }
                                 </View>
 
 
@@ -362,15 +549,41 @@ class OrderPreview extends Component
                                     <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.subTotal }</Text>
                                 </View>
 
+                              
+
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Total Tax</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalText }</Text>
                                 </View>
 
-
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
+                                    <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Discount</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.discount_amount }</Text>
+                                </View>   
+                             <View>
+                             <View style={ [ styles.rowView, { borderBottomWidth: 0, borderBottomColor: Gray, } ] }>
+                                  <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Shipping Charge</Text>
+                                  {/* <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. 100</Text> */}
+                              </View>
+                              { console.log("SSSSS",sellerDetail)}      
+                                    {
+                                       
+                                       this.state.sellerCharge?.map((item)=>{
+                                           console.log("Item",item)
+                                            return(
+                                                <View style={ [ styles.rowView, { borderBottomWidth: 0, borderBottomColor: Gray, } ] }>
+                                                      <Text style={ [ styles.normalText, { fontSize: 12, } ] }>{ item?.seller_name}</Text>
+                                                     <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. {item?.charge}</Text>
+                                                </View>
+                                            )
+                                        })
+                                    }
+                             </View>
+                             
+                               
+                                <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray,borderTopColor:Gray,borderTopWidth:0.5 } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Total</Text>
-                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalPrice  }</Text>
+                                    <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalPrice }</Text>
                                 </View>
 
                             </View>
@@ -383,7 +596,7 @@ class OrderPreview extends Component
                                 {
                                     console.log( "Index", index )
                                     return (
-                                        <View key={ index }>
+                                        <View  style={{paddingHorizontal:8}} key={ index }>
                                             {this.state.checked === index ?
                                                 <TouchableOpacity
                                                     onPress={ () =>
@@ -412,7 +625,7 @@ class OrderPreview extends Component
                                     );
                                 } )
                             }
-                            <View style={ { height: 100 } }></View>
+                            <View style={ { height: 50} }></View>
                             <View style={ { paddingVertical: 10 } }>
                                 <Text style={ [ styles.normalText, { fontSize: 10, textAlign: 'center', color: Text_Gray, } ] }>Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
 </Text>

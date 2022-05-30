@@ -22,6 +22,7 @@ import {
     GoogleSigninButton,
     statusCodes,
   } from '@react-native-google-signin/google-signin';
+import { LOGIN_OTP_URL, LOGIn_OTP_VERIFY_URL } from '../../RestApi/ApiUrl';
   
   GoogleSignin.configure({
     // scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
@@ -340,6 +341,49 @@ import {
     componentWillUnmount(){
         clearInterval();
     }
+
+    LoginWithOtp=()=>{
+      this.setState( { visible: true } )
+      if(this.state.email !== null && this.state.email!== "" && this.state.email.length==10){
+        let request={
+          "phone":this.state.email
+      }
+        Apis.loginWithOtpCall(request)
+        .then((res)=>{
+          return JSON.stringify(res)
+        })
+        .then((responce)=>{
+          this.setState( { visible: false } )
+          if(JSON.parse(responce).data.status == true){
+            let data = JSON.parse(responce).data;
+           
+            this.props.navigation.navigate('OtpScreen',{
+              detail:data?.data,
+              request:{
+                "phone":this.state.email
+            },
+            url:LOGIN_OTP_URL,
+            type:"login",
+            verifyUrl:LOGIn_OTP_VERIFY_URL
+            });
+           
+      
+        }
+        else{
+          this.setState( { visible: false } )
+          let data = JSON.parse(responce).data;
+         alert(data.message);
+           
+        }
+        }).
+        catch(()=>{})
+      }
+      else{
+        this.setState( { visible: false } )
+        alert("please check your phone number")
+      }
+   
+    }
     render ()
     {
         const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
@@ -405,10 +449,12 @@ import {
                                     placeholder={ "**********" }
                                 />
                                 <FilledButton
-                                    onPress={ () => { this.props.navigation.navigate( 'OtpScreen' ) } }
+                                    onPress={ () => { this.LoginWithOtp() } }
                                     title={ "Login with OTP" } />
 
-                                <Pressable>
+                                <Pressable onPress={()=>{
+                                  this.props.navigation.navigate('Forgotpassword')
+                                }}>
                                     <Text style={ [ styles.regularText, { color: Black, textAlign: 'center' } ] }> Forgot Password ?</Text>
                                 </Pressable>
                                 <FilledButton

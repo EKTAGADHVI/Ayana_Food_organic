@@ -28,6 +28,7 @@ import CheckOut from '../Screen/Checkout';
 import OrderPreview from '../Screen/Checkout/OrderPreview';
 import SplashScreen from '../Screen/SplashScreen';
 import FAQScreen from '../Screen/FAQScreen';
+import Forgotpassword from '../Screen/Forgotpassword';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const bottomTab = createBottomTabNavigator();
@@ -81,6 +82,12 @@ const RootNavigation = ( { navigation } ) =>
             <mainStack.Screen
                 name="OtpScreen"
                 component={ OtpScreen }
+                options={ {
+                    headerShown: false
+                } } />
+                 <mainStack.Screen
+                name="Forgotpassword"
+                component={ Forgotpassword }
                 options={ {
                     headerShown: false
                 } } />

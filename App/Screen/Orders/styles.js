@@ -79,7 +79,13 @@ const styles= StyleSheet.create({
         height:screen_width/5,
         width:screen_width/5,
         alignSelf:'center'
-    }
+    },
+    emptyCart:{
+        height:screen_height/3.5,
+        width:screen_width/1.5,
+        resizeMode:'cover',
+        alignSelf:'center'
+    },
 });
 
 export default styles;

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React from 'react';
 import { Component } from 'react';
-import { Image, SafeAreaView, TouchableOpacity, View, Text, ScrollView, FlatList } from 'react-native';
+import { Image, SafeAreaView, TouchableOpacity, View, Text, ScrollView, FlatList,PermissionsAndroid } from 'react-native';
 import { color } from 'react-native-reanimated';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
@@ -9,25 +9,182 @@ import { Black, Light_Green, Text_Gray } from '../../Utils/colors';
 import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
-
+import RNFetchBlob from 'rn-fetch-blob';
+import Apis from '../../RestApi/Apis';
 class OrderDetails extends Component
 {
     constructor ( props )
     {
         super( props );
         this.state={
-            data : this.props.route?.params?.data
+            data : this.props.route?.params?.data,
+            currentIndex: 0,
+            selectedIndex: 0,
+            isExpanded: true,
+            isOnGoing: true,
+            isPast: true,
+            downloadProgress: 0,
         };
     }
     componentDidMount(){
         console.log("Order Data", this.state.data)
+        if (Platform.OS === 'ios') {
+            // this.downloadFile(url).then(r => {
+            // });
+        } else {
+            try {
+                PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: 'storage title',
+                        message: 'storage_permission',
+                    },
+                ).then(granted => {
+                    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                        //Once user grant the permission start downloading
+                        // console.log('Storage Permission Granted.');
+                        // this.downloadFile(url).then(r => {
+                        // });
+                        ;
+                    } else {
+                        //If permission denied then show alert 'Storage Permission
+                        //Not Granted'
+                        Alert.alert('storage_permission');
+                    }
+                });
+            } catch (err) {
+                //To handle permission related issue
+                // console.log('error', err);
+            }
+        }
+    }
+    DownloadPermission(url) {
+        //Function to check the platform
+        //If iOS the start downloading
+        //If Android then ask for runtime permission
+        if (Platform.OS === 'ios') {
+            this.downloadFile(url).then(r => {
+            });
+        } else {
+            try {
+                PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: 'storage title',
+                        message: 'storage_permission',
+                    },
+                ).then(granted => {
+                    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                        //Once user grant the permission start downloading
+                        // console.log('Storage Permission Granted.');
+                        this.downloadFile(url).then(r => {
+                        })
+                        .catch((error)=>{
+                            console.log('ERR',error);
+                        });
+                        
+                    } else {
+                        //If permission denied then show alert 'Storage Permission
+                        //Not Granted'
+                        Alert.alert('storage_permission');
+                    }
+                });
+            } catch (err) {
+                //To handle permission related issue
+                console.log('error', err);
+            }
+        }
+    }
+
+    async downloadFile(url) {
+        const { config, fs } = RNFetchBlob;
+
+        const date = new Date();
+        //  let RNFS = require('react-native-fs');
+        const pdf_url = url;
+        const { dirs } = fs;
+        const DownloadDir = Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir
+        // let DownloadDir = fs.dirs.DownloadDir;
+        let options = {
+            fileCache: true,
+            appendExt: 'pdf',
+            //title:'FineFeather',
+            useDownloadManager: true,
+            path: DownloadDir +
+                '/ayanafood' +
+                Math.floor(date.getTime() + date.getSeconds() / 2)
+                + '.pdf',
+            addAndroidDownloads: {
+                //Related to the Android only
+                useDownloadManager: true,
+                notification: true,
+                path:
+                    DownloadDir +
+                    '/ayanafood' +
+                    Math.floor(date.getTime() + date.getSeconds() / 2)
+                    + '.pdf',
+                description: 'Invoice File',
+            },
+        };
+        config(options)
+            .fetch('GET', pdf_url, {
+                'Cache-Control': 'no-store'
+            })
+            .progress({ interval: 250 }, (received, total) => {
+                // console.log('progress', received / total);
+                this.setState({
+                    downloadProgress: (received / total) * 100
+                })
+            })
+            .then(res => {
+                this.setState({
+                    downloadProgress: 0
+                })
+                //Showing alert after successful downloading
+                // console.log('res -> ', JSON.stringify(res));
+                //  Alert.alert('pdf download');
+                if (Platform.OS === 'ios') {
+                    RNFetchBlob.ios.openDocument(res.path())
+                    ;
+                } else {
+                    RNFetchBlob.android.actionViewIntent(res.path().data, "application/pdf")
+                    .then((res)=>{
+                        console.log("ree",res)
+                    })
+                    .catch((error)=>{
+                        console.log("EE",error)
+                    });
+                }
+            }).catch((errorMessage, statusCode) => {
+                console.log("error with downloading file", errorMessage)
+
+            });
+    }
+    getURLDownload=()=>{
+        let request={
+            "order_id":this.state.data?.ID
+        }
+        Apis.getInvoiceCall(request)
+        .then((res)=>{
+           return JSON.stringify(res)
+        })
+        .then((response)=>{
+            // console.log("response",response);
+            if(JSON.parse(response).data?.status== true){
+                let data = JSON.parse(response).data?.data;
+                this.DownloadPermission(data?.url)
+            }
+        })
+        .catch((error)=>{
+            console.log("eroror",error)
+        })
     }
     render ()
     {
         return (
             <View style={ styles.mainLayout }>
                 <SafeAreaView>
-                    <ScrollView>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                     <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ 'Order Details' } />
                     <View >
                         <View style={ styles.cardView }>
@@ -45,7 +202,7 @@ class OrderDetails extends Component
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" } ] }>Rs. {this.state?.data?.billing_deatil?._order_total} </Text>
                                 </View>
                             </View>
-                            <TouchableOpacity style={ styles.downloadButton }>
+                            <TouchableOpacity style={ styles.downloadButton } onPress={()=>{this.getURLDownload()}}>
                                 <View style={ [ styles.rowView, { justifyContent: 'space-between', paddingHorizontal: "4%" } ] }>
                                     <Text style={ [ styles.normalText, { color: Light_Green, fontSize: 16 } ] }>Download</Text>
                                     <Image
@@ -63,7 +220,7 @@ class OrderDetails extends Component
                       scrollEnabled={false}
                       keyExtractor={(item)=>item.ID}
                       renderItem={({item,index})=>{
-                          console.log("Oderssss",item)
+                        //   console.log("Oderssss",item)
                           return(
                             <View style={ [ styles.cardView, { flexDirection: 'row', alignItems: 'flex-start', } ] } >
                          {
@@ -75,7 +232,7 @@ class OrderDetails extends Component
                              style={ styles.imageStyle } />
                          }
                             <View>
-                                <Text style={ [ styles.regularText,{width:screen_width*0.7} ] }>{item.item_name.slice( 0, 25 ) + ( item?.item_name.length > 25 ? "..." : "" )}</Text>
+                                <Text style={ [ styles.regularText,{width:screen_width*0.7-10} ] }>{item.item_name.slice( 0, 25 ) + ( item?.item_name.length > 25 ? "..." : "" )}</Text>
                                 <View style={ styles.rowView }>
                                     <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Black } ] }> {this.state?.data?.billing_deatil?._order_status} |</Text></Text>
                                     <Text style={ [ styles.smallText, ] }>{moment(this.state?.data?.post_date).format("DD/MM/YYYY")}</Text>

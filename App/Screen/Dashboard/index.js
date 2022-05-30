@@ -137,15 +137,15 @@ class Dashboard extends Component
 
     discountInPercentage = ( data ) =>
     {
-     
-        if(data !== undefined ){
-         
-            let discountPrice = data._regular_price - data._sale_price;
-        let price = ( discountPrice / data._regular_price ) * 100;
+        // console.log("Discount In Percentage", data);
+
+        if(data !== undefined && data.length>0){
+            let discountPrice = data[0]?._regular_price - data[0]?._sale_price;
+        let price = ( discountPrice / data[0]._regular_price ) * 100;
         return price.toFixed( 1 ) + "%";
         }
         else{
-            return 0;
+            return "";
         }
     }
 
@@ -588,12 +588,13 @@ class Dashboard extends Component
     {
 
         let price = "";
-        let l_data = data.filter((item)=>{
+       
+        if(data !== undefined){
+            let l_data = data.filter((item)=>{
         
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
             
         });
-        if(data !== undefined){
             if ( data?.length > 1 )
         {
           
@@ -606,7 +607,7 @@ class Dashboard extends Component
                
             } );
            
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
             return price?._sale_price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
@@ -623,7 +624,7 @@ class Dashboard extends Component
     }
     displayWeight = ( data ) =>
     {
-        console.log( "WEIGHJHGHG",data)
+        // console.log( "WEIGHJHGHG",data)
         let price = "";
     
         if(data!== undefined){
@@ -633,7 +634,7 @@ class Dashboard extends Component
             {
                 return prev._sale_price < curr._sale_price ? prev : curr;
             } );
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
            return  price.attribute_pa_weight
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
@@ -854,7 +855,7 @@ class Dashboard extends Component
                                                 weight={this.displayWeight(item.variation)}
                                                 price={ this.displayPrice( item.variation ) }
                                                 // price={ 50 }
-                                                discount={ this.discountInPercentage( item?.variation[ 0 ] ) }
+                                                discount={ this.discountInPercentage( item?.variation ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -899,9 +900,9 @@ class Dashboard extends Component
                             </View> */}
                             <View style={ [ styles.rowView, { justifyContent: 'space-between' } ] }>
                                 <Text style={ styles.labelText }>Premium Videos</Text>
-                                <Pressable>
+                                {/* <Pressable>
                                     <Text style={ styles.smallText }>see more</Text>
-                                </Pressable>
+                                </Pressable> */}
                             </View>
 
                             <View style={ { justifyContent: "center", } }>
@@ -982,7 +983,7 @@ class Dashboard extends Component
                                                 weight={this.displayWeight(item.variation)}
                                                 price={ this.displayPrice( item.variation ) }
                                                 // price={ 50 }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                discount={ this.discountInPercentage( item.variation ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -1000,9 +1001,9 @@ class Dashboard extends Component
 
                             <View style={ [ styles.rowView, { justifyContent: 'space-between', marginVertical: 10 } ] }>
                                 <Text style={ styles.labelText }>Best Offers</Text>
-                                <Pressable>
+                                {/* <Pressable>
                                     <Text style={ styles.smallText }>see more</Text>
-                                </Pressable>
+                                </Pressable> */}
                             </View>
                             <View style={ { padding: 10, } }>
                                 <FlatList
@@ -1063,7 +1064,7 @@ class Dashboard extends Component
                                             weight={this.displayWeight(item.variation)}
                                             price={ this.displayPrice( item.variation ) }
                                             // price={ 50 }
-                                            discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                            discount={ this.discountInPercentage( item.variation) }
                                             storeName={ item.seller_name }
                                             onPress={ () =>
                                             {
@@ -1135,7 +1136,8 @@ class Dashboard extends Component
                                                 weight={this.displayWeight(item.variation)}
                                                 price={ this.displayPrice( item.variation ) }
                                                 // price={ 50 }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                comment={"nice product"}
+                                                discount={ this.discountInPercentage( item.variation) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -1189,7 +1191,7 @@ class Dashboard extends Component
                                                 weight={this.displayWeight(item.variation)}
                                                 price={ this.displayPrice( item.variation ) }
                                                 // price={ 50 }
-                                                discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                                discount={ this.discountInPercentage( item.variation ) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
@@ -1311,7 +1313,7 @@ class Dashboard extends Component
                                             weight={this.displayWeight(item.variation)}
                                             price={ this.displayPrice( item.variation ) }
                                             // price={ 50 }
-                                            discount={ this.discountInPercentage( item.variation[ 0 ] ) }
+                                            discount={ this.discountInPercentage( item.variation ) }
                                             storeName={ item.seller_name }
                                             onPress={ () =>
                                             {

@@ -11,7 +11,7 @@ import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_REGULAR } from '../../Utils/fonts';
 import Modal from "react-native-modal";
 import styles from './styles';
-import { PRODUCT_FILTER_ERROR, PRODUCT_FILTER_SUCESS } from '../../Redux/actionTypes';
+import { PRODUCT_FILTER_ERROR, PRODUCT_FILTER_SUCESS, PRODUCT_LIST_BY_CAT_ID_EROOR, PRODUCT_LIST_BY_CAT_ID_SUCESS } from '../../Redux/actionTypes';
 import Apis from '../../RestApi/Apis';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -50,33 +50,78 @@ class ProductViewScreen extends Component
            sellerData:[]
 
         }
-        console.log("Product IDDD",this.state.request)
+      
+        // console.log("Product IDDD",this.state.request)
         if ( this.state.categoryId !== '' )
         {
             // let request ={
             //     "category_id":this.state.categoryId
             // };
             // console.log("Request",request)
-            this.props.getProductByCatId( this.state.request );
+            // this.props.getProductByCatId( this.state.request );
 
         }
     }
-    componentDidMount ()
-    {
+
+    callProductByID=()=>{
         this.setState( {
             visible: true
         } )
+        Apis.getProductByCategoryId(this.state.request)
+        .then((res)=>{
+          return JSON.stringify(res);
+      })
+      .then((responce)=>{
+        this.setState( {
+            visible: false
+        } )
+          if(JSON.parse(responce).data.status == true){
+            //   console.log("====== Product List By Cat ID ====== >  ", JSON.parse(responce).data);
+              this.props.dispatch({
+                  type:PRODUCT_LIST_BY_CAT_ID_SUCESS,
+                  payload:JSON.parse(responce).data
+              });
+              this.setState( { categoeries: JSON.parse(responce)?.data?.data} );
+          }
+          else{
+            //   console.log("====== Product List By Cat ID ====== >  ", JSON.parse(responce).data);
+              this.props.dispatch({
+                  type:PRODUCT_LIST_BY_CAT_ID_EROOR,
+                  payload:JSON.parse(responce).data
+              });
+              this.setState( {
+                visible: false
+            } )
+          }
+         
+      })
+      .catch((error)=>{
+        this.setState( {
+            visible: false
+        } )
+          this.props.dispatch({
+              type:PRODUCT_LIST_BY_CAT_ID_EROOR,
+              payload:error
+          });
+          console.log("==== Category List===Error=== ", error)
+      })   
+  
+   
+    }
+    componentDidMount ()
+    {
+       this.callProductByID()
         setTimeout( () =>
         {
 
             this.setState( { categoeries: this.props.getProductsListByCatId.data ?this.props.getProductsListByCatId.data:[] } );
 
-            this.setState( {
-                visible: false
-            } )
+            // this.setState( {
+            //     visible: false
+            // } )
             this.filterDisplay();
             this.filterSeller()
-        }, 2500 )
+        }, 3000 )
 
     }
     addToCart = async ( item ) =>
@@ -214,12 +259,14 @@ class ProductViewScreen extends Component
     {
 
         let price = "";
-        let l_data = data.filter((item)=>{
+     
+        if(data !== undefined){
+            let l_data = data.filter((item)=>{
         
+                
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
             
         });
-        if(data !== undefined){
             if ( data?.length > 1 )
         {
           
@@ -232,7 +279,7 @@ class ProductViewScreen extends Component
                
             } );
            
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
             return price?._sale_price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
@@ -250,7 +297,7 @@ class ProductViewScreen extends Component
 
     displayWeight = ( data ) =>
     {
-        console.log( "WEIGHJHGHG",data)
+        // console.log( "WEIGHJHGHG",data)
         let price = "";
         if(data!== undefined){
             if ( data.length > 1)
@@ -259,7 +306,7 @@ class ProductViewScreen extends Component
             {
                 return prev._sale_price < curr._sale_price ? prev : curr;
             } );
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
            return  price.attribute_pa_weight
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
@@ -274,10 +321,11 @@ class ProductViewScreen extends Component
     }
     discountInPercentage = ( data ) =>
     {
+        // console.log("Discount In Percentage", data);
 
-        if(data !== undefined){
-            let discountPrice = data._regular_price - data._sale_price;
-        let price = ( discountPrice / data._regular_price ) * 100;
+        if(data !== undefined && data.length>0){
+            let discountPrice = data[0]?._regular_price - data[0]?._sale_price;
+        let price = ( discountPrice / data[0]._regular_price ) * 100;
         return price.toFixed( 1 ) + "%";
         }
         else{
@@ -393,30 +441,33 @@ class ProductViewScreen extends Component
                         isHUD={ true }
                         hudColor={ White }
                         color={ Light_Green } />
+                        
+                      
                     {
-                        this.state.categoeries && this.state.categoeries.length > 0  ?
+                        this.state.categoeries && this.state.categoeries.length > 0 && this.state.visible==false  ?
                             <FlatList
                                 data={ this.state.categoeries }
                                 numColumns={ 2 }
                                 extraData={ this.state.categoeries }
                                 scrollEnabled={ true }
-                                maxToRenderPerBatch={ 2 }
+                              
                                 legacyImplementation={ false }
                                 showsHorizontalScrollIndicator={ false }
                                 showsVerticalScrollIndicator={ false }
                                 keyExtractor={ ( item, index ) => index.toString() }
                                 renderItem={ ( { item, index } ) =>
                                 {
+                                   
                                     var count = 14;
                                     return <ProductView
                                         name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                         image={ item?.img[ 0 ]?.img_path }
                                         // image={ item.img[0].img_path }
                                         rating={ item.rating[ 0 ].meta_value }
-                                        weight={this.displayWeight(item.variation)}
-                                        discount={ this.discountInPercentage( item?.variation[ 0 ] ) }
-                                        price={ this.displayPrice( item.variation ) }
-                                        storeName={ item.seller_name }
+                                        weight={this.displayWeight(item?.variation)}
+                                        discount={ this.discountInPercentage( item?.variation )}
+                                        price={ this.displayPrice( item?.variation ) }
+                                        storeName={ item?.seller_name }
                                         onPress={ () =>
                                         {
                                             this.props.navigation.navigate( 'ProductDetailScreen', {
@@ -626,7 +677,8 @@ function mapStateToProps ( state, ownProps )
         // data : state.loginReducer.data
         products: state.productListReducer.data,
         getProductsListByCatId: state.getProductByCatIdReducer.data,
-        filteredProduct:state.productFilterReducer.data
+        filteredProduct:state.productFilterReducer.data,
+        productLoading:state.getProductByCatIdReducer.isLoading
 
     };
 

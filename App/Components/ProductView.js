@@ -45,6 +45,7 @@ const ProductView = ( props ) =>
                 onFinishRating={ this.ratingCompleted }
                 style={ { alignSelf:'flex-start' } }
             />
+            {props.comment ?  <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.comment}</Text>:null}
              <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.storeName}</Text>
              <Text style={[styles.discountText,{color:Black,fontFamily:POPINS_REGULAR,paddingVertical:3}]}>{props.weight}</Text>
              <Text style={styles.regularText}>Rs. {props.price} /-</Text>

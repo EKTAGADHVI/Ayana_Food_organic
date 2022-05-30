@@ -15,6 +15,7 @@ import styles from './styles';
 import { CommonActions } from '@react-navigation/native';
 import Apis from '../../RestApi/Apis';
 import { REGISTER_EROOR, REGISTER_SUCESS } from '../../Redux/actionTypes';
+import { REGISTER_OTP_URL, REGISTER_OTP_VERIFY_URL } from '../../RestApi/ApiUrl';
 
 class RegistrationScreen extends Component
 {
@@ -167,6 +168,88 @@ class RegistrationScreen extends Component
   
     }
 
+    registerWithOTP=()=>{
+        let reg = ( /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/ );
+        let pass = ( /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,20})/ )
+       
+        
+        if(this.state.firstName === '' || this.state.firstName === null)
+        {
+            ToastMessage('error','Enter First Name','Please Check')
+        }
+       else if ( this.state.username === '' || this.state.username === null )
+        { 
+            ToastMessage('error','Enter User Name','Please Check')
+        }
+        else if ( this.state.email === '' || this.state.email === null )
+        { 
+            ToastMessage('error','Enter Email Address','Please Check')
+        }
+        else if ( reg.test( this.state.email ) === false )
+        {
+            //email is not correcct
+            ToastMessage('error','Enter Valid Email','Please Check')
+        }
+        else if ( this.state.phone == "" || this.state.phone === null ) { 
+            ToastMessage('error','Enter Phone Number','Please Check')
+        }
+        else{
+            let req = {
+                "firstname": this.state.firstName,
+                "username":this.state.username,
+                "phone":this.state.phone, 
+                "email":this.state.email,
+               
+            }
+            Apis.registerWithOtpCall(req)
+            .then((res)=>{
+              return JSON.stringify(res);
+          })
+          .then((responce)=>{
+            let data = JSON.parse(responce).data;
+              if(JSON.parse(responce).data.status == true){
+               
+                  console.log("====== Registration Responce ====== >  ", responce);
+            //   this.props.dispatch({
+            //       type:REGISTER_SUCESS,
+            //       payload:JSON.parse(responce).data
+            //   });
+              this.setState({visible:false})
+              this.props.navigation.navigate('OtpScreen',{
+                detail:data?.data,
+                request:{
+                    "firstname": this.state.firstName,
+                    "username":this.state.username,
+                    "phone":this.state.phone,
+                    "email":this.state.email,
+                   
+                },
+              url:REGISTER_OTP_URL,
+              type:"register",
+              verifyUrl:REGISTER_OTP_VERIFY_URL
+              });
+              }
+              else{
+                this.setState({visible:false})
+                ToastMessage('error',JSON.parse(responce).data.message,'Please Check')
+                //  this.props.dispatch({
+                //       type:REGISTER_EROOR,
+                //       payload:JSON.parse(responce).data
+                //   });
+              }
+             
+          })
+          .catch((error)=>{
+            this.setState({visible:false})
+              console.log("====Registration===Error=== ", error)
+            //   this.props.dispatch({
+            //       type:REGISTER_EROOR,
+            //       payload:error
+            //   });
+          })   
+        }
+    }
+
     render ()
     {
         return (
@@ -293,7 +376,7 @@ class RegistrationScreen extends Component
                                     placeholder={ "**********" }
                                 />
 
-<Input
+                            <Input
                                     title={ "Confirm Password" }
                                     value={ this.state.c_password }
                                     onChangeText={ ( text ) =>
@@ -314,7 +397,7 @@ class RegistrationScreen extends Component
                                 />
                                 <FilledButton
                                     onPress={ () => { 
-                                       this.showToast()
+                                      this.registerWithOTP()
                                     } }
                                     title={ "Sign Up with OTP" } />
 

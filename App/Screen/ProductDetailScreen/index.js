@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component, createRef } from 'react';
-import { SafeAreaView, View, FlatList, Image, Text, TouchableOpacity, Linking, TextInput, KeyboardAvoidingView } from 'react-native';
+import { SafeAreaView, View, FlatList, ScrollView, Image, Text, TouchableOpacity, Linking, TextInput, KeyboardAvoidingView } from 'react-native';
 import { EventRegister } from 'react-native-event-listeners';
-import { ScrollView } from 'react-native-gesture-handler';
+
 import { Rating } from 'react-native-ratings';
 import { connect } from 'react-redux';
 import BasicHeader from '../../Components/BasicHeader';
@@ -57,7 +57,8 @@ class ProductDetailScreen extends Component
             selectedRating: 0,
             comment: "",
             userData: [],
-            visible: false
+            visible: false,
+            loginModal: false
         }
 
         this.viewabilityConfig = {
@@ -66,6 +67,62 @@ class ProductDetailScreen extends Component
         };
         this.handleViewableItemsChanged = this.handleViewableItemsChanged.bind( this );
         console.log( 'this.props.route.params.data', this.props.route.params.data )
+
+        this.getReview()
+    }
+
+
+    getProductDetail = () =>
+    {
+        this.setState( { visible: true } )
+        Apis.getProductByCategoryId( {
+            "product_id": this.state.id
+        } )
+            .then( ( res ) =>
+            {
+                return JSON.stringify( res )
+            } )
+            .then( ( response ) =>
+            {
+
+                if ( JSON.parse( response ).data.status == true )
+                {
+                    console.log( "Product Detail", response )
+                    let data = JSON.parse( response )?.data?.data
+
+                    data[ 0 ]?.rating.map( ( item, index ) =>
+                    {
+                        if ( item.meta_key == '_wc_average_rating' )
+                        {
+                            this.setState( {
+                                raingCount: item.meta_value,
+                            } )
+                        }
+                    } )
+                    this.setState( {
+                        raingCount: data[ 0 ]?.rating[ 0 ]?.meta_value,
+                        visible: false
+                    } )
+                    this.getReview()
+
+
+                }
+                else
+                {
+                    this.setState( { visible: false } )
+                    // alert( "Product can not re order" );
+                }
+
+            } )
+            .catch( ( error ) =>
+            {
+                this.setState( { visible: false } )
+                // alert( "Product can not re order" );
+                console.log( "error", error )
+            } )
+
+
+
     }
     getReview = () =>
     {
@@ -83,9 +140,10 @@ class ProductDetailScreen extends Component
                 {
                     let data = JSON.parse( response ).data;
                     this.setState( {
-                        visible: false,
+                        // visible: false,
                         review: data?.data
                     } )
+
 
 
                 }
@@ -104,7 +162,7 @@ class ProductDetailScreen extends Component
     }
     async componentDidMount ()
     {
-        this.getReview()
+
         AsyncStorage.getItem( 'PostalCode' )
             .then( ( res ) =>
             {
@@ -145,6 +203,15 @@ class ProductDetailScreen extends Component
                     this.setState( { userData: [] } )
                 }
             } ).catch( ( error ) => { } )
+        this.state.data?.rating.map( ( item, index ) =>
+        {
+            if ( item.meta_key == '_wc_average_rating' )
+            {
+                this.setState( {
+                    raingCount: item.meta_value,
+                } )
+            }
+        } )
         setTimeout( () =>
         {
 
@@ -169,11 +236,12 @@ class ProductDetailScreen extends Component
     }
     addToCart = async ( item ) =>
     {
-        let added = false;
-        let previousData = null;
-        let alreadyAdded = false;
+        
         try
         {
+            let added = false;
+            let previousData = null;
+            let alreadyAdded = false;
             await AsyncStorage.getItem( 'AddToCart' )
                 .then( ( res ) =>
                 {
@@ -182,16 +250,18 @@ class ProductDetailScreen extends Component
                     previousData = JSON.parse( res );
                     if ( res !== null && cart.length > 0 )
                     {
+
                         // this.setState( { cartItem: cart.length } )
                         alreadyAdded = cart.filter( ( data ) =>
                         {
 
-                            console.log( "DHDHDH", data );
-                            if ( data.ID === item.ID )
+                            if ( data.ID == item.ID )
                             {
-                                if ( data.selectedVariation === this.state.selectedVarinat )
+                                if ( data.selectedVariation == this.state.selectedVarinat )
                                 {
                                     added = true;
+                                    // this.setState( { quentity: data.cartQuentity + 1 } )
+
                                 }
                                 else
                                 {
@@ -234,7 +304,7 @@ class ProductDetailScreen extends Component
                     sPrice: this.state.sPrice,
                     selectedVarinatID: this.state.selectedVarinatID
                 };
-                if ( previousData != null )
+                if ( previousData != null && previousData.length > 0 )
                 {
                     previousData.push( finalItem );
                 } else
@@ -294,20 +364,31 @@ class ProductDetailScreen extends Component
                 {
                     if ( data.ID !== item.ID )
                     {
-                        if ( data.selectedVariation !== this.state.selectedVarinat )
+                        
+                        return data
+                    }
+                    else
+                    {
+                        if ( data.ID == item.ID )
                         {
-                            // let finalItem ={
-                            //     ...data,
-                            //     selectedVariation:this.state.selectedVarinat,
-                            //     cartPrice:this.state.price * this.state.quentity + 1,
-                            //     cartRegularPrice:this.state.cartRegularPrice,
-                            //     cartQuentity:this.state.quentity,
-                            //     regPrice:this.state.regPrice,
-                            //     sPrice:this.state.sPrice
-                            // };
-                            return data
+                            if ( data.selectedVariation != this.state.selectedVarinat )
+                            {
+                                // let finalItem ={
+                                //     ...data,
+                                //     selectedVariation:this.state.selectedVarinat,
+                                //     cartPrice:this.state.price * this.state.quentity + 1,
+                                //     cartRegularPrice:this.state.cartRegularPrice,
+                                //     cartQuentity:this.state.quentity,
+                                //     regPrice:this.state.regPrice,
+                                //     sPrice:this.state.sPrice
+                                // };
+                                return data
+
+                            }
+
                         }
                     }
+
                 } );
                 console.log( "DAATTATATTATA", UpdatedData )
                 this.setState( { quentity: this.state.quentity + 1 } )
@@ -470,7 +551,9 @@ class ProductDetailScreen extends Component
         // Regular expression to identify HTML tags in 
         // the input string. Replacing the identified 
         // HTML tag with a null string.
-        return str.replace( /(<([^>]+)>)/ig, '' );
+
+        let newstr = str.replace( /(<([^>]+)>)/ig, '' );
+        return newstr.replace( /^\s+|\s+$/gm, '' );
     }
     renderImages = ( item, index ) =>
     {
@@ -501,7 +584,7 @@ class ProductDetailScreen extends Component
     onSendReview = () =>
     {
 
-        if ( this.state.userData.length > 0 && this.state.userData!==null )
+        if ( this.state.userData.length > 0 && this.state.userData !== null )
         {
 
             this.setState( { visible: true } )
@@ -525,6 +608,7 @@ class ProductDetailScreen extends Component
                     {
                         this.setState( { visible: false } )
                         this.setState( { reviewModal: false } )
+                        this.getProductDetail();
 
                     }
                     else
@@ -542,33 +626,41 @@ class ProductDetailScreen extends Component
         }
         else
         {
+            this.setState( { reviewModal: false } )
             this.setState( { visible: false } )
-            this.setState( { loginModal: false } )
+            this.setState( { loginModal: true } )
         }
 
 
     }
     render ()
     {
-        let reviewButton=false;
-        let remain=this.state.comment.length;
-        
-        if(remain>0 && remain<=300){
-           
+        let reviewButton = false;
+        let rate = false;
+        let remain = this.state.comment.length;
+
+        if ( this.state.selectedRating > 0 )
+        {
+            rate = true
         }
-        if(this.state.comment !== null && this.state.comment!== ""){
-            reviewButton=true;
+        else
+        {
+            rate = false
         }
-        if(this.state.selectedRating>0){
-            reviewButton=true
+        if ( remain > 0 && remain <= 300 )
+        {
+            reviewButton = true;
         }
-        else{
-            reviewButton=false
+        if ( this.state.comment !== null && this.state.comment !== "" )
+        {
+            reviewButton = true;
         }
+        const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0
         return (
-            <View style={ { backgroundColor: White ,} }>
+            <View style={ { backgroundColor: White, } }>
                 <SafeAreaView>
                     <ScrollView showsVerticalScrollIndicator={ false }>
+
                         <ProgressLoader
                             visible={ this.state.visible }
                             isModal={ true }
@@ -662,10 +754,14 @@ class ProductDetailScreen extends Component
                                         </View>
                                         <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
                                         {
-                                            this.setState( {
-                                                quentity: this.state.quentity + 1,
+                                            if ( this.state.quentity <= 24 )
+                                            {
+                                                this.setState( {
+                                                    quentity: this.state.quentity + 1,
 
-                                            } )
+                                                } )
+                                            }
+
 
                                         } }>
                                             <Image
@@ -751,7 +847,7 @@ class ProductDetailScreen extends Component
                                 } ] }>
 
                                     <View style={ styles.rowView }>
-                                        <Text style={ [ styles.quentityText ] }>Description</Text>
+                                        <Text style={ [ styles.quentityText, { paddingHorizontal: 8 } ] }>Description</Text>
                                         {
                                             this.state.isDiscription === true ?
                                                 <TouchableOpacity onPress={ () =>
@@ -788,7 +884,7 @@ class ProductDetailScreen extends Component
                                 <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                     <View style={ styles.rowView }>
-                                        <Text style={ [ styles.quentityText ] }>More Offers</Text>
+                                        <Text style={ [ styles.quentityText, { paddingHorizontal: 3 } ] }>More Offers</Text>
                                         <TouchableOpacity onPress={ () =>
                                         {
 
@@ -825,16 +921,25 @@ class ProductDetailScreen extends Component
                                         <View style={ { flexDirection: 'row', alignItems: 'center' } }>
                                             <TouchableOpacity onPress={ () =>
                                             {
-                                                this.setState( { reviewModal: true } )
+                                                if ( this.state.userData.length > 0 && this.state.userData !== null )
+                                                {
+                                                    this.setState( { reviewModal: true } )
+                                                }
+                                                else
+                                                {
+                                                    this.setState( { loginModal: true } )
+                                                }
                                             } }
-                                            style={{justifyContent:'center',alignItems:'center', borderRightWidth:0.8,borderRightColor:Text_Gray,}}>
-                                              
+                                                style={ { justifyContent: 'center', alignItems: 'center', borderRightWidth: 0.8, borderRightColor: Text_Gray, } }>
+
                                                 <Image
-                                                    style={ [ styles.iconStyle2, { tintColor:Light_Green, height: 25,right:"70%",
-                                                        width: 25,alignSelf:"center"} ] }
+                                                    style={ [ styles.iconStyle2, {
+                                                        tintColor: Light_Green, height: 25, right: "70%",
+                                                        width: 25, alignSelf: "center"
+                                                    } ] }
                                                     source={ require( '../../../assets/reviewEdit.png' ) }
                                                 />
-                                                  {/* <Text  style={ [styles.smallText,{color:Light_Green,fontSize:10}] }>Add Review</Text> */}
+                                                {/* <Text  style={ [styles.smallText,{color:Light_Green,fontSize:10}] }>Add Review</Text> */ }
                                             </TouchableOpacity>
                                             <View >
                                                 <Text style={ [ styles.quentityText, { textAlign: 'center' } ] }>{ this.state.raingCount } </Text>
@@ -842,47 +947,45 @@ class ProductDetailScreen extends Component
                                             </View>
                                         </View>
                                     </View>
-                                    <FlatList
-                                        data={ this.state.review }
-                                        showsVerticalScrollIndicator={ false }
-                                        scrollEnabled={ false }
-                                        renderItem={ ( { item, index } ) =>
-                                        {
-                                            return (
-                                                <View style={ { alignItems: 'flex-start', marginVertical: 5, paddingVertical: 5, paddingHorizontal: 8, flexDirection: 'row', } }>
-                                                    <Image
-                                                        source={ require( '../../../assets/profile.png' ) }
-                                                        style={ { height: 25, width: 25, resizeMode: "contain", } } />
-                                                    <View style={ { left: 5 } }>
 
-                                                        <Text style={ [ styles.quentityText, { textAlign: 'center', left: 5, fontFamily: POPINS_REGULAR } ] }>{ item.comment_author }</Text>
+                                    { this.state.review.map( ( item, index ) =>
+                                    {
+                                        return (
+                                            <View key={ index } style={ { alignItems: 'flex-start', marginVertical: 5, paddingVertical: 5, paddingHorizontal: 8, flexDirection: 'row', } }>
+                                                <Image
+                                                    source={ require( '../../../assets/profile.png' ) }
+                                                    style={ { height: 25, width: 25, resizeMode: "contain", } } />
+                                                <View style={ { left: 5, alignItems: 'flex-start' } }>
 
-                                                        <Rating
-                                                            type='star'
-                                                            ratingImage={ startImage }
-                                                            ratingColor='#3498db'
-                                                            ratingBackgroundColor='#fff'
-                                                            ratingCount={ 5 }
-                                                            imageSize={ 13 }
-                                                            readonly={ true }
-                                                            // isDisabled={ true }
-                                                            startingValue={ item.rating }
-                                                            // onFinishRating={ this.ratingCompleted }
-                                                            style={ { backgroundColor: White, } }
-                                                        />
+                                                    <Text style={ [ styles.quentityText, { textAlign: 'center', left: 5, fontFamily: POPINS_REGULAR } ] }>{ item.comment_author }</Text>
+
+                                                    <Rating
+                                                        type='star'
+                                                        ratingImage={ startImage }
+                                                        ratingColor='#3498db'
+                                                        ratingBackgroundColor='#fff'
+                                                        ratingCount={ 5 }
+                                                        imageSize={ 13 }
+                                                        readonly={ true }
+                                                        // isDisabled={ true }
+                                                        startingValue={ item.rating }
+                                                        // onFinishRating={ this.ratingCompleted }
+                                                        style={ { backgroundColor: White, paddingHorizontal: 5 } }
+                                                    />
 
 
-                                                        <Text style={ [ styles.smallText, { paddingHorizontal: 5, paddingVertical: 5 } ] }>{ item.comment_content }</Text>
-                                                    </View>
-
+                                                    <Text style={ [ styles.smallText, { paddingHorizontal: 5, paddingVertical: 5 } ] }>{ item.comment_content }</Text>
                                                 </View>
-                                            );
-                                        } } />
+
+                                            </View>
+                                        );
+                                    } ) }
+
                                 </View>
                                 <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                     <View style={ styles.rowView }>
-                                        <Text style={ [ styles.quentityText ] }>Term & Condition</Text>
+                                        <Text style={ [ styles.quentityText, , { paddingHorizontal: 6 } ] }>Term & Condition</Text>
                                         <TouchableOpacity onPress={ () =>
                                         {
                                             this.setState( { isTerm: !this.state.isTerm } )
@@ -907,7 +1010,7 @@ class ProductDetailScreen extends Component
                                 <View style={ [ styles.container, { marginHorizontal: 15, } ] }>
 
                                     <View style={ styles.rowView }>
-                                        <Text style={ [ styles.quentityText ] }>Ask For Question</Text>
+                                        <Text style={ [ styles.quentityText, { paddingHorizontal: 8 } ] }>FAQ</Text>
                                         <TouchableOpacity onPress={ () =>
                                         {
                                             this.props.navigation.navigate( 'FAQScreen' );
@@ -950,9 +1053,9 @@ class ProductDetailScreen extends Component
                             isVisible={ this.state.reviewModal }
                             animationIn="slideInUp"
                             animationOut="slideOutDown"
-                            //    transparent={ true }
+                            transparent={ true }
 
-                            style={ styles.modalStyle }
+                            // style={ styles.modalStyle }
                             onRequestClose={ () =>
                             {
                                 this.setState( { reviewModal: false } )
@@ -961,82 +1064,87 @@ class ProductDetailScreen extends Component
                                 // mooveRL();
                             } }
                         >
-                        
-                            <View style={ { flex: 1, padding: 15 } }>
+                            <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={ keyboardVerticalOffset }>
+                                <View style={ styles.modalStyle }>
 
-                                <ProgressLoader
-                                    visible={ this.state.visible }
-                                    isModal={ true }
-                                    isHUD={ true }
-                                    hudColor={ White }
-                                    color={ Light_Green } />
-                                <TouchableOpacity onPress={ () =>
-                                {
-                                    this.setState( { reviewModal: false } )
-                                } }>
-                                    <Image
-                                        style={ { height: 18, width: 18, resizeMode: 'contain', alignSelf: "flex-end" } }
-                                        source={ require( '../../../assets/closed.png' ) } />
-                                </TouchableOpacity>
+                                    <ProgressLoader
+                                        visible={ this.state.visible }
+                                        isModal={ true }
+                                        isHUD={ true }
+                                        hudColor={ White }
+                                        color={ Light_Green } />
+                                    <TouchableOpacity onPress={ () =>
+                                    {
+                                        this.setState( { reviewModal: false } )
+                                    } }>
+                                        <Image
+                                            style={ { height: 15, width: 15, resizeMode: 'contain', alignSelf: "flex-end" } }
+                                            source={ require( '../../../assets/closed.png' ) } />
+                                    </TouchableOpacity>
 
-                                <View style={ { flex: 0.9, justifyContent: 'center', alignItems: "flex-start", paddingTop: 15 } }>
-                                    <Text style={ [ styles.titleText, { paddingVertical: 8 } ] }>Feedback</Text>
-                                    <View style={ { flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', } }>
-                                        <Rating
-                                            type='star'
-                                            ratingImage={ startImage }
-                                            ratingColor='#3498db'
-                                            ratingBackgroundColor='#fff'
-                                            ratingCount={ 5 }
-                                            imageSize={ 25 }
-                                            // isDisabled={ true }
-                                            startingValue={ this.state.selectedRating }
-                                            onFinishRating={ ( rate ) =>
-                                            {
-                                                this.setState( { selectedRating: rate } )
-                                            } }
-                                            style={ { backgroundColor: White, flex: 0.5 } }
-                                        />
-                                        <View style={ { justifyContent: "flex-end", flex: 0.5, alignItems: 'center' } }>
-                                            <Text style={ [ styles.quentityText, { textAlign: 'right' } ] }>{ this.state.selectedRating } </Text>
-                                            <Text style={ [ styles.smallText, { paddingVertical: 3, textAlign: 'right' } ] }>Over all</Text>
+                                    <View style={ { alignItems: "flex-start", } }>
+                                        <Text style={ [ styles.titleText, { paddingVertical: 8 } ] }>Feedback</Text>
+                                        <View style={ { flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', } }>
+                                            <Rating
+                                                type='star'
+                                                ratingImage={ startImage }
+                                                ratingColor='#3498db'
+                                                ratingBackgroundColor='#fff'
+                                                ratingCount={ 5 }
+                                                imageSize={ 25 }
+                                                // isDisabled={ true }
+                                                startingValue={ this.state.selectedRating }
+                                                onFinishRating={ ( rate ) =>
+                                                {
+                                                    this.setState( { selectedRating: rate } )
+                                                } }
+                                                style={ { backgroundColor: White, alignSelf: 'flex-start' } }
+                                            />
+                                            <View style={ { justifyContent: "flex-end", flex: 1, alignItems: 'center' } }>
+                                                <Text style={ [ styles.quentityText, { textAlign: 'right' } ] }>{ this.state.selectedRating } </Text>
+                                                {/* <Text style={ [ styles.smallText, { paddingVertical: 3, textAlign: 'right' } ] }>Over all</Text> */ }
+                                            </View>
                                         </View>
+
+                                        <TextInput
+                                            value={ this.state.comment }
+                                            style={ [ styles.input, { height: screen_height / 6, width: "99%" } ] }
+                                            multiline={ true }
+                                            maxLength={ 300 }
+                                            placeholder="Comment or Message"
+                                            onChangeText={ ( text ) =>
+                                            {
+                                                this.setState( { comment: text } )
+                                            } }
+                                            placeholderTextColor={ Text_Gray } />
+
+
+                                        <View style={ { flexDirection: "row", alignItems: "center", justifyContent: 'space-between', width: screen_width * 0.8 } }>
+                                            <FilledButton title="Submit"
+                                                disabled={ reviewButton == true && rate === true ? false : true }
+                                                style={ { width: screen_width / 2.5, borderRadious: 20, marginVertical: "4%", opacity: reviewButton == true && rate === true ? 1 : 0.5 } }
+                                                textStyle={ { fontSize: 14, paddingVertical: 8 } }
+                                                onPress={ () =>
+                                                {
+                                                    this.onSendReview()
+                                                } } />
+                                            <Text style={ [ styles.smallText, { paddingVertical: 3, textAlign: 'right' } ] }>{ remain }/300</Text>
+
+
+                                        </View>
+
                                     </View>
 
-                                    <TextInput
-                                        value={ this.state.comment }
-                                        style={ [ styles.input, { height: screen_height / 6, width: "99%" } ] }
-                                        multiline={ true }
-                                        maxLength={300}
-                                        placeholder="Comment or Message"
-                                        onChangeText={ ( text ) =>
-                                        {
-                                            this.setState( { comment: text } )
-                                        } }
-                                        placeholderTextColor={ Text_Gray } />
-
-<Text style={ [ styles.smallText, { paddingVertical: 3, textAlign: 'right' ,width:screen_width*0.8} ] }>{remain}/300</Text>
-
-                                    <FilledButton title="Submit"
-                                        disabled={reviewButton == true ?false:true}
-                                        style={ { width: screen_width / 2.5, borderRadious: 20, marginVertical: "6%",opacity:reviewButton == true ?1:0.5 } }
-                                        textStyle={ { fontSize: 14, paddingVertical: 8 } }
-                                        onPress={ () =>
-                                        {
-                                            this.onSendReview()
-                                        } } />
                                 </View>
-
-                            </View>
-
+                            </KeyboardAvoidingView>
                         </Modal>
                         <Modal
                             isVisible={ this.state.loginModal }
                             animationIn="slideInUp"
                             animationOut="slideOutDown"
-                            //    transparent={ true }
+                            transparent={ true }
 
-                            style={ styles.modalStyle }
+                            // style={ styles.modalStyle }
                             onRequestClose={ () =>
                             {
                                 this.setState( { loginModal: false } )
@@ -1045,22 +1153,22 @@ class ProductDetailScreen extends Component
                                 // mooveRL();
                             } }
                         >
-                            <View style={ { flex: 1, padding: 15 } }>
+                            <View style={ styles.modalStyle }>
                                 <TouchableOpacity onPress={ () =>
                                 {
                                     this.setState( { loginModal: false } )
                                 } }>
                                     <Image
-                                        style={ { height: 18, width: 18, resizeMode: 'contain' } }
+                                        style={ { height: 18, width: 18, resizeMode: 'contain', alignSelf: "flex-end" } }
                                         source={ require( '../../../assets/closed.png' ) } />
                                 </TouchableOpacity>
 
-                                <View style={ { flex: 0.9, justifyContent: 'center', alignItems: "center", paddingTop: 15 } }>
+                                <View style={ { alignItems: "center", paddingTop: 15 } }>
                                     <Image
                                         style={ { height: screen_height / 3.5, width: screen_height / 3.5, resizeMode: 'contain', alignSelf: 'center' } }
                                         source={ require( '../../../assets/emptyCart.png' ) } />
 
-                                    <Text style={ [ styles.titleText, { fontSize: 16, fontFamily: POPINS_REGULAR } ] }>Oops ! Please Login to Continue</Text>
+                                    <Text style={ [ styles.titleText, { fontSize: 16, fontFamily: POPINS_REGULAR, textAlign: 'center' } ] }>Oops ! Please Login to Continue</Text>
                                     <FilledButton
                                         onPress={ this.onLogin }
                                         style={ { width: screen_width / 1.5 } }
@@ -1071,6 +1179,7 @@ class ProductDetailScreen extends Component
                             </View>
 
                         </Modal>
+
                     </ScrollView>
                 </SafeAreaView>
 

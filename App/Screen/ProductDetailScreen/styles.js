@@ -5,6 +5,7 @@ import { POPINS_BOLD, POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts
 
 const styles = StyleSheet.create( {
     mainLayout: {
+       
         borderWidth:2,
         backgroundColor:White
     },
@@ -137,15 +138,16 @@ const styles = StyleSheet.create( {
         borderColor:Gray
     },
     modalStyle:{
-        flex: 0.55, 
+      
         backgroundColor: White ,
-        top:"15%",     
+         
         borderRadius:20,
         shadowColor:Black,
         shadowOffset:{
             height:2,width:0
         },
         elevation:3,
+        padding:15,
         shadowOpacity: 0.5,
    },
    input: {

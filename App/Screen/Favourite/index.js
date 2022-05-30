@@ -68,7 +68,7 @@ class Favourite extends Component
             {
                 return prev._sale_price < curr._sale_price ? prev : curr;
             } );
-            console.log( "MIN", price )
+            // console.log( "MIN", price )
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else

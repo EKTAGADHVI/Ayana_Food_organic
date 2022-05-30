@@ -1,7 +1,7 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { Black, Gray, Light_Green, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
-import { POPINS_SEMI_BOLD } from "../../Utils/fonts";
+import { POPINS_REGULAR, POPINS_SEMI_BOLD } from "../../Utils/fonts";
 
 const styles = StyleSheet.create({
     mainLayout:{
@@ -71,7 +71,26 @@ const styles = StyleSheet.create({
         textAlign:'center',
         fontFamily:POPINS_SEMI_BOLD
     },
-    
+    btnView: {
+        borderRadius:15,
+        backgroundColor:Light_Green,
+        marginVertical:5,
+        paddingHorizontal:"5%",
+        paddingVertical:"1%"
+    },
+    input: {
+        fontSize: 12,
+        fontFamily: POPINS_REGULAR,
+        height: Platform.OS === 'ios' ? 33 : 45,
+        width: "70%",
+        left: 10,
+        borderRadius:15,
+        borderWidth:1,
+        borderColor:Light_Green,
+        backgroundColor:White,
+        paddingHorizontal:10,
+       
+    }
 })
 
 export default styles;

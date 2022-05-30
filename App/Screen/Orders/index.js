@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import { Component } from 'react';
@@ -11,7 +12,7 @@ import { actions } from '../../Redux/actions';
 import Apis from '../../RestApi/Apis';
 import { Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_height } from '../../Utils/constant';
-import { POPINS_SEMI_BOLD } from '../../Utils/fonts';
+import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
 
 class Orders extends Component
@@ -37,8 +38,27 @@ class Orders extends Component
             ],
             orders: [],
             userData: [],
-            visible: false
+            visible: false,
+            shipToken:""
         };
+        let data = {
+            "email": "sales@ayanafoodorganic.com",
+            "password": "Ayana@1234"
+        };
+        axios.post( 'https://apiv2.shiprocket.in/v1/external/auth/login', data, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        } )
+            .then( ( res ) =>
+            {
+                console.log( "Ship Authentication",res.data?.token)
+                this.setState({shipToken:res?.data?.token})
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Ship Authentication", error )
+            } )
     }
 
 
@@ -208,13 +228,34 @@ class Orders extends Component
     }
     renderOrder = ( item, index ) =>
     {
+      var  orderStatus
+        const config = {
+            headers: { Authorization: `Bearer ${this.state.shipToken}`,
+         "Content-Type": "application/json"
+            }
+        };
+        
+        axios.get(`https://apiv2.shiprocket.in/v1/external/orders/show/212884016`,{ headers: {"Authorization" : `Bearer ${this.state.shipToken}`}}).
+        then((res)=>{
+               
+                orderStatus = res?.data?.data?.status
+                console.log("Shipping Details",orderStatus);
+        }).
+        catch((error)=>{
+            orderStatus="not started"
+            console.log("Shipping Error",error);
+        })
+
+
         return (
             <View style={ styles.ItemView } >
                 <Text style={ [ styles.regularText, , { color: Light_Green, } ] }>Order ID : { item.ID } </Text>
                 <View style={ styles.rowView }>
                     <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Text_Gray } ] }> { item?.billing_deatil?._order_status }  |</Text></Text>
+                    
                     <Text style={ [ styles.smallText, { color: Text_Gray } ] }>{ moment( item.post_date ).format( "DD/MM/YYYY" ) }</Text>
                 </View>
+                {/* <Text style={ [ styles.smallText, { color: Light_Green } ] }>Shipping Status :<Text style={ [ styles.smallText, { color: Text_Gray } ] }> { orderStatus }  |</Text></Text> */}
                 {/* <Text style={[styles.smallText,{color:Light_Green,fontSize:12}]}>Order ID : #230002 </Text>  */ }
                 <View style={ [ styles.rowView, { marginVertical: 5 } ] }>
                     <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
@@ -247,15 +288,29 @@ class Orders extends Component
                         isHUD={ true }
                         hudColor={ White }
                         color={ Light_Green } />
-                    <BasicHeader OnBackPress={ () => { this.props.navigation.navigate( 'Home' ) } } title={ 'Orders' } />
+                    <BasicHeader OnBackPress={ () => { this.props.navigation.navigate( 'Home' ) } } title={ 'My Orders' } />
                     <View style={ { height: screen_height * 0.85, } }>
-                        <FlatList
-                            data={ this.state.orders }
-                            keyExtractor={ ( item, index ) => item.ID }
-                            renderItem={ ( { item, index } ) =>
-                                this.renderOrder( item, index )
-                            } />
+                       {
+                           this.state.orders.length>0?
+                           <FlatList
+                           data={ this.state.orders }
+                           keyExtractor={ ( item, index ) => item.ID }
+                           renderItem={ ( { item, index } ) =>
+                               this.renderOrder( item, index )
+                           } />:
+                           this.state.visible == false ?
+                           <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
+                               <Image
+                                   style={ styles.emptyCart }
+                                   source={ require( '../../../assets/emptyCart.png' ) } />
+
+                               <Text style={ styles.titleText }>Oops</Text>
+                               <Text style={ [ styles.normalText, { fontSize: 18, fontFamily: POPINS_REGULAR, textAlign: 'center' } ] }>You've no Orders</Text>
+                           </View>
+                           : null
+                       }
                     </View>
+                
                 </SafeAreaView>
             </View>
         );

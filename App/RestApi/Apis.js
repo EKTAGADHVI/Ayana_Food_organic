@@ -1,6 +1,6 @@
 
 
-import { BANNERS_URL, BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, CREATE_ORDER_URL, CREATE_PRODUCT_REVIEW_URL, GET_FAQ_URL, GET_ORDER_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, GET_PRODUCT_REVIEW_URL, GET_PROFILE_URL, HELp_URL, HOME_PAGE_API_URL, Login_URL, LOGOUT_URL, PINCODE_URL, PRODUCT_FILTER_URL, PRODUCT_SEARCH_URL, Registration_URL, SEARCH_BLOG_URL, SOCIAL_LOGIN_URL, UPDATE_PROFILE_URl, VIDEO_URL } from './ApiUrl';
+import { ADD_BLOG_COMMENT_URL, BANNERS_URL, BEST_OFFERS_URL, BLOGS_URL, CategoeryList_URL, CREATE_ORDER_URL, CREATE_PRODUCT_REVIEW_URL, FORGOT_PASS_SENT_OTP_URL, GET_BLOG_COMMENT, GET_FAQ_URL, GET_ORDER_URL, GET_PRODUCT_BY_CATEGORY_ID_URL, GET_PRODUCT_REVIEW_URL, GET_PROFILE_URL, HELp_URL, HOME_PAGE_API_URL, INVOISE_URL, LOGIN_OTP_URL, LOGIn_OTP_VERIFY_URL, Login_URL, LOGOUT_URL, PINCODE_URL, PRODUCT_FILTER_URL, PRODUCT_SEARCH_URL, REGISTER_OTP_URL, REGISTER_OTP_VERIFY_URL, Registration_URL, RESENT_FORGOT_OTP_URL, SEARCH_BLOG_URL, SHIPPING_CHARGE_URL, SOCIAL_LOGIN_URL, SUBMIT_FORGOT_PASS_URL, UPDATE_PROFILE_URl, VERIFY_COUPON_CODE_URL, VERIFY_FORGOT_PASS_OTP_URl, VIDEO_URL } from './ApiUrl';
 import instance from './index'
 export default class Apis
 {
@@ -217,6 +217,110 @@ export default class Apis
     {
         console.log("Request",request)
         return instance.post(GET_FAQ_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static verifyCouponCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(VERIFY_COUPON_CODE_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static loginWithOtpCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(LOGIN_OTP_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static loginOtpVerifyCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(LOGIn_OTP_VERIFY_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static registerWithOtpCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(REGISTER_OTP_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static registerOtpVerifyCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(REGISTER_OTP_VERIFY_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static forgotOtpCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(FORGOT_PASS_SENT_OTP_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static forgotOtpVerifyCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(VERIFY_FORGOT_PASS_OTP_URl, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static forgotPassCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(SUBMIT_FORGOT_PASS_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static resendforgotCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(RESENT_FORGOT_OTP_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static getShippingCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(SHIPPING_CHARGE_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static getInvoiceCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(INVOISE_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static blogCommentCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(ADD_BLOG_COMMENT_URL, request, {
+            headers: { "content-type": "application/json" }
+        } );
+
+    }  
+    static blogCommentListCall ( request )
+    {
+        console.log("Request",request)
+        return instance.post(GET_BLOG_COMMENT, request, {
             headers: { "content-type": "application/json" }
         } );
 
