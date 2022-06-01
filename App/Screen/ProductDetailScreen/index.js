@@ -675,7 +675,8 @@ class ProductDetailScreen extends Component
                             />
                             <View style={ styles.ImageContainer }>
 
-                                <FlatList
+                              {this.state.images.length>0?
+                                    <FlatList
                                     data={ this.state.images }
                                     // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
                                     horizontal={ true }
@@ -696,6 +697,16 @@ class ProductDetailScreen extends Component
                                 //  ref={(list) => this.myFlatList = list}
                                 //   ref={(node) => (flatRef = node)}
                                 />
+                                : <View style={ styles.ItemContainer }>
+                                <Image
+                                    style={ styles.ImagStyle }
+                                    source={ require('../../../assets/default.png') }
+                                // source={item.url}
+                                />
+                
+                
+                            </View>
+                              }
                                 <View style={ [ styles.paginationWrapper, {
                                     justifyContent: 'center',
                                     alignSelf: 'center',

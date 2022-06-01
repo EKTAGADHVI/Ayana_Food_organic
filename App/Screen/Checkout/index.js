@@ -413,7 +413,7 @@ class CheckOut extends Component
                                 // containerStyle={ { marginHorizontal: 10 } }
                                 secureTextEntry={ false }
                                 inputStyle={ { width: screen_width - 30, } }
-                                placeholder={ "Enter Your Company Name" }
+                                placeholder={ "Enter Your City Name" }
                             />
 
 

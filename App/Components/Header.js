@@ -249,7 +249,7 @@ const Header = ( props ) =>
                             <View >
                                 <Text style={ [ styles.regularText2, { color: Light_Green, paddingVertical: "65%", textAlign: "center" } ] }>v 1.0.1</Text>
                             </View>
-                            {
+                            {/* {
                                 logoutVisible === true ?
                                 <TouchableOpacity onPress={()=>{
                                     logout()
@@ -262,7 +262,7 @@ const Header = ( props ) =>
                                     </View>
                                 </TouchableOpacity>
                                 :null
-                            }
+                            } */}
                         
                         </View>
                     </SafeAreaView>

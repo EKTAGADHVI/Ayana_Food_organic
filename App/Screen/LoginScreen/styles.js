@@ -8,7 +8,7 @@ const styles = StyleSheet.create( {
         height: screen_height-20,
         paddingTop: 15,
         paddingHorizontal: 15,
-        paddingVertical: 15
+        // paddingVertical: 15
     },
     titleText: {
         fontSize: 25,

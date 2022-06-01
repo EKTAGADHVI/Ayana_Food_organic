@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from 'react';
-import { SafeAreaView, View, Image, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Image, Text, TouchableOpacity, Alert } from 'react-native';
 import { EventRegister } from 'react-native-event-listeners';
 import { connect } from 'react-redux';
 import BasicHeader from '../../Components/BasicHeader';
@@ -13,6 +13,7 @@ import { POPINS_REGULAR } from '../../Utils/fonts';
 import styles from './styles';
 import NetInfo from "@react-native-community/netinfo";
 import InternetScreen from '../../Components/InternetScreen';
+import { CommonActions } from '@react-navigation/native';
 class Profile extends Component
 {
     constructor ( props )
@@ -23,6 +24,51 @@ class Profile extends Component
             isInternet:false
         }
         this.checkInternet()
+    }
+    logout = () => {
+        Alert.alert(
+            "Ayana Food & Organic",
+            'Are you sure you want to Logout?',
+            [   
+                {
+                    text: 'Yes', onPress: async () => {
+                    
+                            // setVisible(false)
+                            this.props.logout();
+                            await AsyncStorage.removeItem('UserData')
+                            .then((res)=>{
+                                AsyncStorage.removeItem("PostalCode")
+                                .then(()=>{})
+                                .catch((err)=>{})
+                                AsyncStorage.removeItem("AddToCart")
+                                .then(()=>{})
+                                .catch((err)=>{})
+                               
+                                console.log("Data Removed")
+                              setTimeout(()=>{
+                               this.props.navigation.dispatch(
+                                    CommonActions.reset({
+                                      index: 1,
+                                      routes: [
+                                        { name: 'LoginScreen' },
+                                      ],
+                                    })
+                                  );
+                              },700)
+                            })
+                            .catch((error)=>{
+                                console.log("Data Not Removed")
+                            })}
+                    
+                },
+                {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+            ],
+            {cancelable: false},
+        );
     }
 
 
@@ -178,6 +224,10 @@ class Profile extends Component
                                    onPress={ () => { } }
                                    name={ "Notification" }
                                    leftIcon={ require( '../../../assets/notification.png' ) } />
+                                     <this.renderProfileMenu
+                                   onPress={ () => {this.logout() } }
+                                   name={ "Logout" }
+                                   leftIcon={ require( '../../../assets/logout.png') } />
                                   
                            </View> :
                            <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
@@ -224,6 +274,7 @@ const mapDispatchToProps = dispatch =>
         //getPeople,    
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         profileCall: ( request ) => dispatch( actions.getProfileAction( request ) ),
+        logout:(request)=>dispatch(actions.logoutAction()),
         dispatch,
     };
 };

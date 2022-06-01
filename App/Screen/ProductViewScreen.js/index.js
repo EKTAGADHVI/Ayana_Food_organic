@@ -259,33 +259,54 @@ class ProductViewScreen extends Component
     {
 
         let price = "";
-     
+       
         if(data !== undefined){
             let l_data = data.filter((item)=>{
         
-                
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
             
         });
             if ( data?.length > 1 )
         {
-          
+            /// new Logic
+
+            if(Object.keys(data[ 0 ]).indexOf("_sale_price")!= -1){
+                price=data[ 0 ]?._sale_price
+            }
+            else if(Object.keys(data[ 0 ]).indexOf("_price")!= -1){
+                price=data[ 0 ]?._price
+            }
+            else{
+                price=data[ 0 ]?._regular_price
+            }
+
+        //   Old Logic
             // console.log("L DATA",l_data)
-            price = l_data?.reduce( function ( prev, curr )
-            {
+            // price = l_data?.reduce( function ( prev, curr )
+            // {
             
-                    return prev?._sale_price < curr?._sale_price ? prev : curr;
+            //         return prev?._sale_price < curr?._sale_price ? prev : curr;
                 
                
-            } );
+            // } );
            
             // console.log( "MIN", price )
-            return price?._sale_price;
+            return price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
-         return Object.keys(data[ 0 ]).indexOf("_sale_price")!= -1? Object.keys(data[ 0 ]).indexOf("_regular_price")? data[ 0 ]?._regular_price : data[ 0 ]?._price:data[ 0 ]?._regular_price
+            let price;
+            if(Object.keys(data[ 0 ]).indexOf("_sale_price")!= -1){
+                price=data[ 0 ]?._sale_price
+            }
+            else if(Object.keys(data[ 0 ]).indexOf("_price")!= -1){
+                price=data[ 0 ]?._price
+            }
+            else{
+                price=data[ 0 ]?._regular_price
+            }
+         return price
         }
 
         }
@@ -299,16 +320,21 @@ class ProductViewScreen extends Component
     {
         // console.log( "WEIGHJHGHG",data)
         let price = "";
+    
         if(data!== undefined){
             if ( data.length > 1)
         {
-            price = data.reduce( function ( prev, curr )
-            {
-                return prev._sale_price < curr._sale_price ? prev : curr;
-            } );
-            // console.log( "MIN", price )
-           return  price.attribute_pa_weight
-            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+            return data[ 0 ].attribute_pa_weight
+           
+           
+            //==== OLD =====//
+        //                 price = data.reduce( function ( prev, curr )
+        //     {
+        //         return prev._sale_price < curr._sale_price ? prev : curr;
+        //     } );
+        //     // console.log( "MIN", price )
+        //    return  price.attribute_pa_weight
+        //     // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
         }
         else
         {
@@ -362,7 +388,8 @@ class ProductViewScreen extends Component
         let request ={
             "category_id":this.state.selectedCat,
             "seller_name":this.state.selectedShop,
-            "price":this.state.selectedPrice
+            "price":this.state.selectedPrice,
+            // "product_type":this.state.request.product_type
         }
 
         // this.props.filterCall(request);

@@ -32,7 +32,7 @@ const styles = StyleSheet.create( {
         color: White,
         fontFamily: POPINS_REGULAR,
         textAlign: "center",
-        paddingVertical: 10,
+        paddingVertical: 7,
         fontSize: 18
     },
     btnContainer:{
@@ -44,11 +44,10 @@ const styles = StyleSheet.create( {
         marginVertical: 10,
     },
     iconStyle:{
-        height:20,
-        width:20,
+        height:18,
+        width:18,
         resizeMode:'contain',
         tintColor:White,
-        marginHorizontal:5
-      
+        marginHorizontal:5   ,     alignSelf:'center'
     }
 } )

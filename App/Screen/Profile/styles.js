@@ -1,5 +1,5 @@
 import { BackHandler, StyleSheet } from "react-native";
-import { Gray, White } from "../../Utils/colors";
+import { Black, Gray, White } from "../../Utils/colors";
 import { screen_height, screen_width } from "../../Utils/constant";
 import { POPINS_REGULAR } from "../../Utils/fonts";
 
@@ -40,7 +40,8 @@ const styles = StyleSheet.create( {
         height: 18,
         width: 18,
         alignSelf: 'center',
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        tintColor:Black
     },
     ItemView: {
 
