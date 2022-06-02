@@ -483,12 +483,7 @@ class Dashboard extends Component
                 <TouchableOpacity
                     onPress={ () =>
                     {
-                        this.props.navigation.navigate( "ProductViewScreen", {
-                            request: {
-                                "category_id": item.category_id
-                            },
-                            title: item.name
-                        } )
+                       this.onCategoryPress(item)
                     } }
                     style={ [ styles.categoeryView, { backgroundColor: index % 2 === 0 ? '#FEF1E4' : '#E5F3EA' } ] }  >
 
@@ -671,6 +666,23 @@ class Dashboard extends Component
         }
        
     
+
+    }
+    onCategoryPress = ( data ) =>
+    {
+        let subCategoeriesData =
+            this.props?.cataegoery?.data.filter( ( item ) =>
+            {
+                if ( item.parent === data.category_id )
+                {
+                    return data;
+                }
+            } );
+
+        this.props.navigation.navigate( "SubCategories", {
+            subCategoeries: subCategoeriesData,
+            title: data.name
+        } )
 
     }
     render ()
@@ -1162,7 +1174,7 @@ class Dashboard extends Component
                                                 weight={this.displayWeight(item.variation)}
                                                 price={ this.displayPrice( item.variation ) }
                                                 // price={ 50 }
-                                                comment={"nice product"}
+                                                
                                                 discount={ this.discountInPercentage( item.variation) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
@@ -1316,6 +1328,7 @@ class Dashboard extends Component
                                         secureTextEntry={ false }
                                         placeholder={ "Search here" } />
                                 </View>
+                                
                                 <FlatList
                                     data={ this.props.keyWordProduct?.data }
                                     numColumns={ 2 }

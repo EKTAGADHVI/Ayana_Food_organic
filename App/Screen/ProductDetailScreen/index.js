@@ -100,7 +100,7 @@ class ProductDetailScreen extends Component
                         }
                     } )
                     this.setState( {
-                        raingCount: data[ 0 ]?.rating[ 0 ]?.meta_value,
+                        // raingCount: data[ 0 ]?.rating[ 0 ]?.meta_value,
                         visible: false
                     } )
                     this.getReview()
@@ -162,7 +162,12 @@ class ProductDetailScreen extends Component
     }
     async componentDidMount ()
     {
-
+       let ratings = this.props.route.params?.data?.rating;
+       ratings.map((item)=>{
+            if(item.meta_key==='_wc_average_rating'){
+                this.setState({raingCount:item.meta_value})
+            }
+       });
         AsyncStorage.getItem( 'PostalCode' )
             .then( ( res ) =>
             {
@@ -243,23 +248,23 @@ class ProductDetailScreen extends Component
             let previousData = null;
             let alreadyAdded = false;
             await AsyncStorage.getItem( 'AddToCart' )
-                .then( ( res ) =>
+                .then(async ( res ) =>
                 {
                     console.log( "DashBoard Cart", res )
                     let cart = JSON.parse( res );
                     previousData = JSON.parse( res );
-                    if ( res !== null && cart.length > 0 )
+                    if (await res !== null && await cart.length > 0 )
                     {
 
                         // this.setState( { cartItem: cart.length } )
-                        alreadyAdded = cart.filter( ( data ) =>
+                        alreadyAdded =await cart.filter(async ( data ) =>
                         {
 
-                            if ( data.ID == item.ID )
+                            if (await data.ID == await item.ID )
                             {
-                                if ( data.selectedVariation == this.state.selectedVarinat )
+                                if (await data.selectedVariation == await this.state.selectedVarinat )
                                 {
-                                    added = true;
+                                  added = true;
                                     // this.setState( { quentity: data.cartQuentity + 1 } )
 
                                 }
@@ -289,7 +294,7 @@ class ProductDetailScreen extends Component
                 } )
 
             console.log( "Alreday Added", added )
-            if ( added === false )
+            if (await added === false )
             {
                 let cartData = [];
 
@@ -304,7 +309,7 @@ class ProductDetailScreen extends Component
                     sPrice: this.state.sPrice,
                     selectedVarinatID: this.state.selectedVarinatID
                 };
-                if ( previousData != null && previousData.length > 0 )
+                if (await previousData != null && await previousData.length > 0 )
                 {
                     previousData.push( finalItem );
                 } else
@@ -448,6 +453,7 @@ class ProductDetailScreen extends Component
                     AsyncStorage.setItem( 'addToFav', JSON.stringify( remove ) )
                         .then( ( res ) =>
                         {
+                            EventRegister.emit( 'Add-to-fav' )
                             this.setState( { isFav: false } )
                             // this.setState( { favData: remove } )
                         } )
@@ -460,6 +466,7 @@ class ProductDetailScreen extends Component
                 }
                 else
                 {
+                    EventRegister.emit( 'Add-to-fav' )
                     // this.setState( {
                     //     favData: [],
                     //     // visible: false
@@ -478,26 +485,31 @@ class ProductDetailScreen extends Component
     addToFav = async ( item ) =>
     {
         let alreadyAdded = false;
+        let added =false;
+        let previousData=[]
         try
         {
             await AsyncStorage.getItem( 'addToFav' )
-                .then( ( res ) =>
+                .then( async( res ) =>
                 {
                     console.log( "DashBoard Cart", res )
                     let cart = JSON.parse( res );
-                    if ( res !== null && cart.length > 0 )
+                    if ( await res !== null && await cart.length > 0 )
                     {
                         this.setState( { cartItem: cart.length } )
-                        alreadyAdded = cart.filter( ( data ) =>
+                        previousData=JSON.parse( res );
+                           alreadyAdded = await cart.filter( ( data ) =>
                         {
 
                             console.log( "DHDHDH", data );
                             if ( data.ID === item.ID )
                             {
+                                added =true;
                                 return true;
                             }
                             else
                             {
+                                added =false
                                 return false;
                             }
                         } );
@@ -512,20 +524,22 @@ class ProductDetailScreen extends Component
                     console.log( "Error", error )
                     this.setState( { cartData: [] } )
                 } )
-            if ( alreadyAdded === false )
+            if (await added === false )
             {
                 let cartData = [];
-                cartData.push( item );
-                await AsyncStorage.setItem( 'addToFav', JSON.stringify( cartData ) )
+                previousData.push( item );
+                await AsyncStorage.setItem( 'addToFav', JSON.stringify( previousData ) )
                     .then( ( res ) =>
                     {
                         this.setState( { isFav: true } )
                         console.log( "Sucessfully Added" );
+                        EventRegister.emit( 'Add-to-fav' )
                     } )
                     .catch( ( error ) =>
                     {
                         this.setState( { isFav: false } )
                         console.log( "error", error );
+                        EventRegister.emit( 'Add-to-fav' )
                     } )
             }
             else

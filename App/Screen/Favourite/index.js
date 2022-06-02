@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from 'react';
 import { FlatList, Image, SafeAreaView, Text, View, TouchableOpacity } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
 import BasicHeader from '../../Components/BasicHeader';
 import { Gray, Light_Green, Text_Gray, White } from '../../Utils/colors';
 import { screen_height } from '../../Utils/constant';
@@ -32,7 +33,30 @@ class Favourite extends Component
             favData:[]
         }
     }
-
+    listener = EventRegister.addEventListener( 'Add-to-fav', async () =>{
+        await AsyncStorage.getItem( 'addToFav' )
+        .then( ( res ) =>
+        {
+            console.log('Fav DATA',res)
+       
+            if ( res !== null )
+            {
+                this.setState( { favData: JSON.parse( res ),
+                visible:false } )
+              
+            }
+            else
+            {
+                this.setState( { favData: [],
+                visible:false } )
+            }
+        } )
+        .catch( ( error ) =>
+        {
+            console.log( "Error", error )
+            this.setState( { favData: [] } )
+        } )
+    });
     async componentDidMount(){
         await AsyncStorage.getItem( 'addToFav' )
         .then( ( res ) =>
@@ -366,7 +390,7 @@ class Favourite extends Component
                         this.removeItem( item.ID )
                     }}>
                         <Image
-                            style={ [ styles.iconStyle2,{tintColor:White,} ] }
+                            style={ [ styles.iconStyle2,{tintColor:White,resizeMode:'contain'} ] }
 
                             source={ require( '../../../assets/closed.png' ) } />
                     </TouchableOpacity>
@@ -379,7 +403,7 @@ class Favourite extends Component
                         <Text style={ styles.normalText }>{ item.post_title.slice( 0, 18 ) + ( item.post_title.length > 20 ? "..." : "" ) }</Text>
                         <Text style={ styles.smallText }>{item.seller_name}</Text>
                   
-                        <Text style={ [styles.normalText,{fontSize:12}] }>Rs. {this.displayPrice( item.variation )}   <Text style={ [styles.smallText,{color:Text_Gray,textAlign:"center"}] }>{this.displayWeight(item.variation)}</Text></Text>
+                        <Text style={ [styles.normalText,{fontSize:12,width:"70%"}] }>Rs. {this.displayPrice( item.variation )}   <Text style={ [styles.smallText,{color:Text_Gray,textAlign:"center"}] }>{this.displayWeight(item.variation)}</Text></Text>
                     </View>
                 </View>
                 <View style={ styles.endContainer }>
@@ -413,7 +437,7 @@ class Favourite extends Component
                 <SafeAreaView>
                     <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ 'Favourite' } />
                     {
-                        this.state.link.length > 0 ?
+                        this.state.favData.length > 0 ?
                             <View style={ { height: screen_height / 1.2 - 30, } }>
                                 <FlatList
                                     data={ this.state.favData }

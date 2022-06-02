@@ -17,7 +17,8 @@ const styles = StyleSheet.create( {
         borderWidth:1,
         borderColor:Light_Green,
         borderRadius:20,
-        marginVertical:8
+        marginVertical:8,
+        width:"100%"
     },
     iconStyle2: {
         height: 10,
@@ -58,13 +59,15 @@ const styles = StyleSheet.create( {
     smallText:{
         fontSize:10,
         color:Light_Green,
-        fontFamily:POPINS_REGULAR
+        fontFamily:POPINS_REGULAR,width:"70%"
     },
     endContainer:{
      alignSelf:'center'
     },
     middleContainer:{
-        left:10
+        left:5,
+        // borderWidth:1,
+        width:"60%"
     },
     bottomLine:{
         borderBottomWidth:0.5,
@@ -87,7 +90,8 @@ const styles = StyleSheet.create( {
     ImageStyle:{
         height:screen_height/12,
         width:screen_width/4,
-        left:6
+        left:5,
+        resizeMode:"contain"
     }
 } );
 
