@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, ImageBackground, Text ,Image} from 'react-native';
 import { screen_height, screen_width } from '../Utils/constant';
 import { Rating, AirbnbRating } from 'react-native-ratings';
-import { Black, Light_Green, Line_Gray, ORENGE, Text_Gray, White } from '../Utils/colors';
+import { Black, Gray, Light_Green, Line_Gray, ORENGE, Text_Gray, White } from '../Utils/colors';
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../Utils/fonts';
 
 const startImage = require('../../assets/star.png')
@@ -48,7 +48,13 @@ const ProductView = ( props ) =>
             {/* {props.comment ?  <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.comment}</Text>:null} */}
              <Text style={[styles.discountText,{color:Text_Gray,fontFamily:POPINS_REGULAR,}]}>{props.storeName}</Text>
              <Text style={[styles.discountText,{color:Black,fontFamily:POPINS_REGULAR,paddingVertical:3}]}>{props.weight}</Text>
+           <View
+           style={{flexDirection:'row',alignItems:"center"}}>           
              <Text style={styles.regularText}>Rs. {props.price} /-</Text>
+            <View style={{ borderLeftColor:Light_Green,borderLeftWidth:1.5, paddingLeft:5,padding:0,left:"30%",borderStyle:'solid'}}>
+            <Text style={[styles.regularText,{color:Text_Gray,fontFamily:POPINS_REGULAR,textDecorationLine: 'line-through',paddingVertical:0,fontSize:12}]}>Rs. {props.regularPrice} /-</Text>
+            </View>
+           </View>
              <TouchableOpacity style={styles.btnView} onPress={props.onAdd}>
                  <Image
                  style={{height:10,width:10,alignSelf:'center'}}

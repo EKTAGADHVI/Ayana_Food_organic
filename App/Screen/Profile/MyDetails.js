@@ -141,6 +141,7 @@ class MyDetails extends Component
                 "phone": this.state.phone,
                 "country": "India",
                 "state": "Gujarat",
+                "street_address":this.state.strit,
                 "city": this.state.city,
                 "pincode": this.state.zip
             }

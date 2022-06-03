@@ -345,6 +345,66 @@ class ProductViewScreen extends Component
     
 
     }
+    displayRegularPrice = ( data ) =>
+    {
+
+        let price = "";
+       
+        if(data !== undefined){
+            let l_data = data.filter((item)=>{
+        
+                return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
+            
+        });
+            if ( data?.length > 1 )
+        {
+            /// new Logic
+
+            if(Object.keys(data[ 0 ]).indexOf("_regular_price")!= -1){
+                price=data[ 0 ]?._regular_price
+            }
+            else if(Object.keys(data[ 0 ]).indexOf("_price")!= -1){
+                price=data[ 0 ]?._price
+            }
+            else{
+                price=data[ 0 ]?._sale_price
+            }
+
+        //   Old Logic
+            // console.log("L DATA",l_data)
+            // price = l_data?.reduce( function ( prev, curr )
+            // {
+            
+            //         return prev?._sale_price < curr?._sale_price ? prev : curr;
+                
+               
+            // } );
+           
+            // console.log( "MIN", price )
+            return price;
+            // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
+        }
+        else
+        {
+            let price;
+            if(Object.keys(data[ 0 ]).indexOf("_regular_price")!= -1){
+                price=data[ 0 ]?._regular_price
+            }
+            else if(Object.keys(data[ 0 ]).indexOf("_price")!= -1){
+                price=data[ 0 ]?._price
+            }
+            else{
+                price=data[ 0 ]?._sale_price
+            }
+         return price
+        }
+
+        }
+       
+        // console.log("Price",price._sale_price)
+       
+        // return 50;
+    }
     discountInPercentage = ( data ) =>
     {
         // console.log("Discount In Percentage", data);
@@ -494,6 +554,7 @@ class ProductViewScreen extends Component
                                         weight={this.displayWeight(item?.variation)}
                                         discount={ this.discountInPercentage( item?.variation )}
                                         price={ this.displayPrice( item?.variation ) }
+                                        regularPrice={this.displayRegularPrice(item.variation)}
                                         storeName={ item?.seller_name }
                                         onPress={ () =>
                                         {

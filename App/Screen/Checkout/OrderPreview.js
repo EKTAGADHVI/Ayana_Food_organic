@@ -625,7 +625,7 @@ class OrderPreview extends Component
                                     );
                                 } )
                             }
-                            <View style={ { height: 50} }></View>
+                            <View ></View>
                             <View style={ { paddingVertical: 10 } }>
                                 <Text style={ [ styles.normalText, { fontSize: 10, textAlign: 'center', color: Text_Gray, } ] }>Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.
 </Text>

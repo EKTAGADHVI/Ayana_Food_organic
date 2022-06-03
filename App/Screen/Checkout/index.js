@@ -41,6 +41,7 @@ class CheckOut extends Component
             totalPrice:this.props.route.params.totalPrice,
             CheckOutData:this.props.route.params.checkoutData,
             visible:true,
+            userID:''
             // isFname:false,
             // isLname:false,
             // is
@@ -52,9 +53,11 @@ class CheckOut extends Component
         {
 
             let dd = JSON.parse( res ).data;
+            
             console.log( "UserRes", dd[ 0 ].ID )
             if ( res !== null )
             {
+                this.setState({userID:dd[ 0 ].ID.toString()})
                 Apis.getProfileCall({
                     "user_id":dd[ 0 ].ID.toString()
                 })
@@ -121,6 +124,43 @@ class CheckOut extends Component
 
      
     }
+    UpdateProfile = () =>
+    {
+
+       
+            this.setState( { visible: true } )
+            let request = {
+                "userId": this.state.userID,
+                "userName": this.state.fName,
+                "email": this.state.billingEmail,
+                "phone": this.state.billingPhone,
+                "country": "India",
+                "state": this.state.state_Value,
+                "street_address":this.state.stretAddress,
+                "city": this.state.city,
+                "pincode": this.state.pinCode
+            }
+            Apis.updateProfileCall( request )
+                .then( ( res ) =>
+                {
+                    return JSON.stringify( res )
+                } )
+                .then( ( responce ) =>
+                {
+                    console.log( "Response Fetch call", responce )
+                    if ( JSON.parse( responce ).data.status == true )
+                    {
+                        console.log( "======GET_PROFILE_LOADING_sucess===== >  ", JSON.parse( responce ).data );
+                        let data = JSON.parse( responce ).data.data;
+                        this.profileAPICall()
+                        this.setState( { visible: false } )
+                    }
+                } ).catch( ( error ) =>
+                {
+                    this.setState( { visible: false } )
+                } )
+        
+    }
 
    async componentDidMount(){
        this.profileAPICall()
@@ -181,6 +221,7 @@ class CheckOut extends Component
                 
                   setTimeout(()=>{
                     this.setState({visible:false})
+                    this.UpdateProfile()
                     this.props.navigation.navigate('OrderPreview',{
                         totalPrice:this.state.totalPrice,
                         data:this.state.CheckOutData,

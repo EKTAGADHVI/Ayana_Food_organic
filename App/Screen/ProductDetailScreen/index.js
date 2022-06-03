@@ -39,6 +39,7 @@ class ProductDetailScreen extends Component
             // variation: [],
             description: this.props.route.params?.data?.post_content,
             price: this.props.route.params?.data?.variation[ 0 ]?._price,
+            regprice: this.props.route.params?.data?.variation[ 0 ]?._regular_price,
             // price: 50,
             images: this.props.route.params?.data?.img,
             raingCount: this.props.route.params?.data?.rating[ 0 ].meta_value,
@@ -162,12 +163,14 @@ class ProductDetailScreen extends Component
     }
     async componentDidMount ()
     {
-       let ratings = this.props.route.params?.data?.rating;
-       ratings.map((item)=>{
-            if(item.meta_key==='_wc_average_rating'){
-                this.setState({raingCount:item.meta_value})
+        let ratings = this.props.route.params?.data?.rating;
+        ratings.map( ( item ) =>
+        {
+            if ( item.meta_key === '_wc_average_rating' )
+            {
+                this.setState( { raingCount: item.meta_value } )
             }
-       });
+        } );
         AsyncStorage.getItem( 'PostalCode' )
             .then( ( res ) =>
             {
@@ -241,30 +244,30 @@ class ProductDetailScreen extends Component
     }
     addToCart = async ( item ) =>
     {
-        
+
         try
         {
             let added = false;
             let previousData = null;
             let alreadyAdded = false;
             await AsyncStorage.getItem( 'AddToCart' )
-                .then(async ( res ) =>
+                .then( async ( res ) =>
                 {
                     console.log( "DashBoard Cart", res )
                     let cart = JSON.parse( res );
                     previousData = JSON.parse( res );
-                    if (await res !== null && await cart.length > 0 )
+                    if ( await res !== null && await cart.length > 0 )
                     {
 
                         // this.setState( { cartItem: cart.length } )
-                        alreadyAdded =await cart.filter(async ( data ) =>
+                        alreadyAdded = await cart.filter( async ( data ) =>
                         {
 
-                            if (await data.ID == await item.ID )
+                            if ( await data.ID == await item.ID )
                             {
-                                if (await data.selectedVariation == await this.state.selectedVarinat )
+                                if ( await data.selectedVariation == await this.state.selectedVarinat )
                                 {
-                                  added = true;
+                                    added = true;
                                     // this.setState( { quentity: data.cartQuentity + 1 } )
 
                                 }
@@ -294,7 +297,7 @@ class ProductDetailScreen extends Component
                 } )
 
             console.log( "Alreday Added", added )
-            if (await added === false )
+            if ( await added === false )
             {
                 let cartData = [];
 
@@ -309,7 +312,7 @@ class ProductDetailScreen extends Component
                     sPrice: this.state.sPrice,
                     selectedVarinatID: this.state.selectedVarinatID
                 };
-                if (await previousData != null && await previousData.length > 0 )
+                if ( await previousData != null && await previousData.length > 0 )
                 {
                     previousData.push( finalItem );
                 } else
@@ -369,7 +372,7 @@ class ProductDetailScreen extends Component
                 {
                     if ( data.ID !== item.ID )
                     {
-                        
+
                         return data
                     }
                     else
@@ -485,31 +488,31 @@ class ProductDetailScreen extends Component
     addToFav = async ( item ) =>
     {
         let alreadyAdded = false;
-        let added =false;
-        let previousData=[]
+        let added = false;
+        let previousData = []
         try
         {
             await AsyncStorage.getItem( 'addToFav' )
-                .then( async( res ) =>
+                .then( async ( res ) =>
                 {
                     console.log( "DashBoard Cart", res )
                     let cart = JSON.parse( res );
                     if ( await res !== null && await cart.length > 0 )
                     {
                         this.setState( { cartItem: cart.length } )
-                        previousData=JSON.parse( res );
-                           alreadyAdded = await cart.filter( ( data ) =>
+                        previousData = JSON.parse( res );
+                        alreadyAdded = await cart.filter( ( data ) =>
                         {
 
                             console.log( "DHDHDH", data );
                             if ( data.ID === item.ID )
                             {
-                                added =true;
+                                added = true;
                                 return true;
                             }
                             else
                             {
-                                added =false
+                                added = false
                                 return false;
                             }
                         } );
@@ -524,7 +527,7 @@ class ProductDetailScreen extends Component
                     console.log( "Error", error )
                     this.setState( { cartData: [] } )
                 } )
-            if (await added === false )
+            if ( await added === false )
             {
                 let cartData = [];
                 previousData.push( item );
@@ -689,38 +692,38 @@ class ProductDetailScreen extends Component
                             />
                             <View style={ styles.ImageContainer }>
 
-                              {this.state.images.length>0?
+                                { this.state.images.length > 0 ?
                                     <FlatList
-                                    data={ this.state.images }
-                                    // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
-                                    horizontal={ true }
-                                    pagingEnabled={ true }
-                                    legacyImplementation={ false }
-                                    onScroll={ () =>
-                                    {
-                                        // this.VideoPlayer.stop()
-                                    } }
-                                    showsHorizontalScrollIndicator={ false }
-                                    showsVerticalScrollIndicator={ false }
-                                    onViewableItemsChanged={ this.handleViewableItemsChanged }
-                                    viewabilityConfig={ this.viewabilityConfig }
-                                    keyExtractor={ ( item, index ) => index.toString() }
-                                    renderItem={ ( { item, index } ) => this.renderImages( item, index ) }
-                                    // renderItem={({ item }) => this._renderItem.bind(this)}
-                                    ref={ this.flatList }
-                                //  ref={(list) => this.myFlatList = list}
-                                //   ref={(node) => (flatRef = node)}
-                                />
-                                : <View style={ styles.ItemContainer }>
-                                <Image
-                                    style={ styles.ImagStyle }
-                                    source={ require('../../../assets/default.png') }
-                                // source={item.url}
-                                />
-                
-                
-                            </View>
-                              }
+                                        data={ this.state.images }
+                                        // contentContainerStyle={ { width: screen_width ,justifyContent:'center'} }
+                                        horizontal={ true }
+                                        pagingEnabled={ true }
+                                        legacyImplementation={ false }
+                                        onScroll={ () =>
+                                        {
+                                            // this.VideoPlayer.stop()
+                                        } }
+                                        showsHorizontalScrollIndicator={ false }
+                                        showsVerticalScrollIndicator={ false }
+                                        onViewableItemsChanged={ this.handleViewableItemsChanged }
+                                        viewabilityConfig={ this.viewabilityConfig }
+                                        keyExtractor={ ( item, index ) => index.toString() }
+                                        renderItem={ ( { item, index } ) => this.renderImages( item, index ) }
+                                        // renderItem={({ item }) => this._renderItem.bind(this)}
+                                        ref={ this.flatList }
+                                    //  ref={(list) => this.myFlatList = list}
+                                    //   ref={(node) => (flatRef = node)}
+                                    />
+                                    : <View style={ styles.ItemContainer }>
+                                        <Image
+                                            style={ styles.ImagStyle }
+                                            source={ require( '../../../assets/default.png' ) }
+                                        // source={item.url}
+                                        />
+
+
+                                    </View>
+                                }
                                 <View style={ [ styles.paginationWrapper, {
                                     justifyContent: 'center',
                                     alignSelf: 'center',
@@ -797,7 +800,10 @@ class ProductDetailScreen extends Component
                                     </View>
 
                                     <View style={ { padding: 8 } }>
-                                        <Text style={ [ styles.quentityText, { textAlign: 'right', fontSize: 16, paddingHorizontal: 5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
+                                        <View style={ { flexDirection: 'row', alignItems: "center" } }>
+                                            <Text style={ [ styles.quentityText, { textAlign: 'right', paddingVertical: 2.5, color: Text_Gray, fontFamily: POPINS_REGULAR, textDecorationLine: 'line-through', paddingVertical: 0, fontSize: 12 } ] }>Rs. { this.state.regPrice * this.state.quentity }.00</Text>
+                                            <Text style={ [ styles.quentityText, { textAlign: 'right', fontSize: 16, paddingHorizontal: 5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
+                                        </View>
                                         <Text style={ [ styles.quentityText, { color: Light_Green, textAlign: 'right' } ] }>Avaibility : <Text style={ [ styles.quentityText, {
                                             color:
                                                 Black, fontFamily: POPINS_REGULAR,
@@ -827,6 +833,7 @@ class ProductDetailScreen extends Component
                                                                 {
                                                                     this.setState( {
                                                                         price: item._price,
+
                                                                         selectedVarinat: item.attribute_pa_weight,
                                                                         cartSellPrice: item._sale_price,
                                                                         cartRegularPrice: item._regular_price,
@@ -847,6 +854,7 @@ class ProductDetailScreen extends Component
                                                                     this.setState( {
                                                                         checked: index,
                                                                         price: item._price,
+
                                                                         selectedVarinat: item.attribute_pa_weight,
                                                                         cartSellPrice: item._sale_price,
                                                                         cartRegularPrice: item._regular_price,
