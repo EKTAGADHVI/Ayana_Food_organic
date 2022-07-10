@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useCallback, useState,useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator, CardStyleInterpolators, } from '@react-navigation/native-stack';
 import LoginScreen from '../Screen/LoginScreen';
 import Dashboard from '../Screen/Dashboard';
 import { Black, Gray, Light_Green, Text_Gray, White } from '../Utils/colors';
-import { POPINS_REGULAR } from '../Utils/fonts';
-import { Image, TouchableOpacity } from 'react-native';
+import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../Utils/fonts';
+import { Image, TouchableOpacity,View,Text, Platform } from 'react-native';
 import ContactUs from '../Screen/ContactUs';
 import AboutUs from '../Screen/AboutUs';
 import AddDeliveryLocation from '../Screen/AddDeliveryLocation';
@@ -29,6 +29,8 @@ import OrderPreview from '../Screen/Checkout/OrderPreview';
 import SplashScreen from '../Screen/SplashScreen';
 import FAQScreen from '../Screen/FAQScreen';
 import Forgotpassword from '../Screen/Forgotpassword';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { EventRegister } from 'react-native-event-listeners';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const bottomTab = createBottomTabNavigator();
@@ -212,6 +214,59 @@ const RootNavigation = ( { navigation } ) =>
 
 const BottomTab = ( { navigation } ) =>
 {
+const[favCount,setFavcount]=useState(0);
+const[cartCount,setCartCount]=useState(0)
+useEffect(() => {
+   
+  EventRegister.addEventListener( 'count',  () =>{
+        AsyncStorage.getItem( 'addToFav' )
+        .then( ( res ) =>
+        {
+            console.log('Fav DATA',res)
+       
+            if ( res !== null )
+            {
+                let data =JSON.parse(res)
+              setFavcount(data?.length)
+              
+            }
+            else
+            {
+                setFavcount(0)
+            }
+        } )
+        .catch( ( error ) =>
+        {
+            console.log( "Error", error )
+            setFavcount(0)
+        } )
+
+        AsyncStorage.getItem( 'AddToCart' )
+            .then( ( res ) =>
+            {
+                console.log( 'CartItem', res );
+                if ( res !== null )
+                {
+                    let data = JSON.parse(res)
+                  setCartCount(data?.length)
+                }
+                else
+                {
+                   setCartCount(0)
+                }
+            } )
+            .catch( ( error ) =>
+            {
+                console.log( "Error", error )
+               setCartCount(0)
+            } )
+    })
+    
+    
+    EventRegister.emit('count')
+}, [favCount,cartCount]);
+
+
     return (
         <bottomTab.Navigator screenOptions={ {
             headerShown: false,
@@ -232,6 +287,7 @@ const BottomTab = ( { navigation } ) =>
                 paddingHorizontal: 5,
                 paddingVertical: 5,
                 opacity: 1,
+                height:Platform.OS === 'android' ?60:40,
                 shadowOffset: {
                     width: 0,
                     height: 5
@@ -261,14 +317,32 @@ const BottomTab = ( { navigation } ) =>
             <bottomTab.Screen
                 options={
                     {
-                        tabBarIcon: ( { focused } ) => <TabBarIcon source={ require( '../../assets/cart.png' ) } tintColor={ focused ? Light_Green : Black } />
+                        tabBarIcon: ( { focused } ) => {
+                            return(
+                                <View>
+                                <View style={{height:18,width:18,borderRadius:9,backgroundColor:Light_Green,justifyContent:"center",alignItems:"center",alignSelf:"flex-end",left:10,}}>
+                                    <Text style={{fontFamily:POPINS_SEMI_BOLD,color:White,fontSize:9}}>{cartCount}</Text>
+                                </View>
+                            <TabBarIcon source={ require( '../../assets/cart.png' ) } tintColor={ focused ? Light_Green : Black } />
+                            </View>
+                            )
+                        }
                     } }
                 name="Cart"
                 component={ Cart } />
             <bottomTab.Screen
                 options={
                     {
-                        tabBarIcon: ( { focused } ) => <TabBarIcon source={ require( '../../assets/fav.png' ) } tintColor={ focused ? Light_Green : Black } />
+                        tabBarIcon: ( { focused } ) =>{
+                            return(
+                                <View>
+                                    <View style={{height:18,width:18,borderRadius:9,backgroundColor:Light_Green,justifyContent:"center",alignItems:"center",alignSelf:"flex-end",left:10,}}>
+                                        <Text style={{fontFamily:POPINS_SEMI_BOLD,color:White,fontSize:9}}>{favCount}</Text>
+                                    </View>
+                                <TabBarIcon source={ require( '../../assets/fav.png' ) } tintColor={ focused ? Light_Green : Black } />
+                                </View>
+                            )
+                        }
                     } }
                 name="Favourite"
                 component={ Favourite } />

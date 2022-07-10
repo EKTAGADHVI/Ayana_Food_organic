@@ -325,7 +325,7 @@ class ProductDetailScreen extends Component
                     .then( ( res ) =>
                     {
                         EventRegister.emit( 'Add-to-cart' )
-
+                        EventRegister.emit('count')
                         setTimeout( () =>
                         {
                             this.props.navigation.navigate( 'Cart' );
@@ -424,6 +424,7 @@ class ProductDetailScreen extends Component
                     {
 
                         EventRegister.emit( 'Add-to-cart' )
+                        EventRegister.emit('count')
                         this.props.navigation.navigate( 'Cart' );
                         console.log( "Sucessfully Added" );
                     } )
@@ -457,6 +458,7 @@ class ProductDetailScreen extends Component
                         .then( ( res ) =>
                         {
                             EventRegister.emit( 'Add-to-fav' )
+                            EventRegister.emit('count')
                             this.setState( { isFav: false } )
                             // this.setState( { favData: remove } )
                         } )
@@ -470,6 +472,7 @@ class ProductDetailScreen extends Component
                 else
                 {
                     EventRegister.emit( 'Add-to-fav' )
+                    EventRegister.emit('count')
                     // this.setState( {
                     //     favData: [],
                     //     // visible: false
@@ -537,12 +540,14 @@ class ProductDetailScreen extends Component
                         this.setState( { isFav: true } )
                         console.log( "Sucessfully Added" );
                         EventRegister.emit( 'Add-to-fav' )
+                        EventRegister.emit('count')
                     } )
                     .catch( ( error ) =>
                     {
                         this.setState( { isFav: false } )
                         console.log( "error", error );
                         EventRegister.emit( 'Add-to-fav' )
+                        EventRegister.emit('count')
                     } )
             }
             else

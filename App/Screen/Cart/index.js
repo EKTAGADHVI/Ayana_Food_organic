@@ -58,6 +58,7 @@ class Cart extends Component
                         cartData: JSON.parse( res ),
                         visible: false
                     } )
+                    EventRegister.emit('count')
                     this.callFinalCheckOut();
                 }
                 else
@@ -66,12 +67,14 @@ class Cart extends Component
                         cartData: [],
                         visible: false
                     } )
+                    EventRegister.emit('count')
                 }
             } )
             .catch( ( error ) =>
             {
                 console.log( "Error", error )
                 this.setState( { cartData: [] } )
+                EventRegister.emit('count')
             } )
     } )
     async componentDidMount ()
@@ -92,6 +95,7 @@ class Cart extends Component
                             cartData: JSON.parse( res ),
                             visible: false
                         } )
+                        EventRegister.emit('count')
                         this.callFinalCheckOut();
                     }
                     else
@@ -100,12 +104,14 @@ class Cart extends Component
                             cartData: [],
                             visible: false
                         } )
+                        EventRegister.emit('count')
                     }
                 } )
                 .catch( ( error ) =>
                 {
                     console.log( "Error", error )
                     this.setState( { cartData: [] } )
+                    EventRegister.emit('count')
                 } )
         }, 1000 )
 
@@ -127,10 +133,12 @@ class Cart extends Component
             .then( ( res ) =>
             {
                 EventRegister.emit( 'Add-to-cart' )
+                EventRegister.emit('count')
                 this.setState( { cartData: remove } )
             } )
             .catch( ( error ) =>
             {
+                EventRegister.emit('count')
                 console.log( "Error", error )
 
             } )

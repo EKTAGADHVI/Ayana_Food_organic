@@ -344,7 +344,7 @@ import { LOGIN_OTP_URL, LOGIn_OTP_VERIFY_URL } from '../../RestApi/ApiUrl';
 
     LoginWithOtp=()=>{
       this.setState( { visible: true } )
-      if(this.state.email !== null && this.state.email!== "" && this.state.email.length==10){
+      if(this.state.email !== null && this.state.email!== ""){
         let request={
           "phone":this.state.email
       }

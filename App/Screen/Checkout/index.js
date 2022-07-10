@@ -219,9 +219,12 @@ class CheckOut extends Component
                     billingEmail: this.state.billingEmail,
                 };
                 
+                setTimeout(()=>{
+                    this.UpdateProfile()
+                },1000)
                   setTimeout(()=>{
                     this.setState({visible:false})
-                    this.UpdateProfile()
+                    
                     this.props.navigation.navigate('OrderPreview',{
                         totalPrice:this.state.totalPrice,
                         data:this.state.CheckOutData,

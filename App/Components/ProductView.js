@@ -55,7 +55,7 @@ const ProductView = ( props ) =>
             <Text style={[styles.regularText,{color:Text_Gray,fontFamily:POPINS_REGULAR,textDecorationLine: 'line-through',paddingVertical:0,fontSize:12}]}>Rs. {props.regularPrice} /-</Text>
             </View>
            </View>
-             <TouchableOpacity style={styles.btnView} onPress={props.onAdd}>
+             <TouchableOpacity disabled={true} style={styles.btnView} onPress={props.onAdd}>
                  <Image
                  style={{height:10,width:10,alignSelf:'center'}}
                  source={require('../../assets/plus.png')}/>

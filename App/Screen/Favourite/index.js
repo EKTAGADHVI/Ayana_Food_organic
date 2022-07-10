@@ -43,7 +43,7 @@ class Favourite extends Component
             {
                 this.setState( { favData: JSON.parse( res ),
                 visible:false } )
-              
+                EventRegister.emit('count')
             }
             else
             {
@@ -67,6 +67,7 @@ class Favourite extends Component
             {
                 this.setState( { favData: JSON.parse( res ),
                 visible:false } )
+                EventRegister.emit('count')
               
             }
             else
@@ -361,6 +362,7 @@ class Favourite extends Component
             {
                 
                 this.setState( { favData: remove } )
+                EventRegister.emit('count')
             } )
             .catch( ( error ) =>
             {

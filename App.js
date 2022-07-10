@@ -34,6 +34,7 @@ import { connect } from 'react-redux';
 import AuthNavigation from './App/Navigation/AuthNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LOGIN_SUCESS } from './App/Redux/actionTypes';
+import { EventRegister } from 'react-native-event-listeners';
 
 
 
@@ -46,6 +47,7 @@ class App extends Component{
     }
   }
   async componentDidMount(){
+    EventRegister.emit('count')
   // setTimeout(async()=>{
 
   //   await  AsyncStorage.getItem('UserData')

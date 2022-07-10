@@ -118,7 +118,7 @@ class SplashScreen extends Component
 
           <View style={{alignSelf:"center",top:"20%"}}>
             <Text style={{color:Light_Green,fontFamily:POPINS_REGULAR,textAlign:'center'}}>Powered By</Text>
-            <Text style={{color:Black,fontFamily:POPINS_REGULAR,textAlign:'center',fontSize:14}}>Ayana Food Organic Pvt. Ltd.</Text>
+            <Text style={{color:Black,fontFamily:POPINS_REGULAR,textAlign:'center',fontSize:14}}>Ayana Food Organics Private Limited</Text>
           </View>
         </ImageBackground>
 

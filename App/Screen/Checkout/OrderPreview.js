@@ -64,7 +64,7 @@ class OrderPreview extends Component
             description: '',
             image: 'https://ayanafoodorganic.com/wp-content/uploads/2020/09/logo-1.png',
             currency: 'INR',
-            key: 'rzp_test_f6l6m6k12uB9NY', // Your api key
+            key: 'rzp_live_lEWAwuqdDZ5UBz', // Your api key
             amount: this.state.totalPrice * 100,
             name: 'Ayana Food & Organic',
             prefill: {
@@ -331,7 +331,7 @@ class OrderPreview extends Component
                 //     return data.vendor_id == item.vendor_id
                 // });
                 // console.log("Seprated Array",newArray);
-                this.setState( { visible: false } )
+               await this.setState( { visible: false } )
         })
     //   await  this.setState({sellerCharge:sellerDetail})
     //    await console.log("Final Selller ",this.state.sellerCharge)
@@ -675,9 +675,12 @@ class OrderPreview extends Component
 
                                 <Text style={ styles.titleText }>Oops ! Order Failed</Text>
                                 <FilledButton
+                                onPress={()=>{  this.setState( { orderFail: false } )}}
                                     style={ { width: screen_width / 1.5 } }
                                     title={ 'Please Try Again' } />
-                                <Text style={ [ styles.titleText, { fontSize: 14 } ] }>Back to home</Text>
+                                <Text 
+                                  onPress={ () => { this.props.navigation.navigate( 'Shop' ) }}
+                                style={ [ styles.titleText, { fontSize: 14 } ] }>Back to home</Text>
                             </View>
 
                         </View>
