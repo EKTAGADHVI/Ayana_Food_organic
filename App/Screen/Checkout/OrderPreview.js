@@ -21,7 +21,7 @@ import axios from 'axios';
 
 class OrderPreview extends Component
 {
-   
+
     constructor ( props )
     {
         super( props );
@@ -168,7 +168,7 @@ class OrderPreview extends Component
                    discount_amount:data?.coupon_amount,
                    totalPrice:this.state.totalPrice - data?.coupon_amount
                })
-               
+
             }
             else{
                 let data =JSON.parse(response)?.data?.data;
@@ -201,7 +201,7 @@ class OrderPreview extends Component
                     // this.profileAPICall(dd[ 0 ].ID)
                     // // this.props.profileCall( {
                     // //     "user_id":"122"
-                    // // } ) 
+                    // // } )
                 }
                 else
                 {
@@ -212,9 +212,9 @@ class OrderPreview extends Component
             // if(this.state.totalPrice<500){
             //         this.setState({totalPrice:this.state.totalPrice +100})
             // }
-          
-           
-        
+
+
+
         // await AsyncStorage.getItem('add')
     }
 
@@ -250,24 +250,24 @@ class OrderPreview extends Component
 
     }
 
-    getShipCharges =async()=>{  
+    getShipCharges =async()=>{
         this.setState( { visible: true } )
         let sellers=[];
-      
+
         this.state.checkOutData.map((item,index)=>{
-            sellers.push({  
+            sellers.push({
                 "vendor_id":item.vendor_id,
                 "seller_name":item.seller_name
             })
         });
         let final = sellers.filter((v,i,a)=>a.findIndex(v2=>(v2.vendor_id===v.vendor_id))===i)
 
-       
+
         console.log("   ",final)
         final.map(async(seller_id,index)=>{
             Apis.getShippingCall({"vendor_id":seller_id.vendor_id})
             .then(async(res)=>{
-                  
+
                     console.log("Response",res.data)
                     // let response =JSON.parse(res)?.data?.data;
                    await res?.data?.data?.map(async(item)=>{
@@ -309,7 +309,7 @@ class OrderPreview extends Component
                                 }
                                 // this.setState(prevState => ({
                                 //     sellerCharge: [...prevState, sellerDetail],
-                                  
+
                                 //   }))
                               await  this.setState({ sellerCharge:await sellerDetail})
                                 await console.log("Final Selller ",sellerDetail)
@@ -317,11 +317,11 @@ class OrderPreview extends Component
 
 
                             }
-                           
+
                         })
-            
+
                         this.setState( { visible: false } )
-        
+
             })
             .catch((error)=>{
                 this.setState( { visible: false } )
@@ -335,7 +335,7 @@ class OrderPreview extends Component
         })
     //   await  this.setState({sellerCharge:sellerDetail})
     //    await console.log("Final Selller ",this.state.sellerCharge)
-  
+
     }
 
     saveOrder = () =>
@@ -411,7 +411,7 @@ class OrderPreview extends Component
                 }
             ]
         }
-      
+
 
         Apis.createOrderCall( request )
             .then( ( res ) =>
@@ -422,7 +422,7 @@ class OrderPreview extends Component
             {
                 this.setState( {
                     visible: false,
-                    order_id: JSON.parse( response ).data?.data?.id,
+                    order_id: JSON.parse(response).data?.data?.id,
                     orderDate:JSON.parse(response).data?.data?.date_created
                 } )
                 console.log( "Response", response )
@@ -438,10 +438,10 @@ class OrderPreview extends Component
 
     }
 
-   
+
     OrderSucess = async () =>
     {
-      
+
 
         let UpdatedArray = []
         this.setState( { orderSucess: true } )
@@ -530,9 +530,9 @@ class OrderPreview extends Component
                                                         this.setState({coupon_code:text});
                                                     }}
                                                 />
-                                                <TouchableOpacity 
+                                                <TouchableOpacity
                                                 disabled={visibleBtn === true ? false :true}
-                                                style={ [styles.btnView,{opacity:visibleBtn === true ? 1 :0.5}] } 
+                                                style={ [styles.btnView,{opacity:visibleBtn === true ? 1 :0.5}] }
                                                 onPress={()=>{
                                                     this.verifyCouponCode()
                                                     }}>
@@ -549,7 +549,7 @@ class OrderPreview extends Component
                                     <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.subTotal }</Text>
                                 </View>
 
-                              
+
 
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Total Tax</Text>
@@ -559,15 +559,15 @@ class OrderPreview extends Component
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray, } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Discount</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.discount_amount }</Text>
-                                </View>   
+                                </View>
                              <View>
                              <View style={ [ styles.rowView, { borderBottomWidth: 0, borderBottomColor: Gray, } ] }>
                                   <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Shipping Charge</Text>
                                   {/* <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. 100</Text> */}
                               </View>
-                              { console.log("SSSSS",sellerDetail)}      
+                              { console.log("SSSSS",sellerDetail)}
                                     {
-                                       
+
                                        this.state.sellerCharge?.map((item)=>{
                                            console.log("Item",item)
                                             return(
@@ -579,8 +579,8 @@ class OrderPreview extends Component
                                         })
                                     }
                              </View>
-                             
-                               
+
+
                                 <View style={ [ styles.rowView, { borderBottomWidth: 0.5, borderBottomColor: Gray,borderTopColor:Gray,borderTopWidth:0.5 } ] }>
                                     <Text style={ [ styles.normalText, { fontSize: 15 } ] }>Total</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 12, } ] }>Rs. { this.state.totalPrice }</Text>
@@ -632,7 +632,7 @@ class OrderPreview extends Component
                                 <FilledButton
                                     onPress={ () =>
                                     {
-                                        // 
+                                        //
                                         // this.setState( { orderSucess: true } )
 
                                         // this.OrderFailure()
@@ -678,7 +678,7 @@ class OrderPreview extends Component
                                 onPress={()=>{  this.setState( { orderFail: false } )}}
                                     style={ { width: screen_width / 1.5 } }
                                     title={ 'Please Try Again' } />
-                                <Text 
+                                <Text
                                   onPress={ () => { this.props.navigation.navigate( 'Shop' ) }}
                                 style={ [ styles.titleText, { fontSize: 14 } ] }>Back to home</Text>
                             </View>

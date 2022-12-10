@@ -14,6 +14,7 @@ import styles from './styles';
 import { PRODUCT_FILTER_ERROR, PRODUCT_FILTER_SUCESS, PRODUCT_LIST_BY_CAT_ID_EROOR, PRODUCT_LIST_BY_CAT_ID_SUCESS } from '../../Redux/actionTypes';
 import Apis from '../../RestApi/Apis';
 import { ScrollView } from 'react-native-gesture-handler';
+import axios from "axios";
 
 class ProductViewScreen extends Component
 {
@@ -50,7 +51,7 @@ class ProductViewScreen extends Component
            sellerData:[]
 
         }
-      
+
         // console.log("Product IDDD",this.state.request)
         if ( this.state.categoryId !== '' )
         {
@@ -64,18 +65,30 @@ class ProductViewScreen extends Component
     }
 
     callProductByID=()=>{
+        console.log("staterequest",this.state.request)
         this.setState( {
             visible: true
         } )
-        Apis.getProductByCategoryId(this.state.request)
-        .then((res)=>{
-          return JSON.stringify(res);
-      })
+
+        axios.create({
+
+            baseURL: 'https://ayanafoodorganic.com/api',
+        }).post('/product.php?apicall=product',this.state.request,{
+            headers: { "content-type": "application/json" }
+        }).then((res)=> {
+            return JSON.stringify(res)
+        })
+
+      //   Apis.getProductByCategoryId(this.state.request)
+      //   .then((res)=>{
+      //     return JSON.stringify(res);
+      // })
       .then((responce)=>{
         this.setState( {
             visible: false
         } )
-          if(JSON.parse(responce).data.status == true){
+            console.log("Product List By Cat ID====", JSON.parse(responce).data);
+          if(JSON.parse(responce).data.status === true){
             //   console.log("====== Product List By Cat ID ====== >  ", JSON.parse(responce).data);
               this.props.dispatch({
                   type:PRODUCT_LIST_BY_CAT_ID_SUCESS,
@@ -93,7 +106,7 @@ class ProductViewScreen extends Component
                 visible: false
             } )
           }
-         
+
       })
       .catch((error)=>{
         this.setState( {
@@ -104,9 +117,9 @@ class ProductViewScreen extends Component
               payload:error
           });
           console.log("==== Category List===Error=== ", error)
-      })   
-  
-   
+      })
+
+
     }
     componentDidMount ()
     {
@@ -207,14 +220,14 @@ class ProductViewScreen extends Component
                     "seller_name": item?.seller_name
                 });
             } );
-         
+
                 // this.setState({sellerData:data})
-            
+
             final = data.filter((v,i,a)=>a.findIndex(v2=>(v2.seller_name===v.seller_name))===i)
             console.log("Filter Data",final)
-          
+
             this.setState({sellerData:final})
-           
+
         }
         else
         {
@@ -259,12 +272,12 @@ class ProductViewScreen extends Component
     {
 
         let price = "";
-       
+
         if(data !== undefined){
             let l_data = data.filter((item)=>{
-        
+
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
-            
+
         });
             if ( data?.length > 1 )
         {
@@ -284,12 +297,12 @@ class ProductViewScreen extends Component
             // console.log("L DATA",l_data)
             // price = l_data?.reduce( function ( prev, curr )
             // {
-            
+
             //         return prev?._sale_price < curr?._sale_price ? prev : curr;
-                
-               
+
+
             // } );
-           
+
             // console.log( "MIN", price )
             return price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
@@ -310,9 +323,9 @@ class ProductViewScreen extends Component
         }
 
         }
-       
+
         // console.log("Price",price._sale_price)
-       
+
         // return 50;
     }
 
@@ -320,13 +333,13 @@ class ProductViewScreen extends Component
     {
         // console.log( "WEIGHJHGHG",data)
         let price = "";
-    
+
         if(data!== undefined){
             if ( data.length > 1)
         {
             return data[ 0 ].attribute_pa_weight
-           
-           
+
+
             //==== OLD =====//
         //                 price = data.reduce( function ( prev, curr )
         //     {
@@ -341,20 +354,20 @@ class ProductViewScreen extends Component
            return data[ 0 ].attribute_pa_weight
         }
         }
-       
-    
+
+
 
     }
     displayRegularPrice = ( data ) =>
     {
 
         let price = "";
-       
+
         if(data !== undefined){
             let l_data = data.filter((item)=>{
-        
+
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
-            
+
         });
             if ( data?.length > 1 )
         {
@@ -374,12 +387,12 @@ class ProductViewScreen extends Component
             // console.log("L DATA",l_data)
             // price = l_data?.reduce( function ( prev, curr )
             // {
-            
+
             //         return prev?._sale_price < curr?._sale_price ? prev : curr;
-                
-               
+
+
             // } );
-           
+
             // console.log( "MIN", price )
             return price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
@@ -400,9 +413,9 @@ class ProductViewScreen extends Component
         }
 
         }
-       
+
         // console.log("Price",price._sale_price)
-       
+
         // return 50;
     }
     discountInPercentage = ( data ) =>
@@ -429,7 +442,7 @@ class ProductViewScreen extends Component
             let filterData = {
                 "category_id": item?.category[ 0 ]?.category_id,
                 "category_name": item?.category[ 0 ]?.category_name,
-               
+
             }
             data.push( filterData );
         } ):
@@ -438,7 +451,7 @@ class ProductViewScreen extends Component
         final = data.filter((v,i,a)=>a.findIndex(v2=>['category_name','category_id'].every(k=>v2[k] ===v[k]))===i)
         console.log("Filter Data",final)
         this.setState( { filterData: final } );
-        
+
 
     }
 
@@ -458,11 +471,9 @@ class ProductViewScreen extends Component
         return JSON.stringify(res);
     })
     .then((responce)=>{
-        
-        if(JSON.parse(responce).data.status == true){
-            console.log("======PRODUCT_FILTER_LOADING====== >  ", JSON.parse(responce).data);
+        console.log("PRODUCT_FILTER_LOADING", JSON.parse(responce).data);
 
-            
+        if(JSON.parse(responce).data.status == true){
             this.setState({
                 visible:false,
             categoeries: JSON.parse(responce)?.data?.data});
@@ -473,7 +484,7 @@ class ProductViewScreen extends Component
             });
         }
         else{
-            console.log("======PRODUCT_FILTER_LOADING====== >  ", JSON.parse(responce).data);
+            // console.log("======PRODUCT_FILTER_LOADING====== >  ", JSON.parse(responce).data);
             this.setState({
                 visible:false,
                 categoeries: []});
@@ -483,20 +494,20 @@ class ProductViewScreen extends Component
                 payload:JSON.parse(responce).data
             });
         }
-       
+
     })
     .catch((error)=>{
-        console.log("==== PRODUCT_FILTER_LOADING===Error=== ", error)
+        // console.log("==== PRODUCT_FILTER_LOADING===Error=== ", error)
         this.setState({
             visible:false, categoeries: this.props.getProductsListByCatId.data});
         this.props.dispatch({
             type:PRODUCT_FILTER_ERROR,
             payload:error
         });
-        console.log("==== PRODUCT_FILTER_LOADING===Error=== ", error)
-    })   
+        // console.log("==== PRODUCT_FILTER_LOADING===Error=== ", error)
+    })
 
- 
+
     //  setTimeout(()=>{
     //          this.setState({categoeries:this.props.filteredProduct.data});
     //      },2500)
@@ -528,8 +539,8 @@ class ProductViewScreen extends Component
                         isHUD={ true }
                         hudColor={ White }
                         color={ Light_Green } />
-                        
-                      
+
+
                     {
                         this.state.categoeries && this.state.categoeries.length > 0 && this.state.visible==false  ?
                             <FlatList
@@ -537,14 +548,14 @@ class ProductViewScreen extends Component
                                 numColumns={ 2 }
                                 extraData={ this.state.categoeries }
                                 scrollEnabled={ true }
-                              
+
                                 legacyImplementation={ false }
                                 showsHorizontalScrollIndicator={ false }
                                 showsVerticalScrollIndicator={ false }
                                 keyExtractor={ ( item, index ) => index.toString() }
                                 renderItem={ ( { item, index } ) =>
                                 {
-                                   
+
                                     var count = 14;
                                     return <ProductView
                                         name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
@@ -661,7 +672,7 @@ class ProductViewScreen extends Component
                                                         style={ styles.rowView }
 
                                                             onPress={ () =>
-                                                            { 
+                                                            {
                                                                 // let cat =[...this.state.selectedCat,item.seller_name]
                                                                 this.setState( {
                                                                     checkedSeller: index,
@@ -682,7 +693,7 @@ class ProductViewScreen extends Component
                                                             {
                                                                 this.setState( {
                                                                     checkedSeller: index,
-                                                                   
+
                                                                 } )
                                                                 this.state.selectedShop.push(item.seller_name)
                                                             } }
@@ -747,7 +758,7 @@ class ProductViewScreen extends Component
                             </TouchableOpacity>
                             </ScrollView>
                             </View>
-                          
+
                         </View>
 
                     </Modal>

@@ -1,7 +1,17 @@
 import moment from 'moment';
 import React from 'react';
 import { Component } from 'react';
-import { Image, SafeAreaView, TouchableOpacity, View, Text, ScrollView, FlatList,PermissionsAndroid } from 'react-native';
+import {
+    Image,
+    SafeAreaView,
+    TouchableOpacity,
+    View,
+    Text,
+    ScrollView,
+    FlatList,
+    PermissionsAndroid,
+    Platform
+} from 'react-native';
 import { color } from 'react-native-reanimated';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
@@ -82,7 +92,7 @@ class OrderDetails extends Component
                         .catch((error)=>{
                             console.log('ERR',error);
                         });
-                        
+
                     } else {
                         //If permission denied then show alert 'Storage Permission
                         //Not Granted'
@@ -97,6 +107,8 @@ class OrderDetails extends Component
     }
 
     async downloadFile(url) {
+        console.log("url",url);
+
         const { config, fs } = RNFetchBlob;
 
         const date = new Date();
@@ -140,20 +152,11 @@ class OrderDetails extends Component
                 this.setState({
                     downloadProgress: 0
                 })
-                //Showing alert after successful downloading
-                // console.log('res -> ', JSON.stringify(res));
-                //  Alert.alert('pdf download');
                 if (Platform.OS === 'ios') {
-                    RNFetchBlob.ios.openDocument(res.path())
+                    return RNFetchBlob.ios.openDocument(res.path());
                     ;
                 } else {
-                    RNFetchBlob.android.actionViewIntent(res.path().data, "application/pdf")
-                    .then((res)=>{
-                        console.log("ree",res)
-                    })
-                    .catch((error)=>{
-                        console.log("EE",error)
-                    });
+                   return  RNFetchBlob.android.actionViewIntent(res.path(), "application/pdf");
                 }
             }).catch((errorMessage, statusCode) => {
                 console.log("error with downloading file", errorMessage)
@@ -169,9 +172,9 @@ class OrderDetails extends Component
            return JSON.stringify(res)
         })
         .then((response)=>{
-            // console.log("response",response);
-            if(JSON.parse(response).data?.status== true){
+            if(JSON.parse(response).data?.status=== true){
                 let data = JSON.parse(response).data?.data;
+                console.log("response_Download",data.url);
                 this.DownloadPermission(data?.url)
             }
         })
@@ -216,7 +219,7 @@ class OrderDetails extends Component
                       <FlatList
                       data={this.state.data?.order_deatil}
                     //   horizontal={true}
-                     
+
                       scrollEnabled={false}
                       keyExtractor={(item)=>item.ID}
                       renderItem={({item,index})=>{
@@ -260,18 +263,18 @@ class OrderDetails extends Component
                                 <View>
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD } ] }>item</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>Order Total</Text>
-                                  
+
 
                                 </View>
                                 <View >
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left" ,fontFamily:POPINS_SEMI_BOLD } ] }>{this.state?.data?.billing_deatil?.total_items}</Text>
                                     <Text style={ [ styles.normalText, { fontSize: 14, textAlign: "left",fontFamily:POPINS_SEMI_BOLD  } ] }>{this.state?.data?.billing_deatil?._order_total}</Text>
-                                   
+
                                 </View>
                             </View>
                         </View>
                     </View>
-                  
+
                     </ScrollView>
                 </SafeAreaView>
             </View>

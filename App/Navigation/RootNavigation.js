@@ -215,20 +215,21 @@ const RootNavigation = ( { navigation } ) =>
 const BottomTab = ( { navigation } ) =>
 {
 const[favCount,setFavcount]=useState(0);
-const[cartCount,setCartCount]=useState(0)
+const[cartCount,setCartCount]=useState(0);
+
 useEffect(() => {
-   
+
   EventRegister.addEventListener( 'count',  () =>{
         AsyncStorage.getItem( 'addToFav' )
         .then( ( res ) =>
         {
             console.log('Fav DATA',res)
-       
+
             if ( res !== null )
             {
                 let data =JSON.parse(res)
               setFavcount(data?.length)
-              
+
             }
             else
             {
@@ -244,7 +245,7 @@ useEffect(() => {
         AsyncStorage.getItem( 'AddToCart' )
             .then( ( res ) =>
             {
-                console.log( 'CartItem', res );
+                // console.log( 'CartItem', res );
                 if ( res !== null )
                 {
                     let data = JSON.parse(res)
@@ -261,8 +262,8 @@ useEffect(() => {
                setCartCount(0)
             } )
     })
-    
-    
+
+
     EventRegister.emit('count')
 }, [favCount,cartCount]);
 
@@ -271,7 +272,7 @@ useEffect(() => {
         <bottomTab.Navigator screenOptions={ {
             headerShown: false,
             tabBarHideOnKeyboard: true,
-
+            initialRouteName:"Cart",
             tabBarActiveTintColor: Light_Green,
             tabBarInactiveTintColor: Black,
             tabBarLabelStyle: {

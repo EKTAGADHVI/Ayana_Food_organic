@@ -1,6 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { Component } from 'react';
-import { Alert, Image, ImageBackground, KeyboardAvoidingView, PermissionsAndroid, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import {
+    Alert,
+    Image,
+    ImageBackground,
+    KeyboardAvoidingView,
+    PermissionsAndroid,
+    Platform,
+    SafeAreaView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import BasicHeader from '../../Components/BasicHeader';
 import FilledButton from '../../Components/Filledbuton';
@@ -47,7 +59,7 @@ class AddDeliveryLocation extends Component
         }
 
     }
-    requestLocationPermission = async () => 
+    requestLocationPermission = async () =>
     {
         try
         {
@@ -79,31 +91,31 @@ class AddDeliveryLocation extends Component
         Geolocation.getCurrentPosition(
             ( position ) =>
             {
-                console.log( position );
+                console.log('position', position );
                 Geocoder.from( position.coords.latitude,  position.coords.longitude )
                     .then( json =>
                     {
-                      
+
                         var addressComponent = json.results[ 0 ].address_components
                         let PostalCode= addressComponent.filter((data)=>{
-                                console.log("data",data)
                             if(data.types[0]=== 'postal_code'){
-                               return data.long_name[0];
+                                return data.short_name[1];
                             }
                         })
                         let AddreesCode= addressComponent.filter((data)=>{
-                            console.log("data",data)
-                        if(data.types[0]=== 'locality'){
+                            console.log("data====",data)
+                        if(data.types[0]=== 'locality' && data.types[0]=== 'landmark'){
                            return data.long_name[0];
                         }
                     })
                         this.setState({
                             visible:false,
-                            deliveryCode:PostalCode[0].long_name,
-                            localArea:AddreesCode[0].long_name
-                         })
+                            deliveryCode:PostalCode[0].short_name,
+                         },()=> {
+                            this.onSubmit();
+                        })
                         // console.log( addressComponent );
-                        console.log( "posatl code",AddreesCode[0].long_name+' '+PostalCode[0].long_name );
+                        console.log( "posatl code",this.state.deliveryCode);
                     } )
                     .catch( error => console.warn( error ) );
             },
@@ -162,7 +174,7 @@ class AddDeliveryLocation extends Component
                                 this.setState( { visible: false } )
                                 console.log( "errr", err );
                             } )
-                  
+
 
                 }
                 else
@@ -229,10 +241,10 @@ class AddDeliveryLocation extends Component
                             </View>
                             <View >
                                 <Input
-                                   
+
                                     title={ "Add Your Delivery Location" }
                                     value={ this.state.deliveryCode }
-                                    maxLength={6}
+                                    maxLength={100}
                                     keyboardType={"decimal-pad"}
                                     onChangeText={ ( text ) =>
                                     {
@@ -252,6 +264,9 @@ class AddDeliveryLocation extends Component
                                             style={ styles.iconStyle }
                                             source={ require( '../../../assets/current.png' ) } />
                                         <Text style={ styles.regularText }>Current Location Using GPS</Text>
+
+
+                                        {/*Current Location Using GPS*/}
                                     </View>
                                 </TouchableOpacity>
 

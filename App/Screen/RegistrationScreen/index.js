@@ -45,18 +45,18 @@ class RegistrationScreen extends Component
     {
         let reg = ( /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/ );
         let pass = ( /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,20})/ )
-       
-        
+
+
         if(this.state.firstName === '' || this.state.firstName === null)
         {
             ToastMessage('error','Enter First Name','Please Check')
         }
        else if ( this.state.username === '' || this.state.username === null )
-        { 
+        {
             ToastMessage('error','Enter User Name','Please Check')
         }
         else if ( this.state.email === '' || this.state.email === null )
-        { 
+        {
             ToastMessage('error','Enter Email Address','Please Check')
         }
         else if ( reg.test( this.state.email ) === false )
@@ -64,7 +64,7 @@ class RegistrationScreen extends Component
             //email is not correcct
             ToastMessage('error','Enter Valid Email','Please Check')
         }
-        else if ( this.state.phone == "" || this.state.phone === null ) { 
+        else if ( this.state.phone == "" || this.state.phone === null ) {
             ToastMessage('error','Enter Phone Number','Please Check')
         }
         else if ( this.state.password == "" || this.state.password === null ) {
@@ -97,7 +97,7 @@ class RegistrationScreen extends Component
             // setTimeout(()=>{
 
             // setInterval(()=>{
-           
+
             //     if(this.props.registerData.status === true)
             //     { this.setState({visible:false})
             //     this.props.navigation.dispatch(
@@ -129,6 +129,7 @@ class RegistrationScreen extends Component
         }
         Apis.registrationCall(req)
         .then((res)=>{
+            console.log("responceSignUp", res);
           return JSON.stringify(res);
       })
       .then((responce)=>{
@@ -156,7 +157,7 @@ class RegistrationScreen extends Component
                   payload:JSON.parse(responce).data
               });
           }
-         
+
       })
       .catch((error)=>{
           console.log("====Registration===Error=== ", error)
@@ -164,25 +165,25 @@ class RegistrationScreen extends Component
               type:REGISTER_EROOR,
               payload:error
           });
-      })   
-  
+      })
+
     }
 
     registerWithOTP=()=>{
         let reg = ( /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/ );
         let pass = ( /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,20})/ )
-       
-        
+
+        this.setState({visible: false})
         if(this.state.firstName === '' || this.state.firstName === null)
         {
             ToastMessage('error','Enter First Name','Please Check')
         }
        else if ( this.state.username === '' || this.state.username === null )
-        { 
+        {
             ToastMessage('error','Enter User Name','Please Check')
         }
         else if ( this.state.email === '' || this.state.email === null )
-        { 
+        {
             ToastMessage('error','Enter Email Address','Please Check')
         }
         else if ( reg.test( this.state.email ) === false )
@@ -190,25 +191,27 @@ class RegistrationScreen extends Component
             //email is not correcct
             ToastMessage('error','Enter Valid Email','Please Check')
         }
-        else if ( this.state.phone == "" || this.state.phone === null ) { 
+        else if ( this.state.phone == "" || this.state.phone === null ) {
             ToastMessage('error','Enter Phone Number','Please Check')
         }
         else{
             let req = {
                 "firstname": this.state.firstName,
                 "username":this.state.username,
-                "phone":this.state.phone, 
+                "phone":this.state.phone,
                 "email":this.state.email,
-               
+
             }
             Apis.registerWithOtpCall(req)
             .then((res)=>{
+                console.log("responceRegister", res);
               return JSON.stringify(res);
           })
           .then((responce)=>{
             let data = JSON.parse(responce).data;
+              this.setState({visible: false})
               if(JSON.parse(responce).data.status == true){
-               
+
                   console.log("====== Registration Responce ====== >  ", responce);
             //   this.props.dispatch({
             //       type:REGISTER_SUCESS,
@@ -222,7 +225,7 @@ class RegistrationScreen extends Component
                     "username":this.state.username,
                     "phone":this.state.phone,
                     "email":this.state.email,
-                   
+
                 },
               url:REGISTER_OTP_URL,
               type:"register",
@@ -237,7 +240,7 @@ class RegistrationScreen extends Component
                 //       payload:JSON.parse(responce).data
                 //   });
               }
-             
+
           })
           .catch((error)=>{
             this.setState({visible:false})
@@ -246,7 +249,7 @@ class RegistrationScreen extends Component
             //       type:REGISTER_EROOR,
             //       payload:error
             //   });
-          })   
+          })
         }
     }
 
@@ -262,7 +265,7 @@ class RegistrationScreen extends Component
                 <Toast  />
                 <ProgressLoader
                 visible={this.state.visible}
-                isModal={true} 
+                isModal={true}
                 isHUD={true}
                 hudColor={White}
                 color={Light_Green} />
@@ -273,7 +276,7 @@ class RegistrationScreen extends Component
 
                             </View>
                             <View style={ { marginVertical: 10 } }>
-                         
+
                                 <Text style={ styles.titleText } >Sign Up</Text>
                                 <Text style={ styles.regularText } >Enter Your Credentials to Continue</Text>
                             </View>
@@ -288,7 +291,7 @@ class RegistrationScreen extends Component
                                             firstName: text
                                         } )
                                     } }
-                                    secureTextEntry={ false }                                 
+                                    secureTextEntry={ false }
                                     placeholder={ "xyz" }
                                 />
                                 <Input
@@ -396,7 +399,7 @@ class RegistrationScreen extends Component
                                     placeholder={ "**********" }
                                 />
                                 <FilledButton
-                                    onPress={ () => { 
+                                    onPress={ () => {
                                       this.registerWithOTP()
                                     } }
                                     title={ "Sign Up with OTP" } />

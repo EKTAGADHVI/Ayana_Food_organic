@@ -4,8 +4,6 @@ import { ADD_BLOG_COMMENT_URL, BANNERS_URL, BEST_OFFERS_URL, BLOGS_URL, Categoer
 import instance from './index'
 export default class Apis
 {
-    
-
     static  loginCall ( request )
     {
         console.log("Request",request)
@@ -30,8 +28,8 @@ export default class Apis
         } );
 
 
-    }  
-    
+    }
+
     static getProductByCategoryId ( request )
     {
         console.log("Request data",request )
@@ -75,7 +73,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
     static productSearch ( request )
     {
         return instance.post( PRODUCT_SEARCH_URL, request, {
@@ -83,7 +81,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
     static logout ( request )
     {
         return instance.post( LOGOUT_URL, request, {
@@ -91,7 +89,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
     static getBestOfferCall ( request )
     {
         return instance.get( BEST_OFFERS_URL, request, {
@@ -99,7 +97,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
 
     static getBlogCall ( request )
     {
@@ -108,7 +106,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
 
     static productFilterCall ( request )
     {
@@ -118,7 +116,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
     static bannersCall ( request )
     {
         console.log("Request",request)
@@ -127,7 +125,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
     static videosCall ( request )
     {
         console.log("Request",request)
@@ -136,7 +134,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
     static helpCall ( request )
     {
         console.log("Request",request)
@@ -145,7 +143,7 @@ export default class Apis
         } );
 
 
-    }  
+    }
 
 
     static getProfileCall ( request )
@@ -155,7 +153,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
 
     static searchBlogCall ( request )
     {
@@ -164,15 +162,15 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
     static updateProfileCall ( request )
     {
-        console.log("Request",request)
+        console.log("Request_Update",request)
         return instance.post(UPDATE_PROFILE_URl, request, {
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
     static getOrderCall ( request )
     {
         console.log("Request",request)
@@ -180,7 +178,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
     static createOrderCall ( request )
     {
         console.log("Request",request)
@@ -188,7 +186,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
     static socialLoginCall ( request )
     {
         console.log("Request",request)
@@ -196,7 +194,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
     static getProductReviewCall ( request )
     {
         console.log("Request",request)
@@ -204,7 +202,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }   
+    }
     static createProductReviewCall ( request )
     {
         console.log("Request",request)
@@ -212,7 +210,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static getFAQCall ( request )
     {
         console.log("Request",request)
@@ -220,7 +218,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static verifyCouponCall ( request )
     {
         console.log("Request",request)
@@ -228,7 +226,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static loginWithOtpCall ( request )
     {
         console.log("Request",request)
@@ -236,7 +234,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static loginOtpVerifyCall ( request )
     {
         console.log("Request",request)
@@ -244,7 +242,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static registerWithOtpCall ( request )
     {
         console.log("Request",request)
@@ -252,7 +250,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static registerOtpVerifyCall ( request )
     {
         console.log("Request",request)
@@ -260,7 +258,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static forgotOtpCall ( request )
     {
         console.log("Request",request)
@@ -268,7 +266,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static forgotOtpVerifyCall ( request )
     {
         console.log("Request",request)
@@ -276,7 +274,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static forgotPassCall ( request )
     {
         console.log("Request",request)
@@ -284,7 +282,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static resendforgotCall ( request )
     {
         console.log("Request",request)
@@ -292,7 +290,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static getShippingCall ( request )
     {
         console.log("Request",request)
@@ -300,7 +298,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static getInvoiceCall ( request )
     {
         console.log("Request",request)
@@ -308,7 +306,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static blogCommentCall ( request )
     {
         console.log("Request",request)
@@ -316,7 +314,7 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
     static blogCommentListCall ( request )
     {
         console.log("Request",request)
@@ -324,5 +322,5 @@ export default class Apis
             headers: { "content-type": "application/json" }
         } );
 
-    }  
+    }
 }

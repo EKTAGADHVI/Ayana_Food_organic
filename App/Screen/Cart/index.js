@@ -51,7 +51,7 @@ class Cart extends Component
         await AsyncStorage.getItem( 'AddToCart' )
             .then( ( res ) =>
             {
-                console.log( 'CartItem', res );
+                // console.log( 'CartItem', res );
                 if ( res !== null )
                 {
                     this.setState( {
@@ -88,7 +88,7 @@ class Cart extends Component
             await AsyncStorage.getItem( 'AddToCart' )
                 .then( ( res ) =>
                 {
-                    console.log( 'CartItem', res );
+                    // console.log( 'CartItem', res );
                     if ( res !== null )
                     {
                         this.setState( {
@@ -177,7 +177,7 @@ class Cart extends Component
                     cartRegularPrice: item.regPrice * onIncrement,
                     cartQuentity: parseInt( onIncrement )
                 }
-               
+
                 //   this.setState({checkOutPrice:item.sPrice * onIncrement})
                 return data;
 
@@ -214,13 +214,13 @@ class Cart extends Component
             if ( item.ID === id && index == index2 )
             {
                 let onIncrement = parseInt(value) + 1;
-               
+
                 console.log( "value", item.variation?._price )
                 let data = {
                     ...item,
                     cartPrice: item.sPrice * onIncrement,
                     cartRegularPrice: item.regPrice * onIncrement,
-                    cartQuentity:  onIncrement 
+                    cartQuentity:  onIncrement
                 }
                 // EventRegister.emit( 'Add-to-cart' )
                 //   this.setState({checkOutPrice:item.sPrice * onIncrement})
@@ -284,7 +284,7 @@ class Cart extends Component
                             <View style={ styles.q_Container }>
                                 <Text style={ styles.quentityText }>{ item.cartQuentity }</Text>
                             </View>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                              disabled={ item.cartQuentity <= 24 ? false : true }
                             style={ styles.btnStyle } onPress={ () =>
                             {

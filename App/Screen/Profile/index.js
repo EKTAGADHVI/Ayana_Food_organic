@@ -29,10 +29,10 @@ class Profile extends Component
         Alert.alert(
             "Ayana Food & Organic",
             'Are you sure you want to Logout?',
-            [   
+            [
                 {
                     text: 'Yes', onPress: async () => {
-                    
+
                             // setVisible(false)
                             this.props.logout();
                             await AsyncStorage.removeItem('UserData')
@@ -43,7 +43,7 @@ class Profile extends Component
                                 AsyncStorage.removeItem("AddToCart")
                                 .then(()=>{})
                                 .catch((err)=>{})
-                               
+
                                 console.log("Data Removed")
                               setTimeout(()=>{
                                this.props.navigation.dispatch(
@@ -59,7 +59,7 @@ class Profile extends Component
                             .catch((error)=>{
                                 console.log("Data Not Removed")
                             })}
-                    
+
                 },
                 {
                     text: 'No',
@@ -96,7 +96,7 @@ class Profile extends Component
                 if ( state.isConnected == true )
                 {
                   this.setState({isInternet:true,})
-                 
+
                 }
                 else
                 {
@@ -106,21 +106,23 @@ class Profile extends Component
     }
 
     // profileEvent=EventRegister.addEventListener('profile-call', this.profileAPICall)
-    async componentDidMount ()
-    {
-        await AsyncStorage.getItem( 'UserData' )
+    componentDidMount ()
+      {
+         AsyncStorage.getItem( 'UserData' )
             .then( ( res ) =>
             {
+                console.log("RESPONSE==",res);
 
                 let dd = JSON.parse( res ).data;
                 console.log( "UserRes", dd[ 0 ].ID )
                 if ( res !== null )
                 {
+
                     this.setState( { userData: JSON.parse( res ).data } )
                     this.profileAPICall(dd[ 0 ].ID)
                     // // this.props.profileCall( {
                     // //     "user_id":"122"
-                    // // } ) 
+                    // // } )
                 }
                 else
                 {
@@ -147,7 +149,7 @@ class Profile extends Component
                         type:GET_PROFILE_SUCESS,
                         payload:JSON.parse(responce).data
                     });
-                   
+
                     this.setState({userData:data?.data})
                 })
                 .catch((error)=>{
@@ -228,7 +230,7 @@ class Profile extends Component
                                    onPress={ () => {this.logout() } }
                                    name={ "Logout" }
                                    leftIcon={ require( '../../../assets/logout.png') } />
-                                  
+
                            </View> :
                            <View style={ { justifyContent: 'center', alignItems: 'center', height: screen_height / 1.5 } }>
                                <Image
@@ -271,7 +273,7 @@ function mapStateToProps ( state, ownProps )
 const mapDispatchToProps = dispatch =>
 {
     return {
-        //getPeople,    
+        //getPeople,
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         profileCall: ( request ) => dispatch( actions.getProfileAction( request ) ),
         logout:(request)=>dispatch(actions.logoutAction()),

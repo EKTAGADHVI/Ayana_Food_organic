@@ -31,7 +31,7 @@ class MyDetails extends Component
             isEditable: this.props.route.params.editable,
             visible: true
         }
-        this.profileAPICall()
+
     }
     profileAPICall = () =>
     {
@@ -45,7 +45,7 @@ class MyDetails extends Component
             .then( ( responce ) =>
             {
 
-                console.log( "Response Fetch call", responce )
+                console.log( "Response Fetch call", JSON.parse( responce ).data )
                 if ( JSON.parse( responce ).data.status == true )
                 {
                     console.log( "======GET_PROFILE_LOADING_sucess===== >  ", JSON.parse( responce ).data );
@@ -115,7 +115,7 @@ class MyDetails extends Component
 
     UpdateProfile = () =>
     {
-
+        console.log("update profile")
         if ( this.state.email == null || this.state.email == "" )
         {
 
@@ -135,7 +135,8 @@ class MyDetails extends Component
         {
             this.setState( { visible: true } )
             let request = {
-                "userId": this.props.route.params.data[ 0 ].ID,
+                // "userId": this.props.route.params.data[ 0 ].ID,
+                "userId": this.state.id,
                 "userName": this.state.userName,
                 "email": this.state.email,
                 "phone": this.state.phone,
@@ -152,7 +153,7 @@ class MyDetails extends Component
                 } )
                 .then( ( responce ) =>
                 {
-                    console.log( "Response Fetch call", responce )
+                    console.log( "Response Fetch call Update Profile", responce )
                     if ( JSON.parse( responce ).data.status == true )
                     {
                         console.log( "======GET_PROFILE_LOADING_sucess===== >  ", JSON.parse( responce ).data );
@@ -166,9 +167,10 @@ class MyDetails extends Component
                 } )
         }
     }
-    componentDidMount ()
+    async componentDidMount ()
     {
-        AsyncStorage.getItem( 'PostalCode' )
+        this.profileAPICall();
+        await AsyncStorage.getItem( 'PostalCode' )
             .then( ( res ) =>
             {
                 console.log( "ressfiusgdfg", res )
@@ -194,7 +196,7 @@ class MyDetails extends Component
             phone: this.props.route.params.data[ 0 ].phone
         } )
         // this.props.profileCall({
-        //    "request":this.state.us   
+        //    "request":this.state.us
         // })
     }
     render ()
@@ -296,14 +298,14 @@ class MyDetails extends Component
                                                     } }
                                                     style={ { width: screen_width / 2.5, alignSelf: "center",
                                                 opacity:
-                                                 
+
                                                 (isStreetAddress ===true)&&
                                                 (isPincode ===true)&&
                                                 (isCity===true) &&
                                                 (isState ===true) &&
                                                 (isPhoneNo ===true)&&
                                                 (isEmail ===true) ? 1 :0.5 } }
-                                                    textStyle={ { paddingVertical: 5, fontSize: 14 } } 
+                                                    textStyle={ { paddingVertical: 5, fontSize: 14 } }
                                                     disabled={
                                                         (isStreetAddress ===true)&&
                                                         (isPincode ===true)&&
@@ -311,7 +313,7 @@ class MyDetails extends Component
                                                         (isState ===true) &&
                                                         (isPhoneNo ===true)&&
                                                         (isEmail ===true) ?false :true
-                        
+
                                                     }/>
                                                 :
                                                 null
@@ -341,7 +343,7 @@ function mapStateToProps ( state, ownProps )
 const mapDispatchToProps = dispatch =>
 {
     return {
-        //getPeople,    
+        //getPeople,
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         profileCall: ( request ) => dispatch( actions.getProfileAction( request ) ),
         dispatch,

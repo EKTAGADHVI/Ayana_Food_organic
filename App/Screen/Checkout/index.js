@@ -47,13 +47,14 @@ class CheckOut extends Component
             // is
         }
     }
-    profileAPICall =() =>{
+    profileAPICall =() =>
+    {
          AsyncStorage.getItem( 'UserData' )
         .then( ( res ) =>
         {
 
             let dd = JSON.parse( res ).data;
-            
+
             console.log( "UserRes", dd[ 0 ].ID )
             if ( res !== null )
             {
@@ -65,7 +66,7 @@ class CheckOut extends Component
                     return JSON.stringify(res);
                 })
                 .then((responce)=>{
-        
+
                     console.log("Response Fetch call", responce)
                     if(JSON.parse(responce).data.status == true){
                         this.setState({visible:false})
@@ -118,16 +119,16 @@ class CheckOut extends Component
                 this.setState({visible:false})
                 this.setState( { userData: [] } )
             }
-        } ).catch( ( error ) => { 
+        } ).catch( ( error ) => {
             this.setState({visible:false})
         } )
 
-     
+
     }
     UpdateProfile = () =>
     {
 
-       
+
             this.setState( { visible: true } )
             let request = {
                 "userId": this.state.userID,
@@ -159,7 +160,7 @@ class CheckOut extends Component
                 {
                     this.setState( { visible: false } )
                 } )
-        
+
     }
 
    async componentDidMount(){
@@ -171,10 +172,10 @@ class CheckOut extends Component
             this.setState({pinCode: JSON.parse(res).code})
            }
            else{
-           
+
            }
-            
-        
+
+
         })
         .catch((error)=>{
             console.log("Data Not Removed")
@@ -206,7 +207,7 @@ class CheckOut extends Component
                 ToastMessage('error','Enter Billing Email' ,'Please Check')
             }
             else{
-              
+
                 let billingData={
                     fName: this.state.fName,
                     lName: this.state.lName,
@@ -218,21 +219,21 @@ class CheckOut extends Component
                     billingPhone: this.state.billingPhone,
                     billingEmail: this.state.billingEmail,
                 };
-                
+
                 setTimeout(()=>{
                     this.UpdateProfile()
                 },1000)
                   setTimeout(()=>{
                     this.setState({visible:false})
-                    
+
                     this.props.navigation.navigate('OrderPreview',{
                         totalPrice:this.state.totalPrice,
                         data:this.state.CheckOutData,
                         billingData:billingData
                     })
-                  
+
                   },1500)
-              
+
             }
     }
     validate = (text) => {
@@ -260,7 +261,7 @@ class CheckOut extends Component
         let isBillingEmail=false;
         let isValidEmail=false;
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-         
+
 
         if(this.state.fName === ""){
             isFname=false
@@ -314,7 +315,7 @@ class CheckOut extends Component
             // this.setState({viewBtn:true})
             // ToastMessage('error','Enter Billing Email' ,'Please Check')
         }
-         
+
         else{
             isBillingEmail=true;
         }
@@ -324,25 +325,25 @@ class CheckOut extends Component
      else{
          isValidEmail=true
      }
-       
+
 
         return (
             <View style={ styles.mainLayout }>
-               
+
                    <Toast  />
                 <SafeAreaView>
-             
+
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? "padding" :"height"} keyboardVerticalOffset={20}>
                     <ScrollView showsVerticalScrollIndicator={false} automaticallyAdjustContentInsets={true} >
 
-                     
+
                     <ProgressLoader
                     visible={ this.state.visible }
                     isModal={ true }
                     isHUD={ true }
                     hudColor={ White }
                     color={ Light_Green } />
-                     
+
                       {this.state.visible == false ?
                       <>
                         <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ "Checkout" } />
@@ -353,7 +354,7 @@ class CheckOut extends Component
                             </TouchableOpacity>
                         </View>
                         <View>
-                           
+
                             <View style={ [ styles.rowView, { width: screen_width - 30 } ] }>
                                 <Input
                                     textStyle={{color:Black}}
@@ -368,9 +369,9 @@ class CheckOut extends Component
                                         }
                                         else{
 
-                                            this.setState({viewBtn:true}) 
+                                            this.setState({viewBtn:true})
                                         }
-                                       
+
                                     }}
                                     onChangeText={ ( text ) =>
                                     {
@@ -618,7 +619,7 @@ class CheckOut extends Component
  </View>
                       </>
                       :null}
-                      
+
                     </ScrollView>
                     </KeyboardAvoidingView>
                 </SafeAreaView>

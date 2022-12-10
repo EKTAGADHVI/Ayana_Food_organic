@@ -2,7 +2,7 @@ import Apis from "../../RestApi/Apis";
 import { GET_RECENT_PRODUCT_ERROR, GET_RECENT_PRODUCT_LOADING, GET_RECENT_PRODUCT_SUCESS } from "../actionTypes";
 
 export function getRecentProductAction (request){
-    return dispatch =>{        
+    return dispatch =>{
         dispatch({
             type: GET_RECENT_PRODUCT_LOADING
         });
@@ -12,9 +12,9 @@ export function getRecentProductAction (request){
         return JSON.stringify(res);
     })
     .then((responce)=>{
-        
+
         if(JSON.parse(responce).data.status == true){
-            console.log("====== GET_RECENT_PRODUCT_LOADING ====== >  ", JSON.parse(responce).data);
+            // console.log("====== GET_RECENT_PRODUCT_LOADING ====== >  ", JSON.parse(responce).data);
             dispatch({
                 type:GET_RECENT_PRODUCT_SUCESS,
                 payload:JSON.parse(responce).data
@@ -27,7 +27,7 @@ export function getRecentProductAction (request){
                 payload:JSON.parse(responce).data
             });
         }
-       
+
     })
     .catch((error)=>{
         dispatch({
@@ -35,8 +35,8 @@ export function getRecentProductAction (request){
             payload:error
         });
         console.log("==== GET_RECENT_PRODUCT_ERROR===Error=== ", error)
-    })   
+    })
 
- 
+
     }
 }

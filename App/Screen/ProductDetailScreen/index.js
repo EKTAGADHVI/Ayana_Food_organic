@@ -15,6 +15,7 @@ import { screen_height, screen_width } from '../../Utils/constant';
 import { POPINS_REGULAR, POPINS_SEMI_BOLD } from '../../Utils/fonts';
 import styles from './styles';
 import ProgressLoader from 'rn-progress-loader';
+import {clear} from "react-native/Libraries/LogBox/Data/LogBoxData";
 let removeString = "<p></p>";
 const startImage = require( '../../../assets/star.png' )
 class ProductDetailScreen extends Component
@@ -163,6 +164,7 @@ class ProductDetailScreen extends Component
     }
     async componentDidMount ()
     {
+        console.log("datas==",  JSON.stringify(this.props.route.params?.data,'',4));
         let ratings = this.props.route.params?.data?.rating;
         ratings.map( ( item ) =>
         {
@@ -204,7 +206,7 @@ class ProductDetailScreen extends Component
                     this.profileAPICall( dd[ 0 ].ID )
                     // // this.props.profileCall( {
                     // //     "user_id":"122"
-                    // // } ) 
+                    // // } )
                 }
                 else
                 {
@@ -244,12 +246,14 @@ class ProductDetailScreen extends Component
     }
     addToCart = async ( item ) =>
     {
+        console.log( "Ship item", item )
 
         try
         {
             let added = false;
             let previousData = null;
             let alreadyAdded = false;
+            clear();
             await AsyncStorage.getItem( 'AddToCart' )
                 .then( async ( res ) =>
                 {
@@ -565,13 +569,13 @@ class ProductDetailScreen extends Component
     removeTags = ( str ) =>
     {
 
-        if ( ( str === null ) || ( str === '' ) )
+        if ( ( str === null ) || ( str === '' ) || ( str === undefined )  )
             return '';
         else
             str = str.toString();
 
-        // Regular expression to identify HTML tags in 
-        // the input string. Replacing the identified 
+        // Regular expression to identify HTML tags in
+        // the input string. Replacing the identified
         // HTML tag with a null string.
 
         let newstr = str.replace( /(<([^>]+)>)/ig, '' );
@@ -806,7 +810,7 @@ class ProductDetailScreen extends Component
 
                                     <View style={ { padding: 8 } }>
                                         <View style={ { flexDirection: 'row', alignItems: "center" } }>
-                                            <Text style={ [ styles.quentityText, { textAlign: 'right', paddingVertical: 2.5, color: Text_Gray, fontFamily: POPINS_REGULAR, textDecorationLine: 'line-through', paddingVertical: 0, fontSize: 12 } ] }>Rs. { this.state.regPrice * this.state.quentity }.00</Text>
+                                            <Text style={ [ styles.quentityText, { textAlign: 'right', paddingVertical: 2.5, color: Text_Gray, fontFamily: POPINS_REGULAR, textDecorationLine: 'line-through', fontSize: 12 } ] }>Rs. { this.state.regPrice * this.state.quentity }.00</Text>
                                             <Text style={ [ styles.quentityText, { textAlign: 'right', fontSize: 16, paddingHorizontal: 5 } ] }>Rs. { this.state.price * this.state.quentity }.00</Text>
                                         </View>
                                         <Text style={ [ styles.quentityText, { color: Light_Green, textAlign: 'right' } ] }>Avaibility : <Text style={ [ styles.quentityText, {
@@ -1024,10 +1028,9 @@ class ProductDetailScreen extends Component
 
                                     <View style={ styles.rowView }>
                                         <Text style={ [ styles.quentityText, , { paddingHorizontal: 6 } ] }>Term & Condition</Text>
-                                        <TouchableOpacity onPress={ () =>
-                                        {
-                                            this.setState( { isTerm: !this.state.isTerm } )
-                                        } }>{
+                                        <TouchableOpacity onPress={ () => {
+                                            this.setState( { isTerm: !this.state.isTerm } )}}>
+                                            {
                                                 this.state.isTerm === true ? <Image style={ styles.iconStyle2 } source={ require( '../../../assets/down.png' ) } />
                                                     : <Image style={ styles.iconStyle2 } source={ require( '../../../assets/right.png' ) } />
                                             }
@@ -1037,9 +1040,9 @@ class ProductDetailScreen extends Component
 
                                     </View>
                                     {
-                                        this.state.isTerm === true ?
+                                       ( this.state.isTerm === true && this.props?.product?.data?.[0]?.seller_terms?.refund_policy) ?
                                             <View style={ { padding: 10 } }>
-                                                <Text>{ this.removeTags( this.props.product.data[ 0 ].seller_terms.refund_policy ) }</Text>
+                                                <Text>{ this.removeTags( this.props?.product?.data?.[0]?.seller_terms?.refund_policy ?? "") }</Text>
                                             </View> : null
                                     }
 
@@ -1244,7 +1247,7 @@ function mapStateToProps ( state, ownProps )
 const mapDispatchToProps = dispatch =>
 {
     return {
-        //getPeople,    
+        //getPeople,
         // login: (request) => dispatch(actions.login.apiActionCreator(request)),
         productById: ( request ) => dispatch( actions.getProductByIdAction( request ) ),
 

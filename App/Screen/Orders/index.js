@@ -39,7 +39,7 @@ class Orders extends Component
             orders: [],
             userData: [],
             visible: false,
-            shipToken:""
+            shipToken:"",
         };
         let data = {
             "email": "sales@ayanafoodorganic.com",
@@ -62,92 +62,330 @@ class Orders extends Component
     }
 
 
-    reOrder = async ( order ) =>
+    reOrder = async ( orderDeatil ) =>
     {
-        this.setState( { visible: true } )
-        let previousData = [];
-        let alreadyAdded = false;
+        // new code
+        console.log( "Ship order", orderDeatil )
         let added = false;
+        let previousData = null;
+        let alreadyAdded = false;
         await AsyncStorage.getItem( 'AddToCart' )
-            .then( ( res ) =>
-            {
-                console.log( "DashBoard Cart", res )
-                let cart = JSON.parse( res );
-                previousData = JSON.parse( res );
-                if ( order?.length > 0 )
-                {
-                    let orderData = [];
-    
-    
-                    // let addFlag=false;
-                    order?.map( ( item, index ) =>
-                    {
-                        console.log( "map Called" )
-                        Apis.getProductByCategoryId( {
-                            "product_id": item._product_id
-                        } )
-                            .then( ( res ) =>
-                            {
-                                return JSON.stringify( res )
-                            } )
-                            .then( ( response ) =>
-                            {
-    
-                                if ( JSON.parse( response ).data.status == true )
-                                {
-                                    console.log( "Response", response )
-                                    let data = JSON.parse( response )?.data?.data
-                                    let newItem = {
-                                        ...data[ 0 ],
-                                        selectedVariation: item?.pa_weight,
-                                        cartPrice: item?._line_total,
-                                        cartRegularPrice: item?._line_total,
-                                        cartQuentity: item?._qty,
-                                        regPrice: item?._line_total / item?._qty,
-                                        sPrice: item?._line_total / item?._qty,
-                                        selectedVarinatID: item?._vendor_id
-                                    }
-                                    previousData.push( newItem )
-                                    this.setState( { visible: true } )
-    
-                                    this.addToCart( previousData )
-                                }
-                                else
-                                {
-                                    this.setState( { visible: false } )
-                                    alert( "Product can not re order" );
-                                }
-    
-                            } )
-                            .catch( ( error ) =>
-                            {
-                                this.setState( { visible: false } )
-                                alert( "Product can not re order" );
-                                console.log( "error", error )
-                            } )
-    
-    
-    
-    
-    
-                    } );
-    
-    
-                }
-               
-            } )
-            .catch( ( error ) =>
-            {
-                console.log( "Error", error )
-                // this.setState( { cartData: [] } )
-            } )
+            .then( async ( res ) => {
+                let cart = JSON.parse(res);
+                previousData = JSON.parse(res);
 
-        if ( added === false )
-        {
-           
-           
-               
+        if ( orderDeatil.length > 0 ){
+            orderDeatil.map(async (item, index) => {
+                let newItem = {
+                    ...orderDeatil[ index ],
+                    post_title:item?.item_name.split("-")[0],
+                    selectedVariation: item?.pa_weight,
+                    cartPrice: item?._line_total,
+                    cartRegularPrice: item?._line_total,
+                    cartQuentity: item?._qty,
+                    regPrice: item?._line_total / item?._qty,
+                    sPrice: item?._line_total / item?._qty,
+                    selectedVarinatID: item?._vendor_id
+                }
+                previousData.push( newItem );
+                console.log("previousData==",previousData);
+
+            })
+            if(previousData !== null){
+                // this.props.navigation.navigate( 'Home' );
+                await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
+                    .then( ( res ) =>
+                    {
+                        EventRegister.emit( 'Add-to-cart' )
+                        EventRegister.emit('count')
+                        setTimeout( () =>
+                        {
+                            this.props.navigation.navigate( 'Home',{ screen: 'Cart'} );
+                        }, 1000 )
+                        console.log( "Sucessfully Added" );
+                    } )
+                    .catch( ( error ) =>
+                    {
+                        console.log( "error", error );
+                    } )
+
+            }
+
         }
+            });
+
+                //new code
+        // try
+        // {
+        //     let added = false;
+        //     let previousData = null;
+        //     let alreadyAdded = false;
+        //     await AsyncStorage.getItem( 'AddToCart' )
+        //         .then( async ( res ) =>
+        //         {
+        //             console.log( "DashBoard Cart", res )
+        //             let cart = JSON.parse( res );
+        //             previousData = JSON.parse( res );
+        //             if ( await res !== null && await cart.length > 0 )
+        //             {
+        //
+        //                 // this.setState( { cartItem: cart.length } )
+        //                 alreadyAdded = await cart.filter( async ( data ) =>
+        //                 {
+        //
+        //                     if ( await data.ID == await item.ID )
+        //                     {
+        //                         if ( await data.selectedVariation == await this.state.selectedVarinat )
+        //                         {
+        //                             added = true;
+        //                             // this.setState( { quentity: data.cartQuentity + 1 } )
+        //
+        //                         }
+        //                         else
+        //                         {
+        //                             added = false
+        //                         }
+        //                         return true;
+        //                     }
+        //                     else;
+        //                     {
+        //                         added = false;
+        //                         return false;
+        //                     }
+        //                 } );
+        //             }
+        //             else
+        //             {
+        //                 added = false;
+        //                 alreadyAdded = false;
+        //             }
+        //         } )
+        //         .catch( ( error ) =>
+        //         {
+        //             console.log( "Error", error )
+        //             // this.setState( { cartData: [] } )
+        //         } )
+        //
+        //     console.log( "Alreday Added", added )
+        //     if ( await added === false )
+        //     {
+        //         let cartData = [];
+        //
+        //         // previousData=[];
+        //         let finalItem = {
+        //             ...item,
+        //             selectedVariation: this.state.selectedVarinat,
+        //             cartPrice: this.state.price * this.state.quentity,
+        //             cartRegularPrice: this.state.cartRegularPrice,
+        //             cartQuentity: this.state.quentity,
+        //             regPrice: this.state.regPrice,
+        //             sPrice: this.state.sPrice,
+        //             selectedVarinatID: this.state.selectedVarinatID
+        //         };
+        //         if ( await previousData != null && await previousData.length > 0 )
+        //         {
+        //             previousData.push( finalItem );
+        //         } else
+        //         {
+        //             previousData = [];
+        //             previousData.push( finalItem );
+        //         }
+        //
+        //         await AsyncStorage.setItem( 'AddToCart', JSON.stringify( previousData ) )
+        //             .then( ( res ) =>
+        //             {
+        //                 EventRegister.emit( 'Add-to-cart' )
+        //                 EventRegister.emit('count')
+        //                 setTimeout( () =>
+        //                 {
+        //                     this.props.navigation.navigate( 'Cart' );
+        //                 }, 1000 )
+        //                 console.log( "Sucessfully Added" );
+        //             } )
+        //             .catch( ( error ) =>
+        //             {
+        //                 console.log( "error", error );
+        //             } )
+        //     }
+        //     else
+        //     {
+        //         // let finalItem ={
+        //         //     ...item,
+        //         //     selectedVariation:this.state.selectedVarinat,
+        //         //     cartPrice:this.state.price * this.state.quentity + 1,
+        //         //     cartRegularPrice:this.state.cartRegularPrice,
+        //         //     cartQuentity:this.state.quentity,
+        //         //     regPrice:this.state.regPrice,
+        //         //     sPrice:this.state.sPrice
+        //         // };
+        //         // previousData.push(finalItem );
+        //         let UpdatedData = previousData.filter( ( data ) =>
+        //         {
+        //             if ( data.ID === item.ID )
+        //             {
+        //                 if ( data.selectedVariation !== this.state.selectedVarinat )
+        //                 {
+        //                     // let finalItem ={
+        //                     //     ...data,
+        //                     //     selectedVariation:this.state.selectedVarinat,
+        //                     //     cartPrice:this.state.price * this.state.quentity + 1,
+        //                     //     cartRegularPrice:this.state.cartRegularPrice,
+        //                     //     cartQuentity:this.state.quentity,
+        //                     //     regPrice:this.state.regPrice,
+        //                     //     sPrice:this.state.sPrice
+        //                     // };
+        //                     return data
+        //                 }
+        //             }
+        //         } );
+        //         let oldData = previousData.filter( ( data ) =>
+        //         {
+        //             if ( data.ID !== item.ID )
+        //             {
+        //
+        //                 return data
+        //             }
+        //             else
+        //             {
+        //                 if ( data.ID == item.ID )
+        //                 {
+        //                     if ( data.selectedVariation != this.state.selectedVarinat )
+        //                     {
+        //                         // let finalItem ={
+        //                         //     ...data,
+        //                         //     selectedVariation:this.state.selectedVarinat,
+        //                         //     cartPrice:this.state.price * this.state.quentity + 1,
+        //                         //     cartRegularPrice:this.state.cartRegularPrice,
+        //                         //     cartQuentity:this.state.quentity,
+        //                         //     regPrice:this.state.regPrice,
+        //                         //     sPrice:this.state.sPrice
+        //                         // };
+        //                         return data
+        //
+        //                     }
+        //
+        //                 }
+        //             }
+        //
+        //         } );
+        //         console.log( "DAATTATATTATA", UpdatedData )
+        //         this.setState( { quentity: this.state.quentity + 1 } )
+        //         if ( oldData !== null )
+        //         {
+        //             oldData.push( {
+        //                 ...item,
+        //                 selectedVariation: this.state.selectedVarinat,
+        //                 cartPrice: this.state.price * this.state.quentity,
+        //                 cartRegularPrice: this.state.cartRegularPrice,
+        //                 cartQuentity: this.state.quentity,
+        //                 regPrice: this.state.regPrice,
+        //                 sPrice: this.state.sPrice,
+        //                 selectedVarinatID: this.state.selectedVarinatID
+        //
+        //             } )
+        //         }
+        //         else
+        //         {
+        //             oldData = []
+        //         }
+        //         await AsyncStorage.setItem( 'AddToCart', JSON.stringify( oldData ) )
+        //             .then( ( res ) =>
+        //             {
+        //
+        //                 EventRegister.emit( 'Add-to-cart' )
+        //                 EventRegister.emit('count')
+        //                 this.props.navigation.navigate( 'Cart' );
+        //                 console.log( "Sucessfully Added" );
+        //             } )
+        //             .catch( ( error ) =>
+        //             {
+        //                 console.log( "error", error );
+        //             } )
+        //         // alert( "Item Already added" )
+        //     }
+        // }
+        // catch ( error )
+        // {
+        //
+        // }
+
+        // this.setState( { visible: true } )
+        // let previousData = [];
+        // let alreadyAdded = false;
+        // let added = false;
+        // await AsyncStorage.getItem( 'AddToCart' )
+        //     .then( ( res ) =>
+        //     {
+        //         console.log( "DashBoard Cart", res )
+        //         let cart = JSON.parse( res );
+        //         previousData = JSON.parse( res );
+        //         if ( order?.length > 0 )
+        //         {
+        //             let orderData = [];
+        //
+        //
+        //             // let addFlag=false;
+        //             order?.map( ( item, index ) =>
+        //             {
+        //                 Apis.getProductByCategoryId( {
+        //                     "product_id": item._product_id
+        //                 } )
+        //                     .then( ( res ) =>
+        //                     {
+        //                         return JSON.stringify( res )
+        //
+        //                     } )
+        //                     .then( ( response ) =>
+        //                     {
+        //                         console.log( "response", JSON.parse( response ))
+        //
+        //                         if ( JSON.parse( response ).data.status == true )
+        //                         {
+        //                             console.log( "Response", response )
+        //                             let data = JSON.parse( response )?.data?.data
+        //                             let newItem = {
+        //                                 ...data[ 0 ],
+        //                                 selectedVariation: item?.pa_weight,
+        //                                 cartPrice: item?._line_total,
+        //                                 cartRegularPrice: item?._line_total,
+        //                                 cartQuentity: item?._qty,
+        //                                 regPrice: item?._line_total / item?._qty,
+        //                                 sPrice: item?._line_total / item?._qty,
+        //                                 selectedVarinatID: item?._vendor_id
+        //                             }
+        //                             previousData.push( newItem )
+        //                             this.setState( { visible: true } )
+        //
+        //                             this.addToCart( previousData )
+        //                         }
+        //                         else
+        //                         {
+        //                             this.setState( { visible: false } )
+        //                             alert( "Product can not re order" );
+        //                         }
+        //
+        //                     } )
+        //                     .catch( ( error ) =>
+        //                     {
+        //                         this.setState( { visible: false } )
+        //                         alert( "Product can not re order" );
+        //                         console.log( "error", error )
+        //                     } )
+        //
+        //             } );
+        //         }
+        //
+        //     } )
+        //     .catch( ( error ) =>
+        //     {
+        //         console.log( "Error", error )
+        //         // this.setState( { cartData: [] } )
+        //     } )
+        //
+        // if ( added === false )
+        // {
+        //
+        // }
 
 
     }
@@ -234,10 +472,10 @@ class Orders extends Component
          "Content-Type": "application/json"
             }
         };
-        
+
         axios.get(`https://apiv2.shiprocket.in/v1/external/orders/show/212884016`,{ headers: {"Authorization" : `Bearer ${this.state.shipToken}`}}).
         then((res)=>{
-               
+
                 orderStatus = res?.data?.data?.status
                 console.log("Shipping Details",orderStatus);
         }).
@@ -252,7 +490,7 @@ class Orders extends Component
                 <Text style={ [ styles.regularText, , { color: Light_Green, } ] }>Order ID : { item.ID } </Text>
                 <View style={ styles.rowView }>
                     <Text style={ [ styles.smallText, { color: Light_Green } ] }>Status :<Text style={ [ styles.smallText, { color: Text_Gray } ] }> { item?.billing_deatil?._order_status }  |</Text></Text>
-                    
+
                     <Text style={ [ styles.smallText, { color: Text_Gray } ] }>{ moment( item.post_date ).format( "DD/MM/YYYY" ) }</Text>
                 </View>
                 {/* <Text style={ [ styles.smallText, { color: Light_Green } ] }>Shipping Status :<Text style={ [ styles.smallText, { color: Text_Gray } ] }> { orderStatus }  |</Text></Text> */}
@@ -260,6 +498,7 @@ class Orders extends Component
                 <View style={ [ styles.rowView, { marginVertical: 5 } ] }>
                     <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
                     {
+                        console.log("item",item)
                         this.props.navigation.navigate( 'OrderDetails', {
                             data: item
                         } )
@@ -268,7 +507,10 @@ class Orders extends Component
                     </TouchableOpacity>
                     <TouchableOpacity style={ styles.btnStyle } onPress={ () =>
                     {
-                        this.reOrder( item?.order_deatil )
+                        this.reOrder( item.order_deatil )
+                        // this.props.navigation.navigate( 'cart', {
+                        //     data: item?.order_deatil
+                        // } )
                     } }>
                         <Text style={ [ styles.smallText, { color: Light_Green, fontSize: 12 } ] }>Reorder</Text>
                     </TouchableOpacity>
@@ -310,7 +552,7 @@ class Orders extends Component
                            : null
                        }
                     </View>
-                
+
                 </SafeAreaView>
             </View>
         );

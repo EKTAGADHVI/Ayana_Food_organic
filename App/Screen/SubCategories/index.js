@@ -60,10 +60,10 @@ class SubCategories extends Component
                 "category_id":data.category_id
             },
                 title:data.name
-            }) 
+            })
         }
      },500)
-      
+
 
     }
     renderSubCategories = ( item, index ) =>
@@ -71,7 +71,7 @@ class SubCategories extends Component
         return (
             <TouchableOpacity style={ styles.ItemView } onPress={()=>{this.onPreesSubCategoery(item)}}>
                 <View style={ styles.rowView }>
-                    
+
                     <Text style={ styles.regularText }>{item.name}</Text>
                     <Image
                         source={ require( '../../../assets/right.png' ) }
@@ -91,26 +91,26 @@ class SubCategories extends Component
         return (
             <View style={ styles.mainLayout }>
                 <SafeAreaView>
-                  
+
                         <BasicHeader OnBackPress={ () => { this.props.navigation.goBack() } } title={ this.props.route.params.title} />
                         <ProgressLoader
                 visible={this.state.visible}
-                isModal={true} 
+                isModal={true}
                 isHUD={true}
                 hudColor={White}
                 color={Light_Green} />
                        <View style={{height:screen_height* 0.86}}>
                        <FlatList
                        showsVerticalScrollIndicator={false}
-                      
+
                        data={this.state.subCategories}
                        keyExtractor={(item,index)=>item.category_id}
                        renderItem={({item,index})=>this.renderSubCategories(item,index)}/>
                        </View>
-                   
+
                 </SafeAreaView>
              </View>
-          
+
         );
     }
 }

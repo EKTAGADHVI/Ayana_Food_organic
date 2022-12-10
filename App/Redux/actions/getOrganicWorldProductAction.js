@@ -2,7 +2,7 @@ import Apis from "../../RestApi/Apis";
 import { GET_ORGANIC_WORLD_PRODUCT_ERROR, GET_ORGANIC_WORLD_PRODUCT_LOADING, GET_ORGANIC_WORLD_PRODUCT_SUCESS } from "../actionTypes";
 
 export function getOrganicWorldProductAction (request){
-    return dispatch =>{        
+    return dispatch =>{
         dispatch({
             type: GET_ORGANIC_WORLD_PRODUCT_LOADING
         });
@@ -12,9 +12,9 @@ export function getOrganicWorldProductAction (request){
         return JSON.stringify(res);
     })
     .then((responce)=>{
-        
+
         if(JSON.parse(responce).data.status == true){
-            console.log("====== GET_ORGANIC_WORLD_PRODUCT_LOADING ====== >  ", JSON.parse(responce).data);
+            // console.log("====== GET_ORGANIC_WORLD_PRODUCT_LOADING ====== >  ", JSON.parse(responce).data);
             dispatch({
                 type:GET_ORGANIC_WORLD_PRODUCT_SUCESS,
                 payload:JSON.parse(responce).data
@@ -27,7 +27,7 @@ export function getOrganicWorldProductAction (request){
                 payload:JSON.parse(responce).data
             });
         }
-       
+
     })
     .catch((error)=>{
         dispatch({
@@ -35,8 +35,8 @@ export function getOrganicWorldProductAction (request){
             payload:error
         });
         console.log("==== GET_ORGANIC_WORLD_PRODUCT_LOADING ", error)
-    })   
+    })
 
- 
+
     }
 }

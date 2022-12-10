@@ -125,7 +125,7 @@ class Dashboard extends Component
 
         }
 
-      
+
     };
 
     _startAutoPlay = () =>
@@ -288,9 +288,11 @@ class Dashboard extends Component
         this.callApi();
         this.getCategories()
 
-
+        AsyncStorage.getItem( 'UserData' ).then((res)=>{
+            console.log("=========================UserDataResponces=============",res)
+        })
         // this.props.productList();
-       
+
         AsyncStorage.getItem( 'AddToCart' )
             .then( ( res ) =>
             {
@@ -327,12 +329,12 @@ class Dashboard extends Component
                     homeData: this.props.homePageData.data,
                     specialOffers: this.props.featured?.data
                 } );
-    
-    
+
+
             }, 2000 );
 
         //  setTimeout(()=>{
-        //     this.setState( { 
+        //     this.setState( {
         //         homeData:this.props.homePageData.data,
         //     specialOffers:this.props.homePageData?.data?.featured } );
         //   },4000)
@@ -532,8 +534,8 @@ class Dashboard extends Component
         else
             str = str.toString();
 
-        // Regular expression to identify HTML tags in 
-        // the input string. Replacing the identified 
+        // Regular expression to identify HTML tags in
+        // the input string. Replacing the identified
         // HTML tag with a null string.
         return str.replace( /(<([^>]+)>)/ig, '' );
     }
@@ -583,12 +585,12 @@ class Dashboard extends Component
     {
 
         let price = "";
-       
+
         if(data !== undefined){
             let l_data = data.filter((item)=>{
-        
+
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
-            
+
         });
             if ( data?.length > 1 )
         {
@@ -608,12 +610,12 @@ class Dashboard extends Component
             // console.log("L DATA",l_data)
             // price = l_data?.reduce( function ( prev, curr )
             // {
-            
+
             //         return prev?._sale_price < curr?._sale_price ? prev : curr;
-                
-               
+
+
             // } );
-           
+
             // console.log( "MIN", price )
             return price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
@@ -634,9 +636,9 @@ class Dashboard extends Component
         }
 
         }
-       
+
         // console.log("Price",price._sale_price)
-       
+
         // return 50;
     }
 
@@ -644,12 +646,12 @@ class Dashboard extends Component
     {
 
         let price = "";
-       
+
         if(data !== undefined){
             let l_data = data.filter((item)=>{
-        
+
                 return Object.keys(item).indexOf("_sale_price")!= -1 ?item :null
-            
+
         });
             if ( data?.length > 1 )
         {
@@ -669,12 +671,12 @@ class Dashboard extends Component
             // console.log("L DATA",l_data)
             // price = l_data?.reduce( function ( prev, curr )
             // {
-            
+
             //         return prev?._sale_price < curr?._sale_price ? prev : curr;
-                
-               
+
+
             // } );
-           
+
             // console.log( "MIN", price )
             return price;
             // price = data[ 0 ].meta_value + " - " + data[ data.length - 1 ].meta_value
@@ -695,22 +697,22 @@ class Dashboard extends Component
         }
 
         }
-       
+
         // console.log("Price",price._sale_price)
-       
+
         // return 50;
     }
     displayWeight = ( data ) =>
     {
         // console.log( "WEIGHJHGHG",data)
         let price = "";
-    
+
         if(data!== undefined){
             if ( data.length > 1)
         {
             return data[ 0 ].attribute_pa_weight
-           
-           
+
+
             //==== OLD =====//
         //                 price = data.reduce( function ( prev, curr )
         //     {
@@ -725,8 +727,8 @@ class Dashboard extends Component
            return data[ 0 ].attribute_pa_weight
         }
         }
-       
-    
+
+
 
     }
     onCategoryPress = ( data ) =>
@@ -749,10 +751,10 @@ class Dashboard extends Component
     render ()
     {
         const keyboardVerticalOffset = Platform.OS === 'ios' ? 150 : 0
-      
+
         return (
             <>
-           
+
                         {this.state.isInternet === true?
                 <SafeAreaView >
                     <Header { ...this.props } />
@@ -959,6 +961,7 @@ class Dashboard extends Component
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
+                                                    console.log("item9999",item);
                                                     this.props.navigation.navigate( 'ProductDetailScreen', {
                                                         data: item
                                                     } )
@@ -1088,6 +1091,7 @@ class Dashboard extends Component
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
+                                                    console.log("item8888",item);
                                                     this.props.navigation.navigate( 'ProductDetailScreen', {
                                                         data: item
                                                     } )
@@ -1158,7 +1162,7 @@ class Dashboard extends Component
                                         let count =14;
                                         if ( index <= 3 )
                                         {
-                                            return <ProductView 
+                                            return <ProductView
                                             name={ item.post_title.slice( 0, count ) + ( item.post_title.length > count ? "..." : "" ) }
                                             image={ item.img[ 0 ].img_path }
                                             rating={ item.rating[ 0 ].meta_value }
@@ -1170,6 +1174,7 @@ class Dashboard extends Component
                                             storeName={ item.seller_name }
                                             onPress={ () =>
                                             {
+                                                console.log("item1010",item);
                                                 this.props.navigation.navigate( 'ProductDetailScreen', {
                                                     data: item
                                                 } )
@@ -1180,7 +1185,7 @@ class Dashboard extends Component
                                             } } />
                                     }
                                 } } />
-                                    
+
                             </View>
                             <ImageBackground style={ styles.bannerStyle }
                                 source={ require( '../../../assets/bannerImage.png' ) }>
@@ -1239,11 +1244,12 @@ class Dashboard extends Component
                                                 price={ this.displayPrice( item.variation ) }
                                                 regularPrice={this.displayRegularPrice(item.variation)}
                                                 // price={ 50 }
-                                                
+
                                                 discount={ this.discountInPercentage( item.variation) }
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
+                                                    console.log("item1111",item);
                                                     this.props.navigation.navigate( 'ProductDetailScreen', {
                                                         data: item
                                                     } )
@@ -1299,6 +1305,7 @@ class Dashboard extends Component
                                                 storeName={ item.seller_name }
                                                 onPress={ () =>
                                                 {
+                                                    console.log("item22222",item);
                                                     this.props.navigation.navigate( 'ProductDetailScreen', {
                                                         data: item
                                                     } )
@@ -1394,11 +1401,11 @@ class Dashboard extends Component
                                         secureTextEntry={ false }
                                         placeholder={ "Search here" } />
                                 </View>
-                                
+
                                 <FlatList
                                     data={ this.props.keyWordProduct?.data }
                                     numColumns={ 2 }
-                                  
+
                                     maxToRenderPerBatch={ 2 }
                                     style={{alignSelf:'center'}}
                                     extraData={ this.props.keyWordProduct?.data }
@@ -1424,6 +1431,7 @@ class Dashboard extends Component
                                             onPress={ () =>
                                             {
                                                 this.setState( { modalVisible: false } )
+                                                console.log("item55555",item);
                                                 this.props.navigation.navigate( 'ProductDetailScreen', {
                                                     data: item
                                                 } )
@@ -1443,7 +1451,7 @@ class Dashboard extends Component
                     </Modal>
 
                 </SafeAreaView>
-                 : 
+                 :
                  <InternetScreen
                  onPress={()=>{
                      this.checkInternet();
@@ -1451,7 +1459,7 @@ class Dashboard extends Component
                 {/* {this.state.cartItem > 0 && this.state.cartViewVisible === true ? this.renderCartView() : null } */ }
             </>
         )
-    
+
     }
 }
 
