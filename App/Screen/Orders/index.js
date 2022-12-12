@@ -85,7 +85,8 @@ class Orders extends Component
                     cartQuentity: item?._qty,
                     regPrice: item?._line_total / item?._qty,
                     sPrice: item?._line_total / item?._qty,
-                    selectedVarinatID: item?._vendor_id
+                    selectedVarinatID: item?._vendor_id,
+                    product_id: item?._product_id
                 }
                 previousData.push( newItem );
                 console.log("previousData==",previousData);

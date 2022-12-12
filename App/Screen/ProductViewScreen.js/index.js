@@ -540,7 +540,6 @@ class ProductViewScreen extends Component
                         hudColor={ White }
                         color={ Light_Green } />
 
-
                     {
                         this.state.categoeries && this.state.categoeries.length > 0 && this.state.visible==false  ?
                             <FlatList

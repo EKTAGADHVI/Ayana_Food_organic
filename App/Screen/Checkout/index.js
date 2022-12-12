@@ -85,7 +85,7 @@ class CheckOut extends Component
                                 email:data[0].user_email,
                                 phone: data[0].phone,
                                 billingEmail:data[0].user_email,
-                                billingPhone: data[0].phone,
+                                billingPhone: data[0].phone2,
                                 state_Value:data[0].new_location.state,
                                 city:data[0].new_location.city,
                                 stretAddress:data[0].street_address
@@ -133,6 +133,7 @@ class CheckOut extends Component
             let request = {
                 "userId": this.state.userID,
                 "userName": this.state.fName,
+                "lastname": this.state.lName,
                 "email": this.state.billingEmail,
                 "phone": this.state.billingPhone,
                 "country": "India",

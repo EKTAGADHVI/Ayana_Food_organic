@@ -12,6 +12,8 @@ import { CommonActions } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
 import { EventRegister } from 'react-native-event-listeners';
 import FilledButton from '../../Components/Filledbuton';
+import axios from "axios";
+import {PRODUCT_LIST_BY_CAT_ID_EROOR, PRODUCT_LIST_BY_CAT_ID_SUCESS} from "../../Redux/actionTypes";
 let final = 0
 
 class Cart extends Component
@@ -42,7 +44,8 @@ class Cart extends Component
             visible: true,
             variation: '',
             checkOutData: [],
-            loginModal: false
+            loginModal: false,
+            categoeries: [],
         }
 
     }
@@ -79,7 +82,6 @@ class Cart extends Component
     } )
     async componentDidMount ()
     {
-
         setTimeout( async () =>
         {
             this.setState( {
@@ -156,55 +158,79 @@ class Cart extends Component
         this.setState( { checkOutPrice: total } )
 
     }
-    onDecrement = ( id, value, index2, item ) =>
-    {
-        console.log( 'item', item.ID );
-
-        console.log( "Before update: ", this.state.cartData[ index2 ] );
-
-        const UpdatedArray = this.state.cartData.map( ( item, index ) =>
-        {
 
 
-            if ( item.ID === id && index == index2 )
-            {
+    callProductByID=(productId)=>{
+        console.log("ProductListBy",productId);
+        this.setState( {
+            visible: true
+        } )
+        axios.create({
+            baseURL: 'https://ayanafoodorganic.com/api',
+        }).post('/product.php?apicall=product',this.state.request,{
+            headers: { "content-type": "application/json" }
+        }).then((res)=> {
+            return JSON.stringify(res)
+        }).then((responce)=>{
+                this.setState( {
+                    visible: false
+                } )
+            console.log("JSON.parse(responce).data.data",JSON.parse(responce).data.data);
+                const productDetail= JSON.parse(responce).data.data.find(product => product.ID === productId);
+            this.props.navigation.navigate( 'ProductDetailScreen', {
+                data: productDetail
+            } )
+        })
+    }
+
+    onDecrement = ( id, value, index2, item ) => {
+        console.log('value===', value);
+        console.log('item===', item);
+        if (parseInt(value) > 0) {
+
+        console.log('item===', item);
+        console.log("Before update: ", this.state.cartData[index2]);
+
+        const UpdatedArray = this.state.cartData.map((item, index) => {
+
+
+            if (item.ID === id && index == index2) {
+                console.log("onIncrement", onIncrement)
+
                 let onIncrement = parseInt(value) - 1;
 
-                console.log( "value", item.variation?._price )
+                console.log("value", item.variation?._price)
+                console.log("onIncrement", onIncrement)
                 let data = {
                     ...item,
                     cartPrice: item.sPrice * onIncrement,
                     cartRegularPrice: item.regPrice * onIncrement,
-                    cartQuentity: parseInt( onIncrement )
+                    cartQuentity: parseInt(onIncrement)
                 }
 
                 //   this.setState({checkOutPrice:item.sPrice * onIncrement})
                 return data;
 
-            }
-            else
-            {
+            } else {
                 return item
             }
 
 
-        } );
-        console.log( 'updatedAttya', UpdatedArray )
-        this.setState( { cartData: UpdatedArray } )
-        AsyncStorage.setItem( 'AddToCart', JSON.stringify( UpdatedArray ) )
-            .then( ( res ) =>
-            {
-                 EventRegister.emit( 'Add-to-cart' )
-                console.log( 'Successfully Updated' );
-            } )
-            .catch( ( error ) =>
-            {
-                console.log( "error", error )
-            } );
+        });
+        console.log('updatedAttya', UpdatedArray)
+        this.setState({cartData: UpdatedArray})
+        AsyncStorage.setItem('AddToCart', JSON.stringify(UpdatedArray))
+            .then((res) => {
+                EventRegister.emit('Add-to-cart')
+                console.log('Successfully Updated');
+            })
+            .catch((error) => {
+                console.log("error", error)
+            });
+    }
     }
     onIncrement = ( id, value, index2, item ) =>
     {
-
         console.log( "Before update: ", this.state.cartData[ index2 ] );
 
         const UpdatedArray = this.state.cartData.map( ( item, index ) =>
@@ -253,10 +279,17 @@ class Cart extends Component
         return (
             <TouchableOpacity onPress={ () =>
             {
-                this.props.navigation.navigate( 'ProductDetailScreen', {
-                    data: item
-                } )
-            } } style={ styles.ItemView }>
+                console.log("itemsss",item);
+                if(item.hasOwnProperty("_product_id")){
+                    this.callProductByID(item._product_id);
+                }else {
+                    this.props.navigation.navigate( 'ProductDetailScreen', {
+                        data: item
+                    } )
+                }
+
+            }
+            } style={ styles.ItemView }>
                 <View style={ { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', } }>
                     {
                         item?.img?.length > 0 ?
